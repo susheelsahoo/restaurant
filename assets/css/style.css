@@ -1,0 +1,125 @@
+
+      body {
+        background: radial-gradient(circle at top, #111 0%, #000 60%);
+        font-family: "Poppins", sans-serif;
+        color: #fff;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+      .glass-navbar {
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(12px);
+        padding: 14px 0;
+      }
+
+      .navbar-brand {
+        color: #ffb800 !important;
+        font-weight: 700;
+        letter-spacing: 1px;
+        width: 100px;
+      }
+
+      .nav-pill-bg {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        padding: 6px 10px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      }
+
+      .nav-link {
+        color: #bbb !important;
+        padding: 8px 18px !important;
+        border-radius: 999px;
+        font-size: 14px;
+        transition: 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: #fff !important;
+      }
+
+      .nav-link.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff !important;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ff0000, #b10000);
+        border: none;
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.35);
+      }
+
+      /* Hero */
+      .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding-top: 120px;
+        padding-bottom: 60px;
+      }
+
+      .hero-text h1 {
+        font-size: 3.6rem;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+
+      .hero-text p {
+        color: #bbb;
+        margin-top: 18px;
+        max-width: 520px;
+        font-size: 15px;
+      }
+
+      .ramen-img {
+        max-width: 95%;
+        filter: drop-shadow(0 0 60px rgba(255, 40, 40, 0.55));
+        border-radius: 30px;
+      }
+
+      /* Floating cards bottom */
+      .menu-cards {
+        position: absolute;
+        bottom: 40px;
+        width: 100%;
+      }
+
+      .menu-card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .menu-card img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .menu-card h6 {
+        font-size: 13px;
+        margin: 0;
+      }
+
+      .stars {
+        color: #55ff55;
+        font-size: 12px;
+      }
+
+      @media (max-width: 991px) {
+        .hero-text h1 {
+          font-size: 2.6rem;
+        }
+        .menu-cards {
+          position: static;
+          margin-top: 50px;
+        }
+      }
