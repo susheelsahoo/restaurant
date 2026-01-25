@@ -171,24 +171,30 @@ body {
 }
 
       /* About section */
-      .about-section {
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
-        border-top: 1px solid rgba(255,255,255,0.04);
-        padding-top: 60px;
-        padding-bottom: 60px;
-      }
+     .about-section{
+padding:120px 0;
+background:linear-gradient(180deg,#070707,#020202);
+}
 
-      .about-section h2 {
-        font-size: 1.9rem;
-        color: #fff;
-        margin-bottom: 14px;
-      }
 
-      .about-section p {
-        color: #d0d0d0;
-        line-height: 1.7;
-        margin-bottom: 12px;
-      }
+.about-img{
+width:100%;
+border-radius:26px;
+box-shadow:0 0 70px rgba(216,180,106,.25);
+}
+
+
+.about-section h2{
+color:#d8b46a;
+font-size:2.6rem;
+margin-bottom:18px;
+}
+
+
+.about-section p{
+color:#ccc;
+line-height:1.8;
+}
 
       /* Carousel / slider styles inside About */
       .about-image .carousel-item {
