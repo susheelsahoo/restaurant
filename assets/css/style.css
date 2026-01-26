@@ -23,11 +23,7 @@ body {
 }
 
 .navbar-brand img {
-<<<<<<< HEAD
   height: 90px;
-=======
-  height: 58px;
->>>>>>> 6b1338b (update padding margin and fix gallery gri of images)
   width: auto;
   object-fit: contain;
 }
