@@ -1,56 +1,108 @@
-# Laravel standard
+# --------------------------------------
+# Laravel Framework 11.x - .gitignore
+# --------------------------------------
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
 /vendor
 /node_modules
-/public/storage
+
+# Laravel storage & cache
 /storage/*.key
-.env
-.env.*.php
-.phpunit.result.cache
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.cache
+/storage/app/*
+!/storage/app/public
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+
+# Public hot reload / build files
+/public/hot
+/public/storage
+/public/build
+
+# Compiled files
+/bootstrap/cache/*.php
+/bootstrap/cache/*.json
+
+# IDE / Editor files
 /.idea
 /.vscode
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# OS files
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
 *.log
 
-# Laravel 9+ / 10+ / 11+
-/storage/logs
-/storage/framework/cache
-/storage/framework/sessions
-/storage/framework/views
-/storage/framework/testing
+# PHPUnit / Pest
+.phpunit.result.cache
+.phpunit.cache
+/.phpunit.cache
 
-# Composer / NPM
-composer.lock
-yarn.lock
-pnpm-lock.yaml
-npm-debug.log
-package-lock.json
+# PHP-CS-Fixer
+.php-cs-fixer.cache
 
-# Laravel Mix / Vite
-/public/hot
-/public/mix-manifest.json
-/public/build
-/public/sitemap.xml
+# PHPStan
+/phpstan.neon
+/phpstan.neon.dist
+/phpstan.neon.local
+/phpstan.cache
+
+# Rector
+/rector.php
+/.rector.cache
+
+# NPM / Yarn / PNPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite
+.vite
+
+# Build output
+/dist
 /build
 
-# Laravel Telescope / Debugbar (optional)
-storage/telescope
-debugbar*
+# Coverage
+/coverage
+.phpunit.cache
 
-# OS/System specific
-Thumbs.db
-.DS_Store
-*.sublime-workspace
-*.sublime-project
+# Composer
+/composer.phar
 
-# Custom (optional)
-.idea/
-*.sqlite
-*.bak
-*.zip
-*.gz
-*.tar
+# Homestead
+/Homestead.json
+/Homestead.yaml
+
+# Docker
+/docker-data
+docker-compose.override.yml
+
+# Temporary files
 *.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*~
+
+# Test artifacts
+/tests/_output
+
+# Mac specific
+._*
+.Spotlight-V100
+public/sitemap.xml
