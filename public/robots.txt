@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /private/
+Disallow: /cgi-bin/
+Disallow: /tmp/https://mediator.com.ge/
+Sitemap: https://mediator.com.ge/sitemap.xml

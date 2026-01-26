@@ -1,0 +1,60 @@
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 75%;
+    }
+    .hero_section h1 {
+        font-size: 2rem;
+    }
+    .common_container {
+        width: 100%;
+        padding: 0 15px;
+    }
+    .hero_section {
+        padding: 2rem 0;
+    }
+    .hero_section .hero_btns {
+        margin-top: 2rem;
+    }
+    .hero_section .main_btns .request_demo {
+        display: none;
+    }
+    .second_section {
+        padding: 2rem 0;
+    }
+    .second_section .main_tabs h2 br {
+        display: none;
+    }
+
+    .second_section .tabs_section {
+        flex-direction: column-reverse;
+    }
+    .second_section .main_tabs ul {
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .third_section .second_tabs ul {
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        padding-bottom: 1rem;
+    }
+
+    .third_section .second_tabs ul li {
+        width: auto;
+        white-space: nowrap;
+    }
+
+    .tabs_main_content .common_tabs {
+        margin-bottom: 1rem;
+    }
+    .third_section .inner_shadow .content_left_section {
+        margin-bottom: 1rem;
+    }
+    .fifth_section .fifth_section_heading {
+        width: 100%;
+    }
+    .fifth_section .fifth_img_section .fifth_common {
+        margin-bottom: 1rem;
+        height: 8rem;
+    }
+}

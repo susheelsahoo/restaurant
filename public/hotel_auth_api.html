@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rotel API — Simple Documentation</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        margin: 0;
+        background: #f6f8fa;
+        color: #111;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 36px auto;
+        padding: 28px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(20, 30, 40, 0.08);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+      p.lead {
+        margin: 0 0 18px;
+        color: #444;
+      }
+      section {
+        margin: 20px 0 28px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border: 1px solid #e6e9ee;
+        text-align: left;
+        font-size: 14px;
+      }
+      pre {
+        background: #0b1220;
+        color: #d6f8ff;
+        padding: 12px;
+        border-radius: 6px;
+        overflow: auto;
+        font-size: 13px;
+      }
+      .note {
+        background: #fff8e6;
+        border-left: 4px solid #ffcc00;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+        color: #4a4226;
+      }
+      .muted {
+        color: #666;
+        font-size: 13px;
+      }
+      .kbd {
+        display: inline-block;
+        background: #eef2f7;
+        border-radius: 4px;
+        padding: 3px 7px;
+        font-family: monospace;
+        font-size: 13px;
+      }
+      .small {
+        font-size: 13px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Rotel API — Quick Reference</h1>
+      <p class="lead">
+        Simple documentation for the 4-step flow: authenticate (API 1), then use
+        returned domain/token as credentials for API 2–4.
+      </p>
+
+      <section id="workflow">
+        <h2>Workflow</h2>
+        <ol>
+          <li>
+            Call <strong>API 1</strong> to authenticate a hotel using domain and
+            api_key. Response contains a <code>domain</code> and
+            <code>token</code>.
+          </li>
+          <li>
+            Use the returned token as <code>api-key</code> header for subsequent
+            endpoints (API 2, API 3, API 4).
+          </li>
+          <li>
+            All requests to other APIs include <code>api-key</code> header and
+            appropriate body/query parameters.
+          </li>
+        </ol>
+      </section>
+
+      <section id="api1">
+        <h2>API 1 — Authenticate</h2>
+        <table>
+          <tr>
+            <th>Endpoint</th>
+            <td><code>POST http://127.0.0.1:8000/api/hotel/auth</code></td>
+          </tr>
+          <tr>
+            <th>Content-Type</th>
+            <td><code>application/x-www-form-urlencoded</code></td>
+          </tr>
+        </table>
+
+        <h3>Body parameters</h3>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>domain</td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>e.g. <code>https://rotelstaging.mediator.com.ge</code></td>
+          </tr>
+          <tr>
+            <td>api_key</td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>API key assigned to hotel</td>
+          </tr>
+        </table>
+
+        <h3>curl example</h3>
+        <pre>
+curl --location 'http://127.0.0.1:8000/api/hotel/auth' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'domain=https://rotelstaging.mediator.com.ge' \
+--data-urlencode 'api_key={token}'</pre
+        >
+
+        <h3>Success response (200)</h3>
+        <pre>
+{
+  "success": true,
+  "message": "Authentication successful",
+  "domain": "https://rotelstaging.mediator.com.ge",
+  "token": "{token}"
+}</pre
+        >
+
+        <h3>Error responses</h3>
+        <div class="note"><strong>401</strong> Invalid domain or API key</div>
+        <pre>
+{
+  "success": false,
+  "message": "Invalid domain or API key",
+  "domain": ""
+}</pre
+        >
+        <div class="note"><strong>500</strong> hotel.json not found</div>
+        <pre>
+{
+  "success": false,
+  "message": "something went wrong, hotel not found"
+}</pre
+        >
+      </section>
+
+      <section id="api2">
+        <h2>API 2 — Check Booking</h2>
+        <table>
+          <tr>
+            <th>Endpoint</th>
+            <td>
+              <code
+                >GET
+                {base_url}api/check-booking?guest_phone_number=9087654321</code
+              >
+            </td>
+          </tr>
+          <tr>
+            <th>Header</th>
+            <td><code>api-key: {token}</code></td>
+          </tr>
+        </table>
+
+        <h3>curl example</h3>
+        <pre>
+curl --location '{base_url}api/check-booking?guest_phone_number=9087654321' \
+--header 'api-key: {token}'</pre
+        >
+
+        <p class="small muted">
+          Replace <code>{token}</code> with the token returned from API 1.
+        </p>
+      </section>
+
+      <section id="api3">
+        <h2>API 3 — Check In</h2>
+        <table>
+          <tr>
+            <th>Endpoint</th>
+            <td><code>POST {base_url}api/check-in</code></td>
+          </tr>
+          <tr>
+            <th>Content-Type</th>
+            <td><code>application/x-www-form-urlencoded</code></td>
+          </tr>
+          <tr>
+            <th>Header</th>
+            <td><code>api-key: {token}</code></td>
+          </tr>
+        </table>
+
+        <h3>Body</h3>
+        <table>
+          <tr>
+            <th>booking_detail_id</th>
+            <th>int</th>
+            <th>required</th>
+          </tr>
+          <tr>
+            <td>booking_detail_id</td>
+            <td>797</td>
+            <td>Yes</td>
+          </tr>
+        </table>
+
+        <h3>curl example</h3>
+        <pre>
+curl --location '{base_url}api/check-in' \
+--header 'api-key: {token}' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'booking_detail_id=797'</pre
+        >
+      </section>
+
+      <section id="api4">
+        <h2>API 4 — Check Out</h2>
+        <table>
+          <tr>
+            <th>Endpoint</th>
+            <td><code>POST {base_url}api/check-out</code></td>
+          </tr>
+          <tr>
+            <th>Header</th>
+            <td><code>api-key: {token}</code></td>
+          </tr>
+          <tr>
+            <th>Content-Type</th>
+            <td><code>application/x-www-form-urlencoded</code></td>
+          </tr>
+        </table>
+
+        <h3>Body</h3>
+        <table>
+          <tr>
+            <th>booking_detail_id</th>
+            <th>int</th>
+            <th>required</th>
+          </tr>
+          <tr>
+            <td>booking_detail_id</td>
+            <td>797</td>
+            <td>Yes</td>
+          </tr>
+        </table>
+
+        <h3>curl example</h3>
+        <pre>
+curl --location '{base_url}api/check-out' \
+--header 'api-key: {token}' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'booking_detail_id=797'</pre
+        >
+      </section>
+
+      <section id="api4">
+        <h2>API 5 — Get Terms & Conditions</h2>
+        <table>
+          <tr>
+            <th>Endpoint</th>
+            <td><code>POST {base_url}api/terms-and-conditions</code></td>
+          </tr>
+          <tr>
+            <th>Header</th>
+            <td><code>api-key: {token}</code></td>
+          </tr>
+          <tr>
+            <th>Content-Type</th>
+            <td><code>application/x-www-form-urlencoded</code></td>
+          </tr>
+        </table>
+
+        <h3>curl example</h3>
+        <pre>
+curl --location '{base_url}api/terms-and-conditions' \
+--header 'api-key: {token}' \
+--header 'Content-Type: application/x-www-form-urlencoded' \</pre
+        >
+      </section>
+
+      <section id="notes">
+        <h2>Notes & Tips</h2>
+        <ul>
+          <li>
+            Always call <strong>API 1</strong> first. Use
+            <code>token</code> returned as <code>api-key</code> header for other
+            endpoints.
+          </li>
+          <li>
+            Use <code>Content-Type: application/x-www-form-urlencoded</code> for
+            POST endpoints that accept <code>--data-urlencode</code>.
+          </li>
+          <li>
+            If you use a browser client with Laravel, consider CSRF protection:
+            API routes in <code>routes/api.php</code> usually do not require
+            CSRF tokens.
+          </li>
+          <li>
+            Replace <code>localhost</code> and ports with the real base url you
+            received from API 1 when calling hotel-specific endpoints.
+          </li>
+        </ul>
+      </section>
+
+      <p class="muted">
+        Generated on
+        <?php echo (new Date())." "; /* placeholder - if you save static file remove PHP */ ?>
+      </p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+[
+  {
+    "hotel_name": "Rotel Staging",
+    "hotel_logo": "https://rotel.mediator.com.ge/admin/assets/images/logo/Untitled%20design.png",
+    "hotel_domain": "https://rotelstaging.mediator.com.ge",
+    "api_key": "api_key_001"
+  },
+  {
+    "hotel_name": "Rotel",
+    "hotel_logo": "https://rotel.mediator.com.ge/admin/assets/images/logo/Untitled%20design.png",
+    "hotel_domain": "https://rotel.mediator.com.ge",
+    "api_key": "api_key_002"
+  },
+  {
+    "hotel_name": "Sololaki Staging",
+    "hotel_logo": "https://rotel.mediator.com.ge/admin/assets/images/logo/Untitled%20design.png",
+    "hotel_domain": "http://sololakistaging.mediator.com.ge",
+    "api_key": "api_key_003"
+  },
+  {
+    "hotel_name": "Sololaki",
+    "hotel_logo": "https://rotel.mediator.com.ge/admin/assets/images/logo/Untitled%20design.png",
+    "hotel_domain": "https://sololaki.mediator.com.ge",
+    "api_key": "api_key_004"
+  },
+  {
+    "hotel_name": "mirzaani Palace",
+    "hotel_logo": "https://rotel.mediator.com.ge/admin/assets/images/logo/Untitled%20design.png",
+    "hotel_domain": "https://mirzaani.mediator.com.ge/",
+    "api_key": "api_key_005"
+  }
+]

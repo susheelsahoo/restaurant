@@ -1,0 +1,56 @@
+# Laravel standard
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.env.*.php
+.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+/.vagrant
+.phpunit.cache
+/.idea
+/.vscode
+.DS_Store
+*.log
+
+# Laravel 9+ / 10+ / 11+
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/storage/framework/testing
+
+# Composer / NPM
+composer.lock
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log
+package-lock.json
+
+# Laravel Mix / Vite
+/public/hot
+/public/mix-manifest.json
+/public/build
+/public/sitemap.xml
+/build
+
+# Laravel Telescope / Debugbar (optional)
+storage/telescope
+debugbar*
+
+# OS/System specific
+Thumbs.db
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# Custom (optional)
+.idea/
+*.sqlite
+*.bak
+*.zip
+*.gz
+*.tar
+*.tmp
