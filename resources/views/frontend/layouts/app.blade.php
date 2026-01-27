@@ -64,8 +64,10 @@ management software, property management systems, and enhance guest experience')
 
                     <h6 class="footer-title mt-3">Contact</h6>
                     <ul class="footer-contact">
-                        <li>Phone: +36 30 123 4567</li>
-                        <li>WhatsApp: +36 30 123 4567</li>
+                        <li>Phone: <a href="tel:+36301234567"> +36 30 123 4567</a></a></li>
+                        <li>WhatsApp: <a
+                        href="https://wa.me/+36205811111?text=Hi, You’ve reached Restaurant Tifliszo. How can we help?"
+                        target="_blank">+36 20 581 1111</a></li>
                     </ul>
                 </div>
 
