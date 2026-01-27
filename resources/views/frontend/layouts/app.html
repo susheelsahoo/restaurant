@@ -15,31 +15,17 @@
       rel="stylesheet"
     />
 
-    <link href="assets/css/style.css" rel="stylesheet" />
+    <link href="{{ asset('frontend/css/style.css') }}" rel="stylesheet" />
   </head>
 
-  <script>
-    let lastScrollTop = 0;
-    const navbar = document.querySelector(".glass-navbar");
-
-    window.addEventListener("scroll", () => {
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-      if (scrollTop > lastScrollTop && scrollTop > 100) {
-        navbar.classList.add("nav-hidden");
-      } else {
-        navbar.classList.remove("nav-hidden");
-      }
-
-      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    });
-  </script>
-
   <body>
-    <nav class="navbar navbar-expand-lg glass-navbar">
+    <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
       <div class="container">
         <a href="#" class="navbar-brand">
-          <img src="assets/images/logo_wt.svg" alt="Tifliso Restaurant" />
+          <img
+            src="{{ asset('frontend/images/logo_wt.svg') }}"
+            alt="Tifliso Restaurant"
+          />
         </a>
 
         <button
@@ -53,25 +39,15 @@
         <div class="collapse navbar-collapse justify-content-end" id="mainNav">
           <ul class="navbar-nav nav-pill-bg">
             <li class="nav-item">
-              <a class="nav-link active" href="index.html">Home</a>
+              <a class="nav-link active" href="#">Home</a>
             </li>
+            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Menu</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Kitchen</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Wine</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Blogs</a></li>
             <li class="nav-item">
-              <a class="nav-link" href="about-us.html">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="menu.html">Menu</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="kitchen.html">Kitchen</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="wine.html">Wine</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="blogs.html">Blogs</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="contect-us.html">Contact Us</a>
+              <a class="nav-link" href="#">Contact Us</a>
             </li>
           </ul>
         </div>
@@ -87,17 +63,13 @@
               Serving Budapest with authentic Georgian food including Khinkali,
               Khachapuri, BBQ Mtsvadi and premium Georgian wines.
             </p>
-            <a href="#" class="btn btn-primary-gold rounded-pill px-4 mt-3"
-              >Explore Menu</a
-            >
-            <a href="#" class="btn btn-outline-gold rounded-pill px-4 mt-3"
-              >Reserve a Table</a
-            >
+            <a href="#" class="btn rounded-pill px-4 mt-3">Explore Menu</a>
+            <a href="#" class="btn rounded-pill px-4 mt-3">Reserve a Table</a>
           </div>
 
           <div class="col-lg-6 text-center">
             <img
-              src="assets/images/hero_img.png"
+              src="{{ asset('frontend/images/hero_img.png') }}"
               class="ramen-img"
               alt="Georgian Food"
             />
@@ -110,7 +82,7 @@
           <div class="row g-3">
             <div class="col-md-4">
               <div class="menu-card">
-                <img src="assets/images/PET_7755.jpg" />
+                <img src="{{ asset('frontend/images/PET_7755.jpg') }}" />
                 <div>
                   <h6>Khachapuri</h6>
                   <p>Georgian cheese bread</p>
@@ -120,7 +92,7 @@
             </div>
             <div class="col-md-4">
               <div class="menu-card">
-                <img src="assets/images/PET_7740.jpg" />
+                <img src="{{ asset('frontend/images/PET_7740.jpg') }}" />
                 <div>
                   <h6>Khinkali</h6>
                   <p>Traditional dumplings</p>
@@ -130,7 +102,7 @@
             </div>
             <div class="col-md-4">
               <div class="menu-card">
-                <img src="assets/images/PET_7738.jpg" />
+                <img src="{{ asset('frontend/images/PET_7738.jpg') }}" />
                 <div>
                   <h6>Mtsvadi BBQ</h6>
                   <p>Georgian grilled meat</p>
@@ -142,39 +114,50 @@
         </div>
       </div>
     </section>
-    <!-- About Section -->
-    <section id="about" class="about-section">
+    <section id="about" class="about-section py-5">
       <div class="container">
-        <div class="about-header text-center mb-5">
-          <h2 class="section-title">About Us</h2>
-          <p class="section-subtitle">
-            Discover the story behind Tifliso – where authentic Georgian
-            tradition meets fine dining in Budapest.
-          </p>
-        </div>
-
         <div class="row align-items-center gy-4">
           <div class="col-lg-6">
             <div
               id="aboutCarousel"
-              class="carousel slide about-image"
+              class="carousel slide about-image mb-0"
               data-bs-ride="carousel"
             >
               <div class="carousel-inner">
                 <div class="carousel-item active">
-                  <img src="assets/images/about.webp" class="d-block w-100" />
+                  <img
+                    src="{{ asset('frontend/images/about.webp') }}"
+                    class="d-block w-100 rounded-3"
+                    alt="Tifliso interior 1"
+                  />
+                </div>
+                <div class="carousel-item active">
+                  <img
+                    src="{{ asset('frontend/images/about1.webp') }}"
+                    class="d-block w-100 rounded-3"
+                    alt="Tifliso interior 1"
+                  />
                 </div>
                 <div class="carousel-item">
-                  <img src="assets/images/about1.webp" class="d-block w-100" />
+                  <img
+                    src="{{ asset('frontend/images/about2.webp') }}"
+                    class="d-block w-100 rounded-3"
+                    alt="Tifliso interior 2"
+                  />
                 </div>
                 <div class="carousel-item">
-                  <img src="assets/images/about2.webp" class="d-block w-100" />
+                  <img
+                    src="{{ asset('frontend/images/about3.webp') }}"
+                    class="d-block w-100 rounded-3"
+                    alt="Tifliso interior 3"
+                  />
                 </div>
                 <div class="carousel-item">
-                  <img src="assets/images/about3.webp" class="d-block w-100" />
-                </div>
-                <div class="carousel-item">
-                  <img src="assets/images/about4.webp" class="d-block w-100" />
+                  <img
+                    src="{{ asset('frontend/images/about4.webp') }}"
+                    class="d-block w-100 rounded-3"
+                    alt="Tifliso interior 3"
+                  />
                 </div>
               </div>
 
@@ -184,7 +167,11 @@
                 data-bs-target="#aboutCarousel"
                 data-bs-slide="prev"
               >
-                <span class="carousel-control-prev-icon"></span>
+                <span
+                  class="carousel-control-prev-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Previous</span>
               </button>
               <button
                 class="carousel-control-next"
@@ -192,38 +179,43 @@
                 data-bs-target="#aboutCarousel"
                 data-bs-slide="next"
               >
-                <span class="carousel-control-next-icon"></span>
+                <span
+                  class="carousel-control-next-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Next</span>
               </button>
             </div>
           </div>
 
           <div class="col-lg-6">
-            <article class="about-text">
-              <h3>Traditional Georgian Cuisine Made with Passion</h3>
-
+            <article>
+              <h2>Traditional Georgian Cuisine Made with Passion</h2>
               <p>
                 At Tifliso Restaurant, our experienced Georgian chefs prepare
-                every dish using traditional recipes passed down through
-                generations.
+                every dish using traditional Georgian recipes passed down
+                through generations. Each meal reflects the true essence of
+                Georgian cuisine — rich flavors, fresh ingredients, and
+                heartfelt hospitality.
               </p>
 
               <p>
-                From freshly baked Georgian bread to iconic Khachapuri,
-                Khinkali, grilled meats and premium Georgian wines — each dish
-                tells a story.
+                From freshly baked Georgian bread to iconic khachapuri Georgian
+                cheese bread, Khinkali, grilled meats, traditional Georgian
+                Mtsvadi (BBQ), fresh vegetables, herbs, and signature sauces —
+                every dish is crafted to deliver an unforgettable dining
+                experience.
               </p>
 
-              <ul class="about-list">
-                <li>Authentic Georgian restaurant in Budapest</li>
-                <li>Traditional Georgian meals</li>
-                <li>Premium dining experience</li>
-                <li>Signature Georgian wines</li>
+              <ul>
+                We proudly welcome guests searching for:
+                <li>authentic Georgian restaurant in Budapest</li>
+                <li>Georgian cuisine restaurant</li>
+                <li>fine dining restaurant in Budapest</li>
+                <li>traditional Georgian meals</li>
               </ul>
 
-              <a
-                href="#"
-                class="btn btn-outline-warning rounded-pill px-4 mt-3"
-              >
+              <a href="#" class="btn btn-outline-warning rounded-pill px-4">
                 Read More
               </a>
             </article>
@@ -232,160 +224,150 @@
       </div>
     </section>
 
-    <!-- MENU SECTION -->
     <section id="menu" class="menu-section">
       <div class="container">
-        <div class="menu-header text-center">
-          <h1 class="menu-heading">Our Menu</h1>
-          <p class="menu-subtitle">
-            Discover the taste of Georgia through our finest selections
-          </p>
-        </div>
-
-        <div class="row align-items-center gy-5 menu-block">
-          <div class="col-lg-6 text-center">
+        <div class="row align-items-center gy-5">
+          <!-- Left Image -->
+          <div class="col-lg-6 text-center position-relative">
             <img
-              src="assets/images/PET_7738.jpg"
+              src="{{ asset('frontend/images/PET_7738.jpg') }}"
               class="menu-main-img"
-              alt="Georgian Cuisine"
+              alt="Georgian Food"
             />
           </div>
+
+          <!-- Right Content -->
           <div class="col-lg-6">
             <h2 class="menu-title">Georgian Cuisine</h2>
+
             <p class="menu-desc">
               Elevate your senses and savor the luxury of Georgian culture and
-              cuisine like never before at Furia restobar. Khinkali, khachapuri,
-              sulguni cheese, and other iconic dishes, all reimagined with a
-              contemporary twist to impress our guests and remain as
-              unforgettable experience.
+              cuisine like never before at Tifliso restobar. Khinkali,
+              khachapuri, sulguni cheese, and other iconic dishes, all
+              reimagined with a contemporary twist to impress our guests and
+              remain an unforgettable experience.
             </p>
-            <a href="#" class="btn btn-outline-warning rounded-pill px-4"
-              >Georgian Specialities</a
-            >
+
+            <a href="#" class="btn btn-outline-warning rounded-pill px-4">
+              Georgian specialities
+            </a>
           </div>
         </div>
 
-        <div class="row align-items-center gy-5 menu-block flex-lg-row-reverse">
+        <!-- Bottom Row -->
+        <div class="row align-items-center gy-5 mt-5 flex-lg-row-reverse">
+          <!-- Image -->
           <div class="col-lg-6 text-center">
             <img
-              src="assets/images/PET_7740.jpg"
+              src="{{ asset('frontend/images/PET_7740.jpg') }}"
               class="menu-main-img"
-              alt="Highest Quality"
+              alt="Premium Steak"
             />
           </div>
+
+          <!-- Text -->
           <div class="col-lg-6">
             <h2 class="menu-title">Highest Quality</h2>
+
             <p class="menu-desc">
               Our menu features premium selections, including world-renowned
               Wagyu steaks, celebrated for their unparalleled marbling,
-              tenderness, and rich, buttery taste. Each cut is expertly prepared
-              to perfection by our master chefs, ensuring a dining experience
-              that highlights the natural essence of every bite.
+              tenderness, and rich buttery taste. Each cut is expertly prepared
+              to perfection by our master chefs.
             </p>
-            <a href="#" class="btn btn-outline-warning rounded-pill px-4"
-              >Our Menu</a
-            >
-          </div>
-        </div>
 
-        <div class="row align-items-center gy-5 menu-block">
-          <div class="col-lg-6 text-center">
-            <img
-              src="assets/images/PET_7755.jpg"
-              class="menu-main-img"
-              alt="Wine Collection"
-            />
-          </div>
-          <div class="col-lg-6">
-            <h2 class="menu-title">Wine Collection</h2>
-            <p class="menu-desc">
-              Our award-winning mixologists take pride in creating signature
-              cocktails that are as visually stunning as they are delicious.
-              Enjoy a curated selection of premium wines, rare whiskeys, and
-              bespoke cocktails tailored to your palate.
-            </p>
-            <a href="#" class="btn btn-outline-warning rounded-pill px-4"
-              >Explore Wines</a
-            >
-          </div>
-        </div>
-
-        <div class="row align-items-center gy-5 menu-block flex-lg-row-reverse">
-          <div class="col-lg-6 text-center">
-            <img
-              src="assets/images/PET_7767.jpg"
-              class="menu-main-img"
-              alt="Chef’s Special"
-            />
-          </div>
-          <div class="col-lg-6">
-            <h2 class="menu-title">Chef’s Special</h2>
-            <p class="menu-desc">
-              We are pleased to offer our guests a choice of Premium Furia Aroma
-              hookahs. Our waiters are always ready to help with the best option
-              for you.
-            </p>
-            <a href="#" class="btn btn-outline-warning rounded-pill px-4"
-              >Chef’s Picks</a
-            >
+            <a href="#" class="btn btn-outline-warning rounded-pill px-4">
+              Our Menu
+            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- GALLERY SECTION -->
-    <section class="gallery-section">
-      <div class="gallery-header">
-        <h1 class="gallery-title">Our Gallery</h1>
-        <p class="gallery-subtitle">
-          A visual journey through our atmosphere, cuisine, and unforgettable
-          dining moments.
-        </p>
-      </div>
-      <div class="gallery-4col">
-        <!-- Column 1 -->
-        <div class="gallery-col gallery-item">
-          <div class="gallery-item small">
-            <img src="assets/images/PET_7637.jpg" alt="" />
-          </div>
-          <div class="gallery-item tall gallery-item">
-            <img src="assets/images/PET_7702.jpg" alt="" />
-          </div>
+    <section id="gallery" class="gallery-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="gallery-title">Our Gallery</h2>
+          <p class="gallery-subtitle">
+            A visual journey through our atmosphere, cuisine, and unforgettable
+            dining moments.
+          </p>
         </div>
 
-        <!-- Column 2 -->
-        <div class="gallery-col gallery-item">
-          <div class="gallery-item tall">
-            <img src="assets/images/PET_7639.jpg" alt="" />
+        <div class="row g-4 gallery-grid">
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7637.jpg') }}"
+                alt="Gallery Image7"
+              />
+            </div>
           </div>
-          <div class="gallery-item small gallery-item">
-            <img src="assets/images/PET_7735.jpg" alt="" />
-          </div>
-        </div>
 
-        <!-- Column 3 -->
-        <div class="gallery-col">
-          <div class="gallery-item small">
-            <img src="assets/images/PET_7643.jpg" alt="" />
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7639.jpg') }}"
+                alt="Gallery Image6"
+              />
+            </div>
           </div>
-          <div class="gallery-item tall">
-            <img src="assets/images/PET_7738.jpg" alt="" />
-          </div>
-        </div>
 
-        <!-- Column 4 -->
-        <div class="gallery-col">
-          <div class="gallery-item tall">
-            <img src="assets/images/PET_7675.jpg" alt="" />
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7643.jpg') }}"
+                alt="Gallery Image5"
+              />
+            </div>
           </div>
-          <div class="gallery-item small">
-            <img src="assets/images/PET_7702.jpg" alt="" />
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7675.jpg') }}"
+                alt="Gallery Image4"
+              />
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7702.jpg') }}"
+                alt="Gallery Image3"
+              />
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7735.jpg') }}"
+                alt="Gallery Image2"
+              />
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7738.jpg') }}"
+                alt="Gallery Image1"
+              />
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="gallery-card">
+              <img
+                src="{{ asset('frontend/images/PET_7738.jpg') }}"
+                alt="Gallery Image1"
+              />
+            </div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- TABLE BOOKING SECTION -->
     <section id="reservation" class="reservation-section">
       <div class="container">
         <div class="row justify-content-center">
@@ -452,7 +434,10 @@
                 </div>
 
                 <div class="text-center mt-4">
-                  <button type="submit" class="submit-btn rounded-pill px-5">
+                  <button
+                    type="submit"
+                    class="btn btn-danger rounded-pill px-5"
+                  >
                     Reserve Table
                   </button>
                 </div>
@@ -462,7 +447,7 @@
         </div>
       </div>
     </section>
-    <!-- BLOG SECTION -->
+
     <section id="blog" class="blog-section">
       <div class="container">
         <div class="text-center mb-5">
@@ -478,7 +463,10 @@
           <div class="col-lg-4 col-md-6">
             <article class="blog-card">
               <div class="blog-img">
-                <img src="assets/images/_MG_7406.jpg" alt="Georgian Cuisine" />
+                <img
+                  src="{{ asset('frontend/images/_MG_7406.jpg') }}"
+                  alt="Georgian Cuisine"
+                />
               </div>
               <div class="blog-content">
                 <span class="blog-date">12 Feb 2026</span>
@@ -495,7 +483,10 @@
           <div class="col-lg-4 col-md-6">
             <article class="blog-card">
               <div class="blog-img">
-                <img src="assets/images/_MG_7433.jpg" alt="Khachapuri" />
+                <img
+                  src="{{ asset('frontend/images/_MG_7433.jpg') }}"
+                  alt="Khachapuri"
+                />
               </div>
               <div class="blog-content">
                 <span class="blog-date">29 Jan 2026</span>
@@ -512,7 +503,10 @@
           <div class="col-lg-4 col-md-6">
             <article class="blog-card">
               <div class="blog-img">
-                <img src="assets/images/_MG_7406.jpg" alt="Wine" />
+                <img
+                  src="{{ asset('frontend/images/_MG_7406.jpg') }}"
+                  alt="Wine"
+                />
               </div>
               <div class="blog-content">
                 <span class="blog-date">10 Jan 2026</span>
@@ -541,7 +535,7 @@
           <!-- Brand -->
           <div class="col-lg-4">
             <img
-              src="assets/images/logo_wt.svg"
+              src="{{ asset('frontend/images/logo_wt.svg') }}"
               class="footer-logo"
               alt="Tifliso"
             />
@@ -575,8 +569,8 @@
 
             <h6 class="footer-title mt-3">Contact</h6>
             <ul class="footer-contact">
-              <li>📞 +36 30 123 4567</li>
-              <li>💬 WhatsApp: +36 30 123 4567</li>
+              <li>Phone: +36 30 123 4567</li>
+              <li>WhatsApp: +36 30 123 4567</li>
             </ul>
           </div>
 
@@ -602,7 +596,14 @@
           <p>
             © <span id="year"></span> Tifliso Restaurant. All Rights Reserved.
           </p>
-          <p>Designed & Developed by <a href="#">Your Agency</a></p>
+          <p>
+            Designed & Developed by
+            <a
+              href="https://wa.me/+918799707771?text=Hi%20I%20am%20looking%20for%20website%20development"
+              target="_blank"
+              >IPulse Web Solutions</a
+            >
+          </p>
         </div>
       </div>
     </footer>

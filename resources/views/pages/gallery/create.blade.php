@@ -35,7 +35,7 @@
                     <input type="file" name="image" id="image" class="form-control">
                     @if (isset($galleryImage) && $galleryImage->image_path)
                     <div class="mt-2">
-                        <img src="{{ asset('storage/' . $galleryImage->image_path) }}" alt="Gallery Image" class="img-thumbnail" width="150">
+                        <img src="{{ asset('storage/' . $galleryImage->image_path) }}" alt="Gallery" class="img-thumbnail" width="150">
                     </div>
                     @endif
                     @error('image')

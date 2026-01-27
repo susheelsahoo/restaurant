@@ -1,10 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
-    <title>Tifliso Georgian Restaurant</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@yield('meta_title', 'Mediator Blog | Insights on Hotel Management Software')</title>
+    <meta name="description" content="@yield('meta_description', 'Stay updated with the Mediator Blog for expert tips and insights on hotel
+management software, property management systems, and enhance guest experience')">
+    <meta name="keywords" content="@yield('meta_keywords', 'hotel management software, hotel booking system, hotel PMS, property management system, hotel software Georgia, hotel reservation software, hospitality management software, cloud hotel management')">
+    <meta name="author" content="Mediator">
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -18,468 +23,15 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
-        <div class="container">
-            <a href="#" class="navbar-brand">
-                <img src="{{ asset('frontend/images/logo_wt.svg') }}" alt="Tifliso Restaurant">
-            </a>
+    @yield('content')
 
-            <button
-                class="navbar-toggler"
-                data-bs-toggle="collapse"
-                data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-end" id="mainNav">
-                <ul class="navbar-nav nav-pill-bg">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Kitchen</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Wine</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Blogs</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <section class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-text">
-                    <h1>Authentic Georgian<br />Restaurant in Budapest</h1>
-                    <p>
-                        Serving Budapest with authentic Georgian food including Khinkali,
-                        Khachapuri, BBQ Mtsvadi and premium Georgian wines.
-                    </p>
-                    <a href="#" class="btn rounded-pill px-4 mt-3">Explore Menu</a>
-                    <a href="#" class="btn rounded-pill px-4 mt-3">Reserve a Table</a>
-                </div>
-
-                <div class="col-lg-6 text-center">
-                    <img
-                        src="{{ asset('frontend/images/hero_img.png') }}"
-                        class="ramen-img"
-                        alt="Georgian Food" />
-                </div>
-            </div>
-        </div>
-
-        <div class="menu-cards">
-            <div class="container">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="menu-card">
-                            <img src="{{ asset('frontend/images/PET_7755.jpg') }}" />
-                            <div>
-                                <h6>Khachapuri</h6>
-                                <p>Georgian cheese bread</p>
-                                <div class="stars">★★★★★</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="menu-card">
-                            <img src="{{ asset('frontend/images/PET_7740.jpg') }}" />
-                            <div>
-                                <h6>Khinkali</h6>
-                                <p>Traditional dumplings</p>
-                                <div class="stars">★★★★★</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="menu-card">
-                            <img src="{{ asset('frontend/images/PET_7738.jpg') }}" />
-                            <div>
-                                <h6>Mtsvadi BBQ</h6>
-                                <p>Georgian grilled meat</p>
-                                <div class="stars">★★★★★</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- About Section -->
-    <section id="about" class="about-section py-5">
-        <div class="container">
-            <div class="row align-items-center gy-4">
-                <div class="col-lg-6">
-                    <div
-                        id="aboutCarousel"
-                        class="carousel slide about-image mb-0"
-                        data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="{{ asset('frontend/images/about.webp') }}"
-                                    class="d-block w-100 rounded-3"
-                                    alt="Tifliso interior 1" />
-                            </div>
-                            <div class="carousel-item active">
-                                <img src="{{ asset('frontend/images/about1.webp') }}"
-                                    class="d-block w-100 rounded-3"
-                                    alt="Tifliso interior 1" />
-                            </div>
-                            <div class="carousel-item">
-                                <img
-                                    src="{{ asset('frontend/images/about2.webp') }}"
-                                    class="d-block w-100 rounded-3"
-                                    alt="Tifliso interior 2" />
-                            </div>
-                            <div class="carousel-item">
-                                <img
-                                    src="{{ asset('frontend/images/about3.webp') }}"
-                                    class="d-block w-100 rounded-3"
-                                    alt="Tifliso interior 3" />
-                            </div>
-                            <div class="carousel-item">
-                                <img
-                                    src="{{ asset('frontend/images/about4.webp') }}"
-                                    class="d-block w-100 rounded-3"
-                                    alt="Tifliso interior 3" />
-                            </div>
-                        </div>
-
-                        <button
-                            class="carousel-control-prev"
-                            type="button"
-                            data-bs-target="#aboutCarousel"
-                            data-bs-slide="prev">
-                            <span
-                                class="carousel-control-prev-icon"
-                                aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button
-                            class="carousel-control-next"
-                            type="button"
-                            data-bs-target="#aboutCarousel"
-                            data-bs-slide="next">
-                            <span
-                                class="carousel-control-next-icon"
-                                aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="col-lg-6">
-                    <article>
-                        <h2>Traditional Georgian Cuisine Made with Passion</h2>
-                        <p>
-                            At Tifliso Restaurant, our experienced Georgian chefs prepare
-                            every dish using traditional Georgian recipes passed down
-                            through generations. Each meal reflects the true essence of
-                            Georgian cuisine — rich flavors, fresh ingredients, and
-                            heartfelt hospitality.
-                        </p>
-
-                        <p>
-                            From freshly baked Georgian bread to iconic khachapuri Georgian
-                            cheese bread, Khinkali, grilled meats, traditional Georgian
-                            Mtsvadi (BBQ), fresh vegetables, herbs, and signature sauces —
-                            every dish is crafted to deliver an unforgettable dining
-                            experience.
-                        </p>
-
-                        <ul>
-                            We proudly welcome guests searching for:
-                            <li>authentic Georgian restaurant in Budapest</li>
-                            <li>Georgian cuisine restaurant</li>
-                            <li>fine dining restaurant in Budapest</li>
-                            <li>traditional Georgian meals</li>
-                        </ul>
-
-                        <a href="#" class="btn btn-outline-warning rounded-pill px-4">
-                            Read More
-                        </a>
-                    </article>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MENU SECTION -->
-    <section id="menu" class="menu-section">
-        <div class="container">
-            <div class="row align-items-center gy-5">
-                <!-- Left Image -->
-                <div class="col-lg-6 text-center position-relative">
-                    <img src="{{ asset('frontend/images/PET_7738.jpg') }}"
-                        class="menu-main-img"
-                        alt="Georgian Food" />
-                </div>
-
-                <!-- Right Content -->
-                <div class="col-lg-6">
-                    <h2 class="menu-title">Georgian Cuisine</h2>
-
-                    <p class="menu-desc">
-                        Elevate your senses and savor the luxury of Georgian culture and
-                        cuisine like never before at Tifliso restobar. Khinkali,
-                        khachapuri, sulguni cheese, and other iconic dishes, all
-                        reimagined with a contemporary twist to impress our guests and
-                        remain an unforgettable experience.
-                    </p>
-
-                    <a href="#" class="btn btn-outline-warning rounded-pill px-4">
-                        Georgian specialities
-                    </a>
-                </div>
-            </div>
-
-            <!-- Bottom Row -->
-            <div class="row align-items-center gy-5 mt-5 flex-lg-row-reverse">
-                <!-- Image -->
-                <div class="col-lg-6 text-center">
-                    <img src="{{ asset('frontend/images/PET_7740.jpg') }}"
-                        class="menu-main-img"
-                        alt="Premium Steak" />
-                </div>
-
-                <!-- Text -->
-                <div class="col-lg-6">
-                    <h2 class="menu-title">Highest Quality</h2>
-
-                    <p class="menu-desc">
-                        Our menu features premium selections, including world-renowned
-                        Wagyu steaks, celebrated for their unparalleled marbling,
-                        tenderness, and rich buttery taste. Each cut is expertly prepared
-                        to perfection by our master chefs.
-                    </p>
-
-                    <a href="#" class="btn btn-outline-warning rounded-pill px-4">
-                        Our Menu
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- GALLERY SECTION -->
-    <section id="gallery" class="gallery-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="gallery-title">Our Gallery</h2>
-                <p class="gallery-subtitle">
-                    A visual journey through our atmosphere, cuisine, and unforgettable
-                    dining moments.
-                </p>
-            </div>
-
-            <div class="row g-4 gallery-grid">
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7637.jpg') }}" alt="Gallery Image7" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7639.jpg') }}" alt="Gallery Image6" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7643.jpg') }}" alt="Gallery Image5" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7675.jpg') }}" alt="Gallery Image4" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7702.jpg') }}" alt="Gallery Image3" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7735.jpg') }}" alt="Gallery Image2" />
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7738.jpg') }}" alt="Gallery Image1" />
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="gallery-card">
-                        <img src="{{ asset('frontend/images/PET_7738.jpg') }}" alt="Gallery Image1" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- TABLE BOOKING SECTION -->
-    <section id="reservation" class="reservation-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="reservation-card">
-                        <div class="text-center mb-4">
-                            <h2 class="reservation-title">Book a Table</h2>
-                            <p class="reservation-subtitle">
-                                Reserve your table now and enjoy authentic Georgian fine
-                                dining experience.
-                            </p>
-                        </div>
-
-                        <form class="reservation-form">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label>Visit Date</label>
-                                    <input type="date" class="form-control" />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Visit Time</label>
-                                    <input type="time" class="form-control" />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Number of Guests</label>
-                                    <select class="form-select">
-                                        <option>1 Guest</option>
-                                        <option>2 Guests</option>
-                                        <option>3 Guests</option>
-                                        <option>4 Guests</option>
-                                        <option>5 Guests</option>
-                                        <option>6+ Guests</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Your Name</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        placeholder="John Doe" />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Phone Number</label>
-                                    <input
-                                        type="tel"
-                                        class="form-control"
-                                        placeholder="+36 123 456 789" />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label>Email Address</label>
-                                    <input
-                                        type="email"
-                                        class="form-control"
-                                        placeholder="email@example.com" />
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger rounded-pill px-5">
-                                    Reserve Table
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- BLOG SECTION -->
-    <section id="blog" class="blog-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="blog-title">Latest From Our Blog</h2>
-                <p class="blog-subtitle">
-                    Stories, recipes, traditions, and behind-the-scenes moments from our
-                    Georgian kitchen.
-                </p>
-            </div>
-
-            <div class="row g-4">
-                <!-- Blog Card -->
-                <div class="col-lg-4 col-md-6">
-                    <article class="blog-card">
-                        <div class="blog-img">
-                            <img src="{{ asset('frontend/images/_MG_7406.jpg') }}" alt="Georgian Cuisine" />
-                        </div>
-                        <div class="blog-content">
-                            <span class="blog-date">12 Feb 2026</span>
-                            <h3>Secrets of Authentic Georgian Cuisine</h3>
-                            <p>
-                                Discover the traditional techniques, ingredients, and flavors
-                                that define Georgian culinary culture.
-                            </p>
-                            <a href="#" class="read-more">Read More →</a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="blog-card">
-                        <div class="blog-img">
-                            <img src="{{ asset('frontend/images/_MG_7433.jpg') }}" alt="Khachapuri" />
-                        </div>
-                        <div class="blog-content">
-                            <span class="blog-date">29 Jan 2026</span>
-                            <h3>Khachapuri: Georgia’s Iconic Cheese Bread</h3>
-                            <p>
-                                A deep dive into the story, variations, and secrets behind the
-                                legendary khachapuri.
-                            </p>
-                            <a href="#" class="read-more">Read More →</a>
-                        </div>
-                    </article>
-                </div>
-
-                <div class="col-lg-4 col-md-6">
-                    <article class="blog-card">
-                        <div class="blog-img">
-                            <img src="{{ asset('frontend/images/_MG_7406.jpg') }}" alt="Wine" />
-                        </div>
-                        <div class="blog-content">
-                            <span class="blog-date">10 Jan 2026</span>
-                            <h3>Georgian Wine Culture & Ancient Traditions</h3>
-                            <p>
-                                Explore Georgia’s 8000-year-old wine-making heritage and its
-                                world-famous amber wines.
-                            </p>
-                            <a href="#" class="read-more">Read More →</a>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <div class="text-center mt-5">
-                <a href="#" class="btn btn-outline-warning rounded-pill px-5">
-                    View All Blogs
-                </a>
-            </div>
-        </div>
-    </section>
-    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="container">
             <div class="row gy-5">
                 <!-- Brand -->
                 <div class="col-lg-4">
-                    <img src="{{ asset('frontend/images/logo_wt.svg') }}"
+                    <img
+                        src="{{ asset('frontend/images/logo_wt.svg') }}"
                         class="footer-logo"
                         alt="Tifliso" />
                     <p class="footer-desc">
@@ -512,8 +64,10 @@
 
                     <h6 class="footer-title mt-3">Contact</h6>
                     <ul class="footer-contact">
-                        <li>Phone: +36 30 123 4567</li>
-                        <li>WhatsApp: +36 30 123 4567</li>
+                        <li>Phone: <a href="tel:+36301234567"> +36 30 123 4567</a></a></li>
+                        <li>WhatsApp: <a
+                        href="https://wa.me/+36205811111?text=Hi, You’ve reached Restaurant Tifliszo. How can we help?"
+                        target="_blank">+36 20 581 1111</a></li>
                     </ul>
                 </div>
 
@@ -528,8 +82,7 @@
                     </p>
 
                     <div class="footer-map">
-                        <!-- Map placeholder (embed restricted by platform rules) -->
-                        <div class="map-placeholder">Map Location Preview</div>
+                        <div class="map-placeholder"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2696.126069528447!2d19.060309477019246!3d47.48745737117912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4741dc5a706ea7dd%3A0xc3901e0da9414918!2sBudapest%2C%20R%C3%A1day%20u.%2011%2C%201092!5e0!3m2!1sen!2shu!4v1713966036288!5m2!1sen!2shu" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                     </div>
                 </div>
             </div>
@@ -539,7 +92,12 @@
                 <p>
                     © <span id="year"></span> Tifliso Restaurant. All Rights Reserved.
                 </p>
-                <p>Designed & Developed by <a href="https://wa.me/+918799707771?text=Hi%20I%20am%20looking%20for%20website%20development" target="_blank">IPulse Web Solutions</a></p>
+                <p>
+                    Designed & Developed by
+                    <a
+                        href="https://wa.me/+918799707771?text=Hi%20I%20am%20looking%20for%20website%20development"
+                        target="_blank">IPulse Web Solutions</a>
+                </p>
             </div>
         </div>
     </footer>
@@ -547,7 +105,6 @@
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

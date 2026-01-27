@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tifliso Georgian Restaurant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link href="assets/css/style.css" rel="stylesheet" />
+  </head>
+
+  <script>
+    let lastScrollTop = 0;
+    const navbar = document.querySelector(".glass-navbar");
+
+    window.addEventListener("scroll", () => {
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        navbar.classList.add("nav-hidden");
+      } else {
+        navbar.classList.remove("nav-hidden");
+      }
+
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+  </script>
+
+  <body>
+    <nav class="navbar navbar-expand-lg glass-navbar">
+      <div class="container">
+        <a href="#" class="navbar-brand">
+          <img src="assets/images/logo_wt.svg" alt="Tifliso Restaurant" />
+        </a>
+
+        <button
+          class="navbar-toggler"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+          <ul class="navbar-nav nav-pill-bg">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about-us.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="menu.html">Menu</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="kitchen.html">Kitchen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="wine.html">Wine</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="blogs.html">Blogs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contect-us.html">Contact Us</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- BLOG DETAIL HERO -->
+    <section class="blog-detail-hero">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-9">
+            <span class="blog-detail-date">12 Feb 2026</span>
+            <h1>Secrets of Authentic Georgian Cuisine</h1>
+            <p class="blog-detail-subtitle">
+              Discover the traditional techniques, unique ingredients, and
+              cultural philosophy behind Georgia’s legendary culinary heritage.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOG CONTENT -->
+    <section class="blog-detail-content">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-9">
+            <img
+              src="assets/images/_MG_7406.jpg"
+              class="blog-feature-img"
+              alt="Blog Feature"
+            />
+
+            <article class="blog-article">
+              <p>
+                Georgian cuisine is one of the world’s oldest and richest
+                culinary traditions, shaped by centuries of cultural exchange,
+                fertile landscapes, and deep hospitality.
+              </p>
+
+              <p>
+                At Tifliso Restaurant, we honor this tradition by preparing each
+                dish using authentic methods and premium ingredients sourced
+                directly from Georgian farms.
+              </p>
+
+              <blockquote>
+                "Food is the heart of Georgian hospitality — every meal is a
+                celebration."
+              </blockquote>
+
+              <h3>Traditional Techniques</h3>
+              <p>
+                From slow-fermented dough to hand-folded khinkali, our chefs use
+                time-honored methods to bring authenticity to every plate.
+              </p>
+
+              <h3>Premium Ingredients</h3>
+              <p>
+                Fresh herbs, handcrafted cheeses, organic meats, and regional
+                spices define the soul of our menu.
+              </p>
+            </article>
+
+            <!-- TAGS -->
+            <div class="blog-tags">
+              <a href="#">Georgian Food</a>
+              <a href="#">Cuisine</a>
+              <a href="#">Tradition</a>
+              <a href="#">Fine Dining</a>
+            </div>
+
+            <!-- AUTHOR -->
+            <div class="blog-author">
+              <img src="assets/images/chef.jpg" alt="Author" />
+              <div>
+                <h6>Chef Giorgi</h6>
+                <p>Executive Chef – Georgian Cuisine Specialist</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATED POSTS -->
+    <section class="related-posts">
+      <div class="container">
+        <h2 class="text-center mb-5">Related Articles</h2>
+
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <article class="blog-page-card">
+              <img src="assets/images/PET_7702.jpg" />
+              <div class="blog-card-body">
+                <span>01 Feb 2026</span>
+                <h5>Georgian Wine Traditions</h5>
+                <a href="#">Read More →</a>
+              </div>
+            </article>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <article class="blog-page-card">
+              <img src="assets/images/PET_7735.jpg" />
+              <div class="blog-card-body">
+                <span>18 Jan 2026</span>
+                <h5>Behind The Scenes: Our Kitchen</h5>
+                <a href="#">Read More →</a>
+              </div>
+            </article>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <article class="blog-page-card">
+              <img src="assets/images/_MG_7433.jpg" />
+              <div class="blog-card-body">
+                <span>29 Jan 2026</span>
+                <h5>Khachapuri: The Pride of Georgia</h5>
+                <a href="#">Read More →</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="row gy-5">
+          <!-- Brand -->
+          <div class="col-lg-4">
+            <img
+              src="assets/images/logo_wt.svg"
+              class="footer-logo"
+              alt="Tifliso"
+            />
+            <p class="footer-desc">
+              Authentic Georgian cuisine in the heart of Budapest. Experience
+              tradition, hospitality, and unforgettable flavors.
+            </p>
+          </div>
+
+          <!-- Menu -->
+          <div class="col-lg-2 col-md-4">
+            <h6 class="footer-title">Quick Links</h6>
+            <ul class="footer-links">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Menu</a></li>
+              <li><a href="#">Gallery</a></li>
+              <li><a href="#">Blogs</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+
+          <!-- Opening Hours -->
+          <div class="col-lg-3 col-md-4">
+            <h6 class="footer-title">Opening Hours</h6>
+
+            <ul class="footer-hours">
+              <li><span>Restaurant:</span> Mon – Sun: 11:00 – 23:00</li>
+              <li><span>Kitchen:</span> Mon – Sun: 11:30 – 22:30</li>
+            </ul>
+
+            <h6 class="footer-title mt-3">Contact</h6>
+            <ul class="footer-contact">
+              <li>📞 +36 30 123 4567</li>
+              <li>💬 WhatsApp: +36 30 123 4567</li>
+            </ul>
+          </div>
+
+          <!-- Address + Map -->
+          <div class="col-lg-3 col-md-4">
+            <h6 class="footer-title">Find Us</h6>
+
+            <p class="footer-address">
+              Tifliso Restaurant<br />
+              Budapest, Hungary<br />
+              Example Street 12, 1051
+            </p>
+
+            <div class="footer-map">
+              <!-- Map placeholder (embed restricted by platform rules) -->
+              <div class="map-placeholder">Map Location Preview</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="footer-bottom">
+          <p>
+            © <span id="year"></span> Tifliso Restaurant. All Rights Reserved.
+          </p>
+          <p>Designed & Developed by <a href="#">Your Agency</a></p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -105,4 +105,7 @@ docker-compose.override.yml
 # Mac specific
 ._*
 .Spotlight-V100
+bkup/*
+error_log
+public/error_log
 public/sitemap.xml

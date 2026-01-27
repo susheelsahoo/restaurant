@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GalleryImage;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryImageController extends Controller
@@ -26,7 +27,7 @@ class GalleryImageController extends Controller
     {
         $request->validate([
             'title' => 'nullable|string|max:255',
-            'image' => 'required|image|max:2048',
+            'image' => 'required|image|max:10000', // 10MB in KB
         ]);
 
         $path = $request->file('image')->store('gallery_images', 'public');
@@ -46,13 +47,36 @@ class GalleryImageController extends Controller
         return view('pages.gallery.create', compact('galleryImage'));
     }
 
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:10000', // 10MB in KB
+        ]);
+
+        $files = [];
+
+        foreach ($request->file('images', []) as $image) {
+            $path = $image->store('gallery', 'public');
+
+            $files[] = [
+                'name' => $image->getClientOriginalName(),
+                'size' => $image->getSize(),
+                'url'  => asset('storage/' . $path),
+            ];
+        }
+
+        return response()->json([
+            'files' => $files
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $image = GalleryImage::findOrFail($id);
 
         $request->validate([
             'title' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:10000', // 10MB in KB
         ]);
 
         if ($request->hasFile('image')) {
