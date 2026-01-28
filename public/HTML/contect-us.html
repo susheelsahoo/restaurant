@@ -16,6 +16,11 @@
     />
 
     <link href="assets/css/style.css" rel="stylesheet" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
   </head>
 
   <script>
@@ -78,9 +83,11 @@
       </div>
     </nav>
     <section class="contact-hero">
+      <div class="contact-overlay"></div>
+
       <div class="container">
-        <div class="row">
-          <div class="col-lg-7">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center contact-hero-content">
             <h1>Contact Us</h1>
             <p>
               We’d love to hear from you. Book a table, ask a question, or plan
@@ -93,44 +100,67 @@
 
     <!-- CONTACT INFO -->
     <section class="contact-info-section">
-      <div class="container">
-        <div class="row g-4">
-          <div class="col-lg-3 col-md-6">
-            <div class="contact-box">
-              <h5>Address</h5>
-              <p>Example Street 12<br />1051 Budapest, Hungary</p>
-            </div>
+      <div class="container overflow-hidden">
+        <div class="contact-slider">
+          <!-- ORIGINAL 4 CARDS -->
+          <div class="contact-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <h5>Address</h5>
+            <p>Example Street 12<br />Budapest</p>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="contact-box">
-              <h5>Phone</h5>
-              <p>+36 30 123 4567</p>
-            </div>
+          <div class="contact-box">
+            <i class="fa-solid fa-phone"></i>
+            <h5>Phone</h5>
+            <p>+36 30 123 4567</p>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="contact-box">
-              <h5>WhatsApp</h5>
-              <p>+36 30 123 4567</p>
-            </div>
+          <div class="contact-box">
+            <i class="fa-brands fa-whatsapp"></i>
+            <h5>WhatsApp</h5>
+            <p>+36 30 123 4567</p>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="contact-box">
-              <h5>Email</h5>
-              <p>info@tifliso.hu</p>
-            </div>
+          <div class="contact-box">
+            <i class="fa-solid fa-envelope"></i>
+            <h5>Email</h5>
+            <p>info@tifliso.hu</p>
+          </div>
+
+          <!-- DUPLICATED SET (FOR LOOP) -->
+          <div class="contact-box">
+            <i class="fa-solid fa-location-dot"></i>
+            <h5>Address</h5>
+            <p>Example Street 12<br />Budapest</p>
+          </div>
+
+          <div class="contact-box">
+            <i class="fa-solid fa-phone"></i>
+            <h5>Phone</h5>
+            <p>+36 30 123 4567</p>
+          </div>
+
+          <div class="contact-box">
+            <i class="fa-brands fa-whatsapp"></i>
+            <h5>WhatsApp</h5>
+            <p>+36 30 123 4567</p>
+          </div>
+
+          <div class="contact-box">
+            <i class="fa-solid fa-envelope"></i>
+            <h5>Email</h5>
+            <p>info@tifliso.hu</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- CONTACT FORM -->
-    <section class="contact-form-section">
+    <section class="contact-section">
       <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
+        <div class="row g-5 align-items-start">
+          <!-- LEFT : CONTACT FORM -->
+          <div class="col-lg-6">
             <div class="contact-card">
               <h2>Send Us a Message</h2>
 
@@ -177,22 +207,29 @@
                   </div>
                 </div>
 
-                <div class="text-center mt-4">
-                  <button class="btn btn-danger rounded-pill px-5">
+                <div class="mt-4">
+                  <button class="btn btn-primary-gold rounded-pill px-5">
                     Send Message
                   </button>
                 </div>
               </form>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- MAP SECTION -->
-    <section class="contact-map-section">
-      <div class="container">
-        <div class="map-placeholder">Google Map Location Preview</div>
+          <div class="col-lg-6">
+            <div class="contact-info-top">
+              <h3>Let’s Connect</h3>
+              <p>
+                Reach out to us for reservations, private events, or any
+                questions. Our team is always happy to assist you.
+              </p>
+            </div>
+
+            <div class="contact-map">
+              <div class="map-placeholder">Google Map Location Preview</div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
     <!-- FOOTER -->
