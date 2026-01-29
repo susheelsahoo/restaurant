@@ -16,14 +16,14 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="/">Home</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
-                <li class="nav-item"><a class="nav-link" href="#kitchen">Kitchen</a></li>
-                <li class="nav-item"><a class="nav-link" href="#wine">Wine</a></li>
-                <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
-                <li class="nav-item"><a class="nav-link" href="#blog">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="menu">Menu</a></li>
+                <li class="nav-item"><a class="nav-link" href="kitchen">Kitchen</a></li>
+                <li class="nav-item"><a class="nav-link" href="wine">Wine</a></li>
+                <li class="nav-item"><a class="nav-link" href="gallery">Gallery</a></li>
+                <li class="nav-item"><a class="nav-link" href="blog">Blogs</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#reservation">Contact Us</a>
+                    <a class="nav-link" href="contact-us">Contact Us</a>
                 </li>
             </ul>
         </div>

@@ -30,8 +30,8 @@ class ReservationController extends Controller
 
         $booking = Reservation::create($validated);
 
-        dispatch(new \App\Jobs\SendBookingEmailJob($booking));
-        dispatch(new \App\Jobs\SendWhatsappJob($booking));
+        //dispatch(new \App\Jobs\SendBookingEmailJob($booking));
+        //dispatch(new \App\Jobs\SendWhatsappJob($booking));
 
         return response()->json([
             'message' => "Booking confirmed! ID: {$booking->booking_code}"
