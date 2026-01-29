@@ -66,8 +66,8 @@ management software, property management systems, and enhance guest experience')
                     <ul class="footer-contact">
                         <li>Phone: <a href="tel:+36301234567"> +36 30 123 4567</a></a></li>
                         <li>WhatsApp: <a
-                        href="https://wa.me/+36205811111?text=Hi, You’ve reached Restaurant Tifliszo. How can we help?"
-                        target="_blank">+36 20 581 1111</a></li>
+                                href="https://wa.me/+36205811111?text=Hi, You’ve reached Restaurant Tifliszo. How can we help?"
+                                target="_blank">+36 20 581 1111</a></li>
                     </ul>
                 </div>
 
@@ -106,6 +106,49 @@ management software, property management systems, and enhance guest experience')
         document.getElementById("year").textContent = new Date().getFullYear();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelector('[name="visit_date"]').addEventListener('change', async function() {
+            const res = await axios.get('/api/slots/' + this.value);
+
+            const timeSelect = document.querySelector('[name="visit_time"]');
+
+            timeSelect.innerHTML = res.data
+                .map(t => `<option value="${t}">${t}</option>`)
+                .join('');
+        });
+    </script>
+
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = new FormData(form);
+
+            try {
+                const res = await axios.post('/api/reservations', data);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Booking Confirmed 🎉',
+                    text: res.data.message,
+                });
+
+                form.reset();
+
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Booking Failed',
+                    text: err.response?.data?.message || 'Something went wrong',
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>
