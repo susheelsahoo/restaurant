@@ -30,7 +30,7 @@ body {
 }
 
 .nav-link {
-  color: #fff!important;
+  color: #fff !important;
   padding: 8px 15px !important;
   border-radius: 999px;
   font-size: 14px;
@@ -50,6 +50,12 @@ body {
 .navbar-toggler {
   border: none;
   box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 /* Mobile menu overlay fix */
@@ -794,51 +800,33 @@ body {
 }
 
 /* ================= ABOUT PAGE ================= */
-.about-hero{
-  position:relative;
-  min-height:50vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:url("../images/hero_img.png") center/cover no-repeat;
-  overflow:hidden;
+.about-hero {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("../images/hero_img.png") center/cover no-repeat;
+  overflow: hidden;
 }
 
-.about-hero-overlay{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.8));
-  z-index:1;
+.about-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0, 0, 0, .65), rgba(0, 0, 0, .8));
+  z-index: 1;
 }
 
-.about-hero-content{
-  position:relative;
-  z-index:2;
-  animation:fadeUp 1.2s ease forwards;
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 1.2s ease forwards;
 }
 
-.about-hero h1{
-  font-size:3.4rem;
-  color:#d8b46a;
-  margin-bottom:12px;
-}
-
-.about-hero p{
-  font-size:16px;
-  color:#ddd;
-}
-
-/* Animation */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(60px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* ================= STORY / CHEF ================= */
-.about-story,
-.about-chef{
-  padding:120px 0;
-  background:linear-gradient(180deg,#060606,#020202);
+.about-hero h1 {
+  font-size: 3.4rem;
+  color: #d8b46a;
+  margin-bottom: 12px;
 }
 
 .about-hero p {
@@ -846,45 +834,53 @@ body {
   color: #ddd;
 }
 
+/* Animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= STORY / CHEF ================= */
+.about-story,
+.about-chef {
+  padding: 120px 0;
+  background: linear-gradient(180deg, #060606, #020202);
+}
+
+.about-chef {
+  background: linear-gradient(180deg, #050505, #020202);
+}
+
 .about-story h2,
-.about-chef h2{
-  color:#d8b46a;
-  font-size:2.6rem;
-  margin-bottom:18px;
+.about-chef h2 {
+  color: #d8b46a;
+  font-size: 2.6rem;
+  margin-bottom: 18px;
 }
 
 .about-story p,
-.about-chef p{
-  color:#ccc;
-  line-height:1.8;
+.about-chef p {
+  color: #ccc;
+  line-height: 1.8;
 }
 
-.about-img{
-  width:100%;
-  border-radius:26px;
-  box-shadow:0 0 60px rgba(216,180,106,.25);
+.about-img {
+  width: 100%;
+  border-radius: 26px;
+  box-shadow: 0 0 60px rgba(216, 180, 106, .25);
 }
 
 /* ================= VALUES ================= */
-.about-values{
-  padding:100px 0;
-  background:#020202;
-}
-
-.value-box{
-  background:rgba(255,255,255,.04);
-  padding:40px 30px;
-  border-radius:22px;
-  transition:.3s;
-}
-
-.value-box:hover{
-  transform:translateY(-6px);
-  box-shadow:0 0 30px rgba(216,180,106,.3);
-}
-
-.value-box h4{
-  color:#d8b46a;
+.about-values {
+  padding: 100px 0;
+  background: #020202;
 }
 
 .value-box {
@@ -894,11 +890,30 @@ body {
   transition: .3s;
 }
 
+.value-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 30px rgba(216, 180, 106, .3);
+}
+
+.value-box h4 {
+  color: #d8b46a;
+}
+
+.value-box p {
+  color: #bbb;
+  font-size: 14px;
+}
+
 /* ================= MOBILE ================= */
-@media(max-width:991px){
-  .about-hero h1{font-size:2.4rem}
+@media(max-width:991px) {
+  .about-hero h1 {
+    font-size: 2.4rem
+  }
+
   .about-story h2,
-  .about-chef h2{font-size:2rem}
+  .about-chef h2 {
+    font-size: 2rem
+  }
 }
 
 /* ================= MENU PAGE ================= */
@@ -906,7 +921,7 @@ body {
   position: relative;
   min-height: 50vh;
   display: flex;
-  align-items: center; 
+  align-items: center;
   background: url("../images/hero_img.png") center / cover no-repeat;
   overflow: hidden;
 }
@@ -915,11 +930,9 @@ body {
 .menu-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.75)
-  );
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.75));
   z-index: 1;
 }
 
@@ -942,41 +955,6 @@ body {
   line-height: 1.8;
   max-width: 620px;
   margin: 0 auto;
-}
-
-/* ANIMATION */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* MOBILE */
-@media (max-width: 991px) {
-  .menu-hero {
-    min-height: 75vh;
-  }
-
-  .menu-hero h1 {
-    font-size: 2.3rem;
-  }
-
-  .menu-hero p {
-    font-size: 14px;
-  }
-}
-
-.filter-tabs{
-  padding-top: 30px;
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:12px;
 }
 
 /* ANIMATION */
@@ -1035,9 +1013,10 @@ body {
   padding: 100px 0;
   background: linear-gradient(180deg, #050505, #020202);
 }
+
 /* CARD */
 .food-card {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 22px;
   overflow: hidden;
   transition: .35s;
@@ -1051,7 +1030,7 @@ body {
 
 .food-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 40px rgba(216,180,106,.3);
+  box-shadow: 0 0 40px rgba(216, 180, 106, .3);
 }
 
 .food-content {
@@ -1099,7 +1078,7 @@ body {
 }
 
 
-/* ================= CONTACT PAGE ================= */
+/* ---------- CONTACT HERO ---------- */
 .contact-hero {
   position: relative;
   min-height: 50vh;
@@ -1109,25 +1088,29 @@ body {
   overflow: hidden;
 }
 
-/* Dark Overlay */
 .contact-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   z-index: 1;
 }
 
-/* Content */
 .contact-hero .container {
   position: relative;
   z-index: 2;
+}
+
+.contact-hero-content {
+  text-align: center;
+  animation: slideUpFade 1.1s ease forwards;
+  opacity: 0;
 }
 
 .contact-hero-content h1 {
   font-size: 3.2rem;
   font-weight: 700;
   color: #d8b46a;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .contact-hero-content p {
@@ -1137,131 +1120,114 @@ body {
   margin: 0 auto;
 }
 
-/* Animation: Bottom to Top */
-.contact-hero-content {
-  animation: slideUpFade 1.1s ease forwards;
-  opacity: 0;
-}
-
+/* Hero animation */
 @keyframes slideUpFade {
   from {
     transform: translateY(40px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
 }
 
-/* Responsive */
-@media (max-width: 991px) {
-  .contact-hero {
-    min-height: 60vh;
-  }
-
-  .contact-hero-content h1 {
-    font-size: 2.4rem;
-  }
-
-  .contact-hero-content p {
-    font-size: 14px;
-  }
-}
+/* ===============================
+   CONTACT INFO – 4 GOLD CARDS
+================================ */
 
 .contact-info-section {
-  padding: 60px 0;
+  padding: 100px 0;
   background: #000;
-  overflow: hidden;
 }
 
-/* SLIDER */
-.contact-slider {
-  display: flex;
-  gap: 20px;
-  animation: stepSlide 8s steps(4) infinite;
+/* FORCE 4 CARDS IN ONE ROW */
+.contact-cards {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
 }
 
 /* CARD */
-.contact-box {
-  width: 240px;
-  height: 130px;
-  padding: 16px;
-  flex-shrink: 0;
+.contact-card-item {
+  min-height: 150px;
+  padding: 22px;
   text-align: center;
-  border-radius: 14px;
+  border-radius: 16px;
 
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(216,180,106,0.3);
-  backdrop-filter: blur(10px);
+  /* GOLD GLASS BACKGROUND */
+  background: rgba(255, 255, 255, 0.05);
 
-  /* GOLD INNER SHADOW */
+  /* GOLD BORDER */
+  border: 1px solid rgba(216, 180, 106, 0.45);
+
+  /* GOLD INNER + OUTER SHADOW */
   box-shadow:
-    inset 0 0 14px rgba(216,180,106,0.35),
-    inset 0 0 28px rgba(216,180,106,0.15);
+    inset 0 0 18px rgba(216, 180, 106, 0.35),
+    inset 0 0 36px rgba(216, 180, 106, 0.15),
+    0 0 22px rgba(216, 180, 106, 0.35);
 
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  backdrop-filter: blur(12px);
+
+  /* SMOOTH TRANSITION */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card-item:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    inset 0 0 18px rgba(216, 180, 106, 0.5),
+    0 0 35px rgba(216, 180, 106, 0.5);
 }
 
 /* ICON */
-.contact-box i {
-  font-size: 26px;
+.contact-card-item i {
+  font-size: 28px;
   color: #d8b46a;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
+  display: block;
 }
 
-.contact-box h5 {
-  font-size: 15px;
+/* TITLE */
+.contact-card-item h5 {
+  font-size: 16px;
   color: #fff;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
-.contact-box p {
+/* TEXT */
+.contact-card-item p {
   font-size: 13px;
-  color: #ccc;
-  line-height: 1.4;
+  color: #ddd;
+  line-height: 1.5;
+  margin: 0;
 }
 
-/* STEP ANIMATION — 1 CARD EVERY 2 SEC */
-@keyframes stepSlide {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-1040px); /* (240 + 20) × 4 */
+/* RESPONSIVE (layout only) */
+@media (max-width: 991px) {
+  .contact-cards {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* HOVER → OUTER GOLD GLOW */
-.contact-box:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 0 25px rgba(216,180,106,0.55),
-    0 0 60px rgba(216,180,106,0.35);
-}
-
-/* PAUSE ON HOVER */
-.contact-info-section:hover .contact-slider {
-  animation-play-state: paused;
-}
-
-/* MOBILE */
-@media (max-width: 767px) {
-  .contact-box {
-    width: 200px;
-    height: 120px;
+@media (max-width: 575px) {
+  .contact-cards {
+    grid-template-columns: 1fr;
   }
 }
-/* CONTACT SECTION */
+
+/* ---------- CONTACT FORM SECTION ---------- */
 .contact-section {
-  padding: 120px 0;
+  padding: 100px 0;
   background: #000;
 }
 
-
 .contact-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(216,180,106,0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(216, 180, 106, 0.2);
   border-radius: 18px;
   padding: 40px;
   backdrop-filter: blur(12px);
@@ -1272,10 +1238,9 @@ body {
   margin-bottom: 24px;
 }
 
-
 .contact-form .form-control {
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
 }
 
@@ -1288,6 +1253,7 @@ body {
   box-shadow: none;
 }
 
+/* ---------- CONTACT INFO RIGHT SIDE ---------- */
 .contact-info-top {
   margin-bottom: 24px;
 }
@@ -1304,11 +1270,11 @@ body {
   line-height: 1.6;
 }
 
+/* ---------- MAP ---------- */
 .contact-map {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 16px;
   padding: 14px;
-  margin-bottom: 20px;
 }
 
 .map-placeholder {
@@ -1321,15 +1287,18 @@ body {
   border-radius: 12px;
 }
 
-
-/* RESPONSIVE */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 991px) {
-  .contact-section {
-    padding: 80px 0;
+  .contact-hero {
+    min-height: 60vh;
   }
 
-  .contact-image img {
-    height: 180px;
+  .contact-hero-content h1 {
+    font-size: 2.4rem;
+  }
+
+  .contact-section {
+    padding: 80px 0;
   }
 }
 
@@ -1347,7 +1316,7 @@ body {
 .blog-hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1;
 }
 
@@ -1357,7 +1326,7 @@ body {
   z-index: 2;
   color: #fff;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 
   /* Animation */
   opacity: 0;
@@ -1396,6 +1365,7 @@ body {
     transform: translateY(40px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1521,6 +1491,7 @@ body {
     0 16px 60px rgba(216, 180, 106, 0.22),
     0 0 0 1px rgba(216, 180, 106, 0.12);
 }
+
 /* META WRAPPER */
 .blog-meta {
   display: flex;
@@ -1536,7 +1507,7 @@ body {
 }
 
 .blog-title {
-  font-size: 1.4rem;  
+  font-size: 1.4rem;
   font-weight: 600;
   color: #d8b46a;
   line-height: 1.3;
@@ -1709,6 +1680,7 @@ body {
     border-radius: 16px;
   }
 }
+
 @media (max-width: 991px) {
   .blog-meta {
     flex-direction: column;
@@ -1735,79 +1707,131 @@ body {
   overflow: hidden;
 }
 
-.wine-hero {
-  padding: 80px 0 120px;
-  overflow: hidden;
+/* BACKGROUND IMAGE */
+.blog-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+/* OVERLAY */
+.blog-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.85));
+  z-index: 2;
+}
+
+/* CONTENT CARD */
+.blog-hero-card {
   position: relative;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 26px;
+  padding: 46px 42px;
+  text-align: center;
+
+  animation: blogFadeUp 1.2s ease forwards;
 }
 
-.wine-hero-image {
-  opacity: 0;
-  animation: slideInLeft 1.2s ease forwards;
-}
-
-.wine-hero-image img {
-  max-width: 480px;
-  width: 100%;
-  border-radius: 22px;
-  box-shadow:
-    0 0 60px rgba(216,180,106,0.35),
-    0 0 120px rgba(216,180,106,0.15);
-}
-
-.wine-hero-text {
-  opacity: 0;
-  animation: slideInRight 1s ease forwards;
-}
-
-.wine-hero h1 {
-  font-size: 3rem;
+/* TEXT */
+.blog-hero-tag {
+  display: inline-block;
   color: #d8b46a;
-  margin-bottom: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
-.wine-hero p {
-  color: #bbb;
+.blog-hero-card h1 {
+  color: #fff;
+  font-size: 2.8rem;
+  margin-bottom: 14px;
+}
+
+.blog-hero-card p {
+  color: #ddd;
   font-size: 15px;
-  max-width: 480px;
+  line-height: 1.8;
+  margin-bottom: 24px;
 }
 
+/* ANIMATION */
+@keyframes blogFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(70px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+  .blog-hero {
+    min-height: 75vh;
+  }
+
+  .blog-hero-card {
+    padding: 34px 28px;
+  }
+
+  .blog-hero-card h1 {
+    font-size: 2rem;
+  }
+
+  .blog-hero-card p {
+    font-size: 14px;
+  }
+}
 
 .wine-list-section {
-  padding: 180px 0;
-  background: #020202;
+  padding: 160px 80px;
+  background: linear-gradient(180deg, #060606, #020202);
 }
 
+/* CARD */
 .wine-card {
-  margin-bottom: 80px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 28px;
+  padding: 60px 70px;
+  margin-bottom: 100px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .75);
+  overflow: hidden;
 }
 
-
-.wine-card .row {
-  display: flex;
-  align-items: center;
-}
-
-.wine-card:nth-child(even) .row {
-  flex-direction: row-reverse;
-}
-
+/* IMAGE */
 .wine-img {
-  max-height: 280px;
-  filter: drop-shadow(0 0 30px rgba(216,180,106,.35));
+  max-width: 300px;
+  width: 100%;
+  filter: drop-shadow(0 0 40px rgba(216, 180, 106, .4));
+}
+
+
+.wine-card .col-lg-8 {
+  max-width: 450px;
 }
 
 .wine-name {
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 22px;
+  font-size: 2.2rem;
+  color: #d8b46a;
+  margin-bottom: 14px;
 }
 
 .wine-desc {
   color: #ccc;
-  font-size: 15px;
-  line-height: 1.8;
-  margin-bottom: 22px;
+  font-size: 14px;
+  line-height: 1.9;
+  margin-bottom: 20px;
 }
 
 .wine-options {
@@ -1817,74 +1841,107 @@ body {
 }
 
 .wine-options span {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
   color: #d8b46a;
 }
 
-/* MOBILE FIX – always stack nicely */
-@media (max-width: 991px) {
-  .wine-card:nth-child(even) .row {
-    flex-direction: column;
+/* ================= ANIMATIONS ================= */
+
+.wine-animate-img-left {
+  animation: wineImgLeft 1.1s ease forwards;
+}
+
+.wine-animate-img-right {
+  animation: wineImgRight 1.1s ease forwards;
+}
+
+.wine-animate-content-right {
+  animation: wineContentRight 1.1s ease forwards;
+}
+
+.wine-animate-content-left {
+  animation: wineContentLeft 1.1s ease forwards;
+}
+
+@keyframes wineImgLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-80px) scale(0.96);
   }
 
-  .wine-card .row {
-    flex-direction: column;
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes wineImgRight {
+  from {
+    opacity: 0;
+    transform: translateX(80px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes wineContentRight {
+  from {
+    opacity: 0;
+    transform: translateX(80px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wineContentLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 991px) {
+  .wine-list-section {
+    padding: 120px 24px;
+  }
+
+  .wine-card {
+    padding: 44px 28px;
     text-align: center;
+  }
+
+  .wine-img {
+    max-width: 240px;
+    margin-bottom: 26px;
+  }
+
+  .wine-card .col-lg-8 {
+    max-width: 100%;
+  }
+
+  .wine-name {
+    font-size: 1.7rem;
   }
 
   .wine-options {
     justify-content: center;
-  }
-}
-
-/* ANIMATIONS */
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-140px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(140px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* MOBILE */
-@media (max-width: 991px) {
-  .wine-hero {
-    padding: 120px 0 80px;
-  }
-
-  .wine-hero h1 {
-    font-size: 2.2rem;
-  }
-
-  .wine-hero-image {
-    margin-bottom: 30px;
-    text-align: center;
-  }
-
-  .wine-hero-image img {
-    max-width: 300px;
-  }
-
-  .wine-hero-text {
-    text-align: center;
   }
 }
 
@@ -1902,11 +1959,9 @@ body {
 .kitchen-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,0.65),
-    rgba(0,0,0,0.9)
-  );
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0.65),
+      rgba(0, 0, 0, 0.9));
   z-index: 1;
 }
 
@@ -1938,6 +1993,7 @@ body {
     opacity: 0;
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1959,6 +2015,7 @@ body {
     font-size: 14px;
   }
 }
+
 /* SECTION */
 .kitchen-dishes-section {
   padding: 120px 0;
@@ -1981,7 +2038,7 @@ body {
 
 /* CARD */
 .kitchen-dish-card {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 22px;
   overflow: hidden;
   transition: 0.35s ease;
@@ -1990,7 +2047,7 @@ body {
 
 .kitchen-dish-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 40px rgba(216,180,106,0.25);
+  box-shadow: 0 0 40px rgba(216, 180, 106, 0.25);
 }
 
 .kitchen-dish-card img {
@@ -2018,6 +2075,7 @@ body {
   color: #fff;
   font-weight: 600;
 }
+
 .kitchen-pagination button {
   background: transparent;
   border: 1px solid #d8b46a;
@@ -2043,7 +2101,7 @@ body {
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #bbb;
   font-size: 13px;
 }

@@ -1196,6 +1196,7 @@ body {
    CONTACT INFO – 4 GOLD CARDS
 ================================ */
 
+<<<<<<< HEAD
 .contact-info-section {
   padding: 100px 0;
   background: #000;
@@ -1279,6 +1280,9 @@ body {
 }
 
 /* ---------- CONTACT FORM SECTION ---------- */
+=======
+/* CONTACT SECTION */
+>>>>>>> 5e24217 (content updated)
 .contact-section {
   padding: 100px 0;
   background: #000;
