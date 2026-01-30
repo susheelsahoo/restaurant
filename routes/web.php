@@ -18,6 +18,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 
 
@@ -53,6 +54,10 @@ Route::get('/error', function () {
 
 
 Route::post('/leads', [LeadsController::class, 'store'])->name('leads.store');
+Route::post('/reservations', [ReservationController::class, 'store']);
+Route::get('/slots/{date}', [ReservationController::class, 'slots']);
+
+
 
 Route::get('/email', function () {
     try {
