@@ -57,7 +57,7 @@
                 @if(!empty($blog->tags))
                 <div class="blog-tags">
                     @foreach(explode(',', $blog->tags) as $tag)
-                    <a href="{{ route('blogs') }}?tag={{ trim($tag) }}">
+                    <a href="{{ route('blog.index', ['tag' => trim($tag)]) }}">
                         {{ trim($tag) }}
                     </a>
                     @endforeach
