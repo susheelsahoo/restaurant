@@ -4,114 +4,82 @@
 
 @section('content')
 @include(config('settings.FRONTED_PAGE_DIR').'/layouts/_menu')
-<section>
-    <div class="custom_container_full">
-        <div class="hero_section blogs_hero">
-            <div class="common_container">
-                <div class="col-lg-12">
-                    <div class="row align-items-center m-0">
-                        <div class="col-lg-7">
-                            <h1>
-                                Insights, Strategies & Trends to Elevate Guest<br>
-                                Experience and Drive Hotel Growth in Today’s<br>
-                                Hospitality Landscape
-                            </h1>
-                        </div>
-                    </div>
-                </div>
+<section class="blog-hero">
+      <div class="blog-hero-overlay"></div>
+
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-6 col-md-8">
+            <div class="blog-hero-card">
+              <span class="blog-hero-tag">Our Blog</span>
+              <h1>Delicious Stories for Food Lovers</h1>
+              <p>
+                Discover recipes, traditions, and behind-the-scenes moments from
+                our Georgian kitchen.
+              </p>
+              <a
+                href="#blog-list"
+                class="btn btn-primary-gold rounded-pill px-4"
+              >
+                Explore Blogs
+              </a>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
 @if($featured)
-<section>
-    <div class="custom_container_full">
-        <div class="blogs_main">
-            <div class="common_container">
-                <div class="col-lg-12">
-                    <div class="row m-0">
-                        <!-- Featured Blog -->
-                        <div class="col-lg-8">
-                            <div class="blogs_main_left">
-                                <div class="blogs_main_image">
-                                    <img src="{{ asset('storage/' . $featured->image) }}" alt="{{ $featured->title }}">
-                                </div>
-                                <div class="blogs_main_description">
-                                    <h2>
-                                        <a href="{{ route('blog.show', $featured->slug) }}">
-                                            {{ $featured->title }}
-                                        </a>
-                                    </h2>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Side Posts -->
-                        <div class="col-md-4">
-                            <div class="blogs_main_right">
-                                @foreach($sidePosts as $post)
-                                <div class="common_sidepost">
-                                    <div class="sidepost_image">
-                                        <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
-                                    </div>
-                                    <div class="sidepost_description">
-                                        <h3>
-                                            <a href="{{ route('blog.show', $post->slug) }}">
-                                                {{ $post->title }}
-                                            </a>
-                                        </h3>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 @endif
 
 <!-- Recent Posts -->
 <!-- Recent Posts -->
-<section>
-    <div class="custom_container_full">
-        <div class="blog_listing">
-            <div class="common_container">
-                <h3>Recent POSTS</h3>
-                <div class="col-lg-12 p-0">
-                    <div class="row m-0">
-                        @foreach($blogs as $blog)
-                        <div class="col-md-4">
-                            <div class="blog_list_item">
-                                <div class="blog_list_image">
-                                    <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}">
-                                </div>
-                                <div class="blog_date_time">
-                                    <p>{{ $blog->created_at->format('d.m.Y H:i') }}</p>
-                                </div>
-                                <div class="blog_list_description">
-                                    <h4>
-                                        <a href="{{ route('blog.show', $blog->slug) }}">
-                                            {{ $blog->title }}
-                                        </a>
-                                    </h4>
-                                    <p>{{ Str::limit(strip_tags($blog->content), 150, '...') }}</p>
-                                    <a href="{{ route('blog.show', $blog->slug) }}">Read More</a>
-                                </div>
-                            </div>
+<!-- BLOG GRID -->
+<section class="blog-grid-section">
+    <div class="container">
+
+        <div class="row g-4">
+
+            @foreach($blogs as $blog)
+                <div class="col-lg-4 col-md-6">
+                    <article class="blog-page-card">
+
+                        <img
+                            src="{{ asset('storage/' . $blog->image) }}"
+                            alt="{{ $blog->title }}"
+                            loading="lazy"
+                        />
+
+                        <div class="blog-card-body">
+                            <span>
+                                {{ $blog->created_at->format('d M Y') }}
+                            </span>
+
+                            <h5>{{ $blog->title }}</h5>
+
+                            <p>
+                                {{ Str::limit(strip_tags($blog->content), 100) }}
+                            </p>
+
+                            <a href="{{ route('blog.show', $blog->slug) }}">
+                                Read More →
+                            </a>
                         </div>
-                        @endforeach
-                    </div>
-                    <!-- Pagination -->
-                    <div class="mt-4">
-                        {{ $blogs->links('pagination::bootstrap-4') }}
-                    </div>
+
+                    </article>
                 </div>
-            </div>
+            @endforeach
+
         </div>
+
+        <!-- Pagination -->
+        @if($blogs->hasPages())
+            <div class="blog-pagination">
+                {{ $blogs->links('pagination::bootstrap-4') }}
+            </div>
+        @endif
+
     </div>
 </section>
 

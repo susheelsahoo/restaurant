@@ -677,6 +677,28 @@ body {
   color: #fff;
 }
 
+.blog-pagination .pagination {
+  justify-content: center;
+  margin-top: 60px;
+}
+
+.blog-pagination .page-item .page-link {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #bbb;
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin: 0 4px;
+}
+
+.blog-pagination .page-item.active .page-link,
+.blog-pagination .page-item .page-link:hover {
+  background: #d8b46a;
+  color: #000;
+  border-color: #d8b46a;
+}
+
+
 /* Mobile */
 @media (max-width: 991px) {
   .blog-title {

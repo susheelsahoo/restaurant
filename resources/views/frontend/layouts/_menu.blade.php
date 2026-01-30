@@ -1,30 +1,64 @@
 <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
     <div class="container">
-        <a href="#" class="navbar-brand">
-            <img
-                src="{{ asset('frontend/images/logo_wt.svg') }}"
-                alt="Tifliso Restaurant" />
+        <a href="{{ url('/') }}" class="navbar-brand">
+            <img src="{{ asset('frontend/images/logo_wt.svg') }}" alt="Tifliso Restaurant" />
         </a>
-        <button
-            class="navbar-toggler"
-            data-bs-toggle="collapse"
-            data-bs-target="#mainNav">
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse justify-content-end" id="mainNav">
             <ul class="navbar-nav nav-pill-bg">
+
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">Home</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">
+                        Home
+                    </a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="menu">Menu</a></li>
-                <li class="nav-item"><a class="nav-link" href="kitchen">Kitchen</a></li>
-                <li class="nav-item"><a class="nav-link" href="wine">Wine</a></li>
-                <li class="nav-item"><a class="nav-link" href="gallery">Gallery</a></li>
-                <li class="nav-item"><a class="nav-link" href="blog">Blogs</a></li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="contact-us">Contact Us</a>
+                    <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ url('about') }}">
+                        About
+                    </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('menu') ? 'active' : '' }}" href="{{ url('menu') }}">
+                        Menu
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('kitchen') ? 'active' : '' }}" href="{{ url('kitchen') }}">
+                        Kitchen
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('wine') ? 'active' : '' }}" href="{{ url('wine') }}">
+                        Wine
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('gallery') ? 'active' : '' }}" href="{{ url('gallery') }}">
+                        Gallery
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('blogs*') ? 'active' : '' }}" href="{{ url('blogs') }}">
+                        Blogs
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('contact-us') ? 'active' : '' }}" href="{{ url('contact-us') }}">
+                        Contact Us
+                    </a>
+                </li>
+
             </ul>
         </div>
     </div>
