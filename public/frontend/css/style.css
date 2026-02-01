@@ -1185,6 +1185,23 @@ body {
    CONTACT INFO – 4 GOLD CARDS
 ================================ */
 
+/* Hero animation */
+@keyframes slideUpFade {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===============================
+   CONTACT INFO – 4 GOLD CARDS
+================================ */
+
 .contact-info-section {
   padding: 100px 0;
   background: #000;
@@ -1267,35 +1284,7 @@ body {
   }
 }
 
-/* Hero animation */
-@keyframes slideUpFade {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Responsive */
-@media (max-width: 991px) {
-  .contact-hero {
-    min-height: 60vh;
-  }
-
-  .contact-hero-content h1 {
-    font-size: 2.4rem;
-  }
-
-  .contact-hero-content p {
-    font-size: 14px;
-  }
-}
-
-/* CONTACT SECTION */
+/* ---------- CONTACT FORM SECTION ---------- */
 .contact-section {
   padding: 100px 0;
   background: #000;
