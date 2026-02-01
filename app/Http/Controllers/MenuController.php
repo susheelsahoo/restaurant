@@ -36,7 +36,7 @@ class MenuController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:menus,slug',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
+            'price' => 'nullable|string',
             'image' => 'nullable|image|max:4096',
             'menu_category_id' => 'nullable|exists:menu_categories,id',
             'is_active' => 'nullable|boolean',
