@@ -36,8 +36,8 @@
                 </li>-->
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('wine') ? 'active' : '' }}" href="{{ url('wine') }}">
-                        Wine
+                    <a class="nav-link {{ request()->is('wines') ? 'active' : '' }}" href="{{ url('wine') }}">
+                        Wines
                     </a>
                 </li>
 
