@@ -33,7 +33,7 @@
     <div class="container">
         <div class="row g-4" id="menuDishGrid">
             @forelse($menus as $menu)
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-6 col-md-6">
                 <div class="menu-card">
                     <a href="{{ route('menu.show', $menu->slug) }}">
                         <img class="menu-main-img" src="{{ $menu->image ? asset('storage/' . $menu->image) : asset('images/no-image.jpg') }}" alt="{{ $menu->title }}" loading="lazy">
