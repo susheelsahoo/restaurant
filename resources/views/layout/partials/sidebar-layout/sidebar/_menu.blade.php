@@ -33,9 +33,9 @@
 				</a>
 			</div>
 			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.leads.index') ? 'active' : '' }}" href="{{ route('admin.leads.index') }}">
+				<a class="menu-link {{ request()->routeIs('admin.bookings.index') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
 					<span class="menu-icon">{!! getIcon('chart', 'fs-2') !!}</span>
-					<span class="menu-title">Leads</span>
+					<span class="menu-title">Bookings</span>
 				</a>
 			</div>
 			<!-- <div class="menu-item">

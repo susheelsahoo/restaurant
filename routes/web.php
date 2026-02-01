@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\BlogController;
@@ -66,7 +66,7 @@ Route::get('/error', function () {
 });
 
 
-Route::post('/leads', [LeadsController::class, 'store'])->name('leads.store');
+Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/reservations', [ReservationController::class, 'store']);
 Route::get('/slots/{date}', [ReservationController::class, 'slots']);
 
@@ -94,7 +94,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/gallery', GalleryImageController::class)->names('gallery');
     Route::resource('/banners', BannerController::class)->names('banners');
     Route::resource('/contacts', ContactController::class)->names('contacts');
-    Route::resource('/leads', LeadsController::class)->names('leads');
+    Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/settings', SettingController::class)->names('settings');
 
     Route::name('user-management.')->group(function () {

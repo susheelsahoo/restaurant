@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lead;
+use App\Models\Bookings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
-class LeadsController extends Controller
+class BookingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Lead::latest();
+        $query = Bookings::latest();
 
         if ($request->has('status') && in_array($request->status, ['new', 'in_progress', 'converted', 'closed'])) {
             $query->where('status', $request->status);
         }
 
-        $leads = $query->get();
+        $bookings = $query->get();
 
-        return view('pages.leads.index', compact('leads'));
+        return view('pages.bookings.index', compact('bookings'));
     }
 
 
     public function create()
     {
-        return view('pages.leads.create');
+        return view('pages.bookings.create');
     }
 
     public function store(Request $request)
@@ -63,12 +63,12 @@ class LeadsController extends Controller
     }
 
 
-    public function edit(Lead $lead)
+    public function edit(Bookings $booking)
     {
-        return view('pages.leads.create', compact('lead'));
+        return view('pages.bookings.edit', compact('booking'));
     }
 
-    public function update(Request $request, Lead $lead)
+    public function update(Request $request, Bookings $booking)
     {
         $validated = $request->validate([
             'full_name'       => 'required|string|max:255',
@@ -81,23 +81,23 @@ class LeadsController extends Controller
         ]);
         $validated['name'] = $validated['full_name'];
         unset($validated['full_name']);
-        $lead->update($validated);
+        $booking->update($validated);
 
         return redirect()
-            ->route('admin.leads.index')
-            ->with('success', 'Lead updated successfully!');
+            ->route('admin.bookings.index')
+            ->with('success', 'Booking updated successfully!');
     }
 
 
-    public function destroy(Lead $lead)
+    public function destroy(Bookings $booking)
     {
-        $lead->delete();
-        return redirect()->route('admin.leads.index')->with('success', 'Lead deleted successfully!');
+        $booking->delete();
+        return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
     public function show($id)
     {
-        $lead = Lead::findOrFail($id);
-        return view('pages.leads.show', compact('lead'));
+        $booking = Booking::findOrFail($id);
+        return view('pages.bookings.show', compact('booking'));
     }
 }
