@@ -49,12 +49,12 @@ management software, property management systems, and enhance guest experience')
                 <div class="col-lg-2 col-md-4">
                     <h6 class="footer-title">Quick Links</h6>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Menu</a></li>
-                        <li><a href="#">Gallery</a></li>
-                        <li><a href="#">Blogs</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="{{ url('home') }}">Home</a></li>
+                        <li><a href="{{ url('about') }}">About</a></li>
+                        <li><a href="{{ url('general-data-protection-regulation') }}">GDPR</a></li>
+                        <li><a href="{{ url('privacy-policy') }}">Privacy Policy</a></li>
+                        <li><a href="{{ url('terms-of-service') }}">Terms of Service</a></li>
+                        <li><a href="{{ url('refund-policy') }}">Cancellation Policy</a></li>
                     </ul>
                 </div>
 
