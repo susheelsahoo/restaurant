@@ -32,7 +32,7 @@
 
                             <td>{{ $wine->title }}</td>
                             <td>{{ $wine->category->name ?? '-' }}</td>
-                            <td>{{ $wine->price }}</td>
+                            <td>{{ $wine->price }} {{ config('app.price_sign') }}</td>
                             <td>
                                 {!! $wine->is_active
                                 ? '<span class="badge badge-success">Active</span>'

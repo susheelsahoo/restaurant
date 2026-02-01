@@ -32,7 +32,7 @@
 
                             <td>{{ $menu->title }}</td>
                             <td>{{ $menu->category->name ?? '-' }}</td>
-                            <td>{{ $menu->price ? number_format($menu->price, 2) : '-' }}</td>
+                            <td>{{ $menu->price }} {{ config('app.price_sign') }}</td>
                             <td>
                                 {!! $menu->is_active
                                 ? '<span class="badge badge-success">Active</span>'
