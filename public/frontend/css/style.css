@@ -1202,7 +1202,89 @@ body {
    CONTACT INFO – 4 GOLD CARDS
 ================================ */
 
-/* CONTACT SECTION */
+.contact-info-section {
+  padding: 100px 0;
+  background: #000;
+}
+
+/* FORCE 4 CARDS IN ONE ROW */
+.contact-cards {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+/* CARD */
+.contact-card-item {
+  min-height: 150px;
+  padding: 22px;
+  text-align: center;
+  border-radius: 16px;
+
+  /* GOLD GLASS BACKGROUND */
+  background: rgba(255, 255, 255, 0.05);
+
+  /* GOLD BORDER */
+  border: 1px solid rgba(216, 180, 106, 0.45);
+
+  /* GOLD INNER + OUTER SHADOW */
+  box-shadow:
+    inset 0 0 18px rgba(216, 180, 106, 0.35),
+    inset 0 0 36px rgba(216, 180, 106, 0.15),
+    0 0 22px rgba(216, 180, 106, 0.35);
+
+  backdrop-filter: blur(12px);
+
+  /* SMOOTH TRANSITION */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card-item:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    inset 0 0 18px rgba(216, 180, 106, 0.5),
+    0 0 35px rgba(216, 180, 106, 0.5);
+}
+
+/* ICON */
+.contact-card-item i {
+  font-size: 28px;
+  color: #d8b46a;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* TITLE */
+.contact-card-item h5 {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+/* TEXT */
+.contact-card-item p {
+  font-size: 13px;
+  color: #ddd;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* RESPONSIVE (layout only) */
+@media (max-width: 991px) {
+  .contact-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .contact-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- CONTACT FORM SECTION ---------- */
 .contact-section {
   padding: 100px 0;
   background: #000;
