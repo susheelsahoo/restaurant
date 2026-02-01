@@ -18,8 +18,13 @@ management software, property management systems, and enhance guest experience')
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
         rel="stylesheet" />
-
     <link href="{{ asset('frontend/css/style.css') }}" rel="stylesheet" />
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+
 </head>
 
 <body>
@@ -109,7 +114,7 @@ management software, property management systems, and enhance guest experience')
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.querySelector('[name="visit_date"]').addEventListener('change', async function() {
+        /* document.querySelector('[name="visit_date"]').addEventListener('change', async function() {
             const res = await axios.get('/api/slots/' + this.value);
 
             const timeSelect = document.querySelector('[name="visit_time"]');
@@ -118,10 +123,7 @@ management software, property management systems, and enhance guest experience')
                 .map(t => `<option value="${t}">${t}</option>`)
                 .join('');
         });
-    </script>
-
-
-    <script>
+    
         document.getElementById('bookingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -146,7 +148,7 @@ management software, property management systems, and enhance guest experience')
                     text: err.response?.data?.message || 'Something went wrong',
                 });
             }
-        });
+        });*/
     </script>
 
 </body>
