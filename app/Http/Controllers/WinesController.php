@@ -36,7 +36,7 @@ class WinesController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:wines,slug',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
+            'price' => 'nullable|string',
             'image' => 'nullable|image|max:4096',
             'wine_category_id' => 'nullable|exists:wine_categories,id',
             'is_active' => 'nullable|boolean',

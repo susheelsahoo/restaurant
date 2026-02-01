@@ -46,7 +46,7 @@
                                 <p class="menu-desc mb-0">{{ Str::limit(strip_tags($menu->description), 120) }}</p>
                             </div>
                             <div class="text-end">
-                                <h6 class="menu-price">{{ $menu->price ? number_format($menu->price, 2) . ' GEL' : '' }}</h6>
+                                <h6 class="menu-price">{{$menu->price}} {{ config('app.price_sign') }}</h6>
                             </div>
                         </div>
                     </div>

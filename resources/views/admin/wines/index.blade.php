@@ -8,8 +8,8 @@
                 </form>
             </div>
             <div class="card-toolbar">
-                <a href="{{ route('admin.menus.create') }}" class="btn btn-primary">
-                    {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Menu
+                <a href="{{ route('admin.wines.create') }}" class="btn btn-primary">
+                    {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Wine
                 </a>
             </div>
         </div>
@@ -32,7 +32,7 @@
 
                             <td>{{ $wine->title }}</td>
                             <td>{{ $wine->category->name ?? '-' }}</td>
-                            <td>{{ $wine->price ? number_format($wine->price, 2) : '-' }}</td>
+                            <td>{{ $wine->price }}</td>
                             <td>
                                 {!! $wine->is_active
                                 ? '<span class="badge badge-success">Active</span>'

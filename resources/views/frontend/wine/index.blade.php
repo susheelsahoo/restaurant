@@ -69,7 +69,7 @@
                 </p>
 
                 <div class="wine-options mt-3">
-                    <span class="price">{{ number_format($wine->price, 2) }} HUF</span>
+                    <span class="price">{{$wine->price}} {{ config('app.price_sign') }}</span>
                 </div>
             </div>
         </div>
