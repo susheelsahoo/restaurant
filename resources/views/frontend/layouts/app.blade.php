@@ -10,7 +10,7 @@
 management software, property management systems, and enhance guest experience')">
     <meta name="keywords" content="@yield('meta_keywords', 'hotel management software, hotel booking system, hotel PMS, property management system, hotel software Georgia, hotel reservation software, hospitality management software, cloud hotel management')">
     <meta name="author" content="Mediator">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" />
@@ -113,6 +113,42 @@ management software, property management systems, and enhance guest experience')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Reservation Confirmed',
+            text: '{{ session('
+            success ') }}',
+            confirmButtonColor: '#d8b46a'
+        });
+    </script>
+    @endif
+    @if($errors->any())
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Reservation Failed',
+            html: `{!! implode('<br>', $errors->all()) !!}`,
+            confirmButtonColor: '#b10000'
+        });
+    </script>
+    @endif
+
+    <script>
+        document.addEventListener('submit', function(e) {
+            if (e.target.tagName === 'FORM') {
+                if (!e.target.querySelector('input[name="_token"]')) {
+                    let token = document.createElement('input');
+                    token.type = 'hidden';
+                    token.name = '_token';
+                    token.value = document.querySelector('meta[name="csrf-token"]').content;
+                    e.target.appendChild(token);
+                }
+            }
+        });
+    </script>
+
     <script>
         /* document.querySelector('[name="visit_date"]').addEventListener('change', async function() {
             const res = await axios.get('/api/slots/' + this.value);

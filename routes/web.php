@@ -67,7 +67,11 @@ Route::get('/error', function () {
 
 
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-Route::post('/reservations', [ReservationController::class, 'store']);
+//Route::post('/reservations', [ReservationController::class, 'store']);
+Route::get('/reserve-table', [ReservationController::class, 'create'])
+    ->name('reserve-table.form');
+Route::post('/reserve-table', [ReservationController::class, 'store'])
+    ->name('reserve-table.store');
 Route::get('/slots/{date}', [ReservationController::class, 'slots']);
 
 

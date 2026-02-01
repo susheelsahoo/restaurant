@@ -2,15 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bookings;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
+
     public function index(Request $request)
     {
-        $query = Bookings::latest();
+        $query = Reservation::query();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $bookings = $query
+            ->orderBy('visit_date', 'desc')
+            ->paginate(10)     // ✅ IMPORTANT
+            ->withQueryString();
+
+        return view('pages.bookings.index', compact('bookings'));
+    }
+
+    public function index_old(Request $request)
+    {
+        $query = Reservation::latest();
 
         if ($request->has('status') && in_array($request->status, ['new', 'in_progress', 'converted', 'closed'])) {
             $query->where('status', $request->status);
@@ -37,8 +54,8 @@ class BookingController extends Controller
             'notes'      => 'nullable|string',
         ]);
 
-        $lead = Lead::create([
-            'name'       => $validated['full_name'],
+        $lead = Reservation::create([
+            'customer_name'       => $validated['full_name'],
             'email'      => $validated['email'],
             'phone'      => $validated['phone'],
             'hotel_size' => $validated['hotel_size'],
@@ -63,15 +80,15 @@ class BookingController extends Controller
     }
 
 
-    public function edit(Bookings $booking)
+    public function edit(Reservation $reservation)
     {
-        return view('pages.bookings.edit', compact('booking'));
+        return view('pages.bookings.edit', compact('reservation'));
     }
 
-    public function update(Request $request, Bookings $booking)
+    public function update(Request $request, Reservation $reservation)
     {
         $validated = $request->validate([
-            'full_name'       => 'required|string|max:255',
+            'customer_name'       => 'required|string|max:255',
             'email'      => 'required|email|max:255',
             'phone'      => 'nullable|string|max:20',
             'source'     => 'nullable|string|max:100',
@@ -79,9 +96,9 @@ class BookingController extends Controller
             'status'     => 'required|in:new,in_progress,converted,closed',
             'notes'      => 'nullable|string',
         ]);
-        $validated['name'] = $validated['full_name'];
-        unset($validated['full_name']);
-        $booking->update($validated);
+        $validated['customer_name'] = $validated['customer_name'];
+        unset($validated['customer_name']);
+        $reservation->update($validated);
 
         return redirect()
             ->route('admin.bookings.index')
@@ -89,15 +106,15 @@ class BookingController extends Controller
     }
 
 
-    public function destroy(Bookings $booking)
+    public function destroy(Reservation $reservation)
     {
-        $booking->delete();
+        $reservation->delete();
         return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
     public function show($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Reservation::findOrFail($id);
         return view('pages.bookings.show', compact('booking'));
     }
 }

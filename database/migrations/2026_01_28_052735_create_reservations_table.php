@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('visit_date');
             $table->time('visit_time');
             $table->unsignedTinyInteger('guests');
-            $table->string('name', 120);
+            $table->string('customer_name', 120);
             $table->string('phone', 25);
             $table->string('email', 150);
             $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
