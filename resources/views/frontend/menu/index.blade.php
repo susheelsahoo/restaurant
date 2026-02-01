@@ -43,7 +43,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <a href="{{ route('menu.show', $menu->slug) }}">
-                                    <h6 class="menu-title mb-1">{{ $menu->title }}</h6>
+                                    <h5 class="menu-title mb-1">{{ $menu->title }}</h5>
                                 </a>
                                 <p class="menu-desc mb-0">{{ Str::limit(strip_tags($menu->description), 120) }}</p>
                             </div>
