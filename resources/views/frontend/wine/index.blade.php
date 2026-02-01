@@ -53,7 +53,7 @@
 
         <div class="row align-items-center gy-5 wine-menu-block">
             {{-- IMAGE --}}
-            <div class="col-lg-4 wine-img-col">
+            <div class="col-lg-2 wine-img-col">
                 <img
                     src="{{ $wine->image ? asset('storage/' . $wine->image) : asset('images/no-image.jpg') }}"
                     class="wine-menu-img"
@@ -61,7 +61,7 @@
             </div>
 
             {{-- CONTENT --}}
-            <div class="col-lg-8 wine-content">
+            <div class="col-lg-10 wine-content">
                 <h3 class="wine-menu-title">{{ $wine->title }}</h3>
 
                 <p class="wine-menu-desc">
