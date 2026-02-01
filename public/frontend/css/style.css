@@ -2006,20 +2006,45 @@ body {
 }
 
 /* ================= GALLERY PAGE ================= */
-
 .gallery-hero {
-  padding: 180px 0 120px;
-  background: radial-gradient(circle at top, #150707 0%, #020202 70%);
+  position: relative;
+  background: url("https://staging.tifliszo.hu/storage/gallery_images/D9E3MV9TJvhjfhcFF2y5StzuFHGntKwBw1Wfthsb.png") center/cover no-repeat;
+  padding: 100px 0;
+  color: #fff;
 }
 
-.gallery-hero h1 {
-  font-size: 3.8rem;
-  color: #d8b46a;
+.gallery-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
 }
 
-.gallery-hero p {
-  color: #bbb;
-  max-width: 540px;
+.gallery-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.gallery-hero-content h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.gallery-hero-content p {
+  font-size: 18px;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gallery-hero-content h1 {
+    font-size: 32px;
+  }
+
+  .gallery-hero-content p {
+    font-size: 15px;
+  }
 }
 
 .gallery-page-section {
