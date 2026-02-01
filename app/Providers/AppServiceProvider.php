@@ -32,6 +32,14 @@ class AppServiceProvider extends ServiceProvider
 
         KTBootstrap::init();
 
+        // Share blog categories to all views (menu categories are admin-only)
+        // Guard with Schema::hasTable to avoid errors during migrations or when DB is not ready
+        if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+            view()->share('blogCategories', \App\Models\Category::where('is_active', true)->get());
+        } else {
+            view()->share('blogCategories', collect());
+        }
+
         if (app()->environment('production')) {
             Livewire::setUpdateRoute(function ($handle) {
                 return Route::post('/starterkit/metronic/laravel/livewire/update', $handle);

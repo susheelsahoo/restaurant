@@ -83,6 +83,31 @@
 					</div>
 				</div>
 			</div>
+			<div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('admin.menus.*') || request()->routeIs('admin.menu-categories.*') ? 'here show' : '' }}">
+				<span class="menu-link">
+					<span class="menu-icon">{!! getIcon('text-align-left', 'fs-2') !!}</span>
+					<span class="menu-title">Menu</span>
+					<span class="menu-arrow"></span>
+				</span>
+				<div class="menu-sub menu-sub-accordion">
+					<div class="menu-item">
+						<a class="menu-link {{ request()->routeIs('admin.menus.*') ? 'active' : '' }}" href="{{ route('admin.menus.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+							<span class="menu-title">Menu</span>
+						</a>
+					</div>
+					<div class="menu-item">
+						<a class="menu-link {{ request()->routeIs('admin.menu-categories.*') ? 'active' : '' }}" href="{{ route('admin.menu-categories.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+							<span class="menu-title">Menu Categories</span>
+						</a>
+					</div>
+				</div>
+			</div>
 
 
 			<div class="menu-item pt-5">

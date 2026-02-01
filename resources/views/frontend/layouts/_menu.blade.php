@@ -47,10 +47,21 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('blogs*') ? 'active' : '' }}" href="{{ url('blogs') }}">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->is('blogs*') ? 'active' : '' }}" href="{{ url('blogs') }}" id="blogsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Blogs
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="blogsDropdown">
+                        <li><a class="dropdown-item" href="{{ url('blogs') }}">All Blogs</a></li>
+                        @if(isset($blogCategories) && $blogCategories->count())
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @foreach($blogCategories as $cat)
+                        <li><a class="dropdown-item" href="{{ route('blog.category', $cat->slug) }}">{{ $cat->name }}</a></li>
+                        @endforeach
+                        @endif
+                    </ul>
                 </li>
 
                 <li class="nav-item">

@@ -13,12 +13,12 @@ class BlogController extends Controller
 {
     public function index()
     {
-        
+
         $blogs = Blog::where('status', 'published')
             ->latest()
             ->paginate(9);
-        
-        return view('blog.index', compact('blogs'));
+
+        return view('admin.blogs.index', compact('blogs'));
     }
 
     public function create()
