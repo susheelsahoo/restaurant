@@ -19,6 +19,8 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\MenuCategoryController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 
 
@@ -37,7 +39,10 @@ Route::get('/', [FrontendPageController::class, 'index'])->name('home');
 // Route::get('/about', [FrontendPageController::class, 'index'])->name('about');
 
 Route::get('/blogs', [FrontendPageController::class, 'blogs'])->name('blog.index');
+Route::get('/blogs/category/{slug}', [FrontendPageController::class, 'blogsByCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [FrontendPageController::class, 'showBlog'])->name('blog.show');
+
+
 
 // Page Slug (must be last, and exclude reserved keywords like admin, blog, auth, storage, etc.)
 Route::get('/{slug}', [FrontendPageController::class, 'index'])
@@ -93,6 +98,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/blogs', BlogController::class);
     Route::resource('/categories', CategoryController::class);
     Route::resource('/tags', TagController::class);
+    Route::resource('/menu-categories', MenuCategoryController::class);
+    Route::resource('/menus', MenuController::class);
 });
 
 

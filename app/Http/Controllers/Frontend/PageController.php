@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Page;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -64,6 +65,34 @@ class PageController extends Controller
 
         return view('frontend.blog.show', compact('blog', 'relatedBlogs'));
     }
+
+    // Filter blogs by category
+    public function blogsByCategory($slug)
+    {
+        $category = Category::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+        $featured = Blog::where('is_published', true)
+            ->where('category_id', $category->id)
+            ->latest()
+            ->first();
+
+        $sidePosts = Blog::where('is_published', true)
+            ->where('category_id', $category->id)
+            ->latest()
+            ->skip(1)
+            ->take(3)
+            ->get();
+
+        $blogs = Blog::where('is_published', true)
+            ->where('category_id', $category->id)
+            ->latest()
+            ->skip(4)
+            ->paginate(9);
+
+        return view('frontend.blog.index', compact('featured', 'sidePosts', 'blogs', 'category'));
+    }
+
+
 
 
 

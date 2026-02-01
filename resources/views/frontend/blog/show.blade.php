@@ -7,92 +7,107 @@
 @endsection
 
 @section('content')
+
 @include(config('settings.FRONTED_PAGE_DIR').'/layouts/_menu')
 
-{{-- Hero Section --}}
-<section>
-    <div class="custom_container_full">
-        <div class="hero_section blogs_hero">
-            <div class="common_container">
-                <div class="col-lg-12">
-                    <div class="row align-items-center m-0">
-                        <div class="col-lg-7">
-                            <h1>{{ $blog->title }}</h1>
-                            <p class="text-muted">
-                                Published on {{ $blog->created_at->format('d.m.y H:i') }}
-                                @if($blog->category)
-                                | Category: {{ $blog->category->name }}
-                                @endif
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- BLOG DETAIL HERO -->
+<section class="blog-detail-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <span class="blog-detail-date">
+                    {{ $blog->created_at->format('d M Y') }}
+                    @if($blog->category)
+                    | {{ $blog->category->name }}
+                    @endif
+                </span>
 
-{{-- Feature Image --}}
-<section>
-    <div class="custom_container_full">
-        <div class="common_container">
-            <div class="col-lg-12 blog_details_image">
-                @if($blog->image)
-                <img class="w-100 mb-4" src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}">
+                <h1>{{ $blog->title }}</h1>
+
+                @if($blog->excerpt)
+                <p class="blog-detail-subtitle">
+                    {{ $blog->excerpt }}
+                </p>
                 @endif
             </div>
         </div>
     </div>
 </section>
 
-{{-- Blog Content --}}
-<section>
-    <div class="custom_container_full">
-        <div class="common_container">
-            <div class="col-lg-12">
-                <div class="blogs_main_description">
+<!-- BLOG CONTENT -->
+<section class="blog-detail-content">
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                @if($blog->image)
+                <img
+                    src="{{ asset('storage/' . $blog->image) }}"
+                    class="blog-feature-img"
+                    alt="{{ $blog->title }}"
+                    loading="lazy" />
+                @endif
+
+                <article class="blog-article">
                     {!! $blog->content !!}
+                </article>
+
+                <!-- TAGS -->
+                @if(!empty($blog->tags))
+                <div class="blog-tags">
+                    @foreach(explode(',', $blog->tags) as $tag)
+                    <a href="{{ route('blog.index', ['tag' => trim($tag)]) }}">
+                        {{ trim($tag) }}
+                    </a>
+                    @endforeach
                 </div>
+                @endif
+
             </div>
         </div>
+
     </div>
 </section>
 
-{{-- Related Posts --}}
-@if($relatedBlogs->count() > 0)
-<section>
-    <div class="custom_container_full">
-        <div class="common_container">
-            <h3 class="mt-5 mb-4">Related Posts</h3>
-            <div class="row">
-                @foreach($relatedBlogs as $related)
-                <div class="col-md-4">
-                    <div class="blog_list_item">
-                        <div class="blog_list_image">
-                            @if($related->image)
-                            <a href="{{ route('blog.show', $related->slug) }}">
-                                <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->title }}">
-                            </a>
-                            @endif
-                        </div>
-                        <div class="blog_date_time">
-                            <p>{{ $related->created_at->format('d.m.y H:i') }}</p>
-                        </div>
-                        <div class="blog_list_description">
-                            <h4>
-                                <a href="{{ route('blog.show', $related->slug) }}">
-                                    {{ $related->title }}
-                                </a>
-                            </h4>
-                            <p>{{ Str::limit(strip_tags($related->content), 120) }}</p>
-                            <a href="{{ route('blog.show', $related->slug) }}">Read More</a>
-                        </div>
+<!-- RELATED POSTS -->
+@if($relatedBlogs->count())
+<section class="related-posts">
+    <div class="container">
+
+        <h2 class="text-center mb-5">Related Articles</h2>
+
+        <div class="row g-4">
+
+            @foreach($relatedBlogs as $related)
+            <div class="col-lg-4 col-md-6">
+                <article class="blog-page-card">
+
+                    <img
+                        src="{{ asset('storage/' . $related->image) }}"
+                        alt="{{ $related->title }}"
+                        loading="lazy">
+
+                    <div class="blog-card-body">
+                        <span>{{ $related->created_at->format('d M Y') }}</span>
+
+                        <h5>{{ $related->title }}</h5>
+
+                        <p>{{ Str::limit(strip_tags($related->content), 100) }}</p>
+
+                        <a href="{{ route('blog.show', $related->slug) }}">
+                            Read More →
+                        </a>
                     </div>
-                </div>
-                @endforeach
+
+                </article>
             </div>
+            @endforeach
+
         </div>
+
     </div>
 </section>
 @endif
+
 @endsection
