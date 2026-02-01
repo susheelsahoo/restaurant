@@ -1135,6 +1135,8 @@ body {
   color: #d8b46a;
   font-weight: 600;
 }
+
+
 /* ---------- CONTACT HERO ---------- */
 .contact-hero {
   position: relative;
@@ -1358,6 +1360,7 @@ body {
     padding: 80px 0;
   }
 }
+
 
 /* BLOG HERO */
 .blog-hero {
@@ -1834,7 +1837,77 @@ body {
   }
 }
 
-/* KITCHEN HERO */
+/* WINE MENU IMAGE - make images smaller */
+.wine-menu-img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+}
+
+.wine-menu-title {
+  font-size: 1.7rem;
+  color: #d8b46a;
+  margin-bottom: 6px;
+}
+
+.wine-menu-desc {
+  font-size: 14px;
+  color: #bbb;
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.price {
+  color: #d8b46a;
+  font-weight: 600;
+}
+
+
+/* Responsive smaller on mobile */
+@media (max-width: 991px) {
+  .wine-menu-img {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (max-width: 991px) {
+  .wine-menu-block {
+    text-align: center;
+  }
+
+  .wine-menu-img {
+    margin: 0 auto;
+  }
+}
+
+/* Alternate layout automatically */
+.wine-menu-block:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+/* Smooth entrance animation */
+.wine-menu-block {
+  animation: fadeUp 0.8s ease both;
+}
+
+/* Delay for nicer flow */
+.wine-menu-block:nth-child(2) { animation-delay: 0.1s; }
+.wine-menu-block:nth-child(3) { animation-delay: 0.2s; }
+.wine-menu-block:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ================= KITCHEN PAGE ================= */
 .kitchen-hero {
   position: relative;
   min-height: 50vh;
@@ -2008,20 +2081,45 @@ body {
 }
 
 /* ================= GALLERY PAGE ================= */
-
 .gallery-hero {
-  padding: 180px 0 120px;
-  background: radial-gradient(circle at top, #150707 0%, #020202 70%);
+  position: relative;
+  background: url("https://staging.tifliszo.hu/storage/gallery_images/D9E3MV9TJvhjfhcFF2y5StzuFHGntKwBw1Wfthsb.png") center/cover no-repeat;
+  padding: 100px 0;
+  color: #fff;
 }
 
-.gallery-hero h1 {
-  font-size: 3.8rem;
-  color: #d8b46a;
+.gallery-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
 }
 
-.gallery-hero p {
-  color: #bbb;
-  max-width: 540px;
+.gallery-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.gallery-hero-content h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.gallery-hero-content p {
+  font-size: 18px;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gallery-hero-content h1 {
+    font-size: 32px;
+  }
+
+  .gallery-hero-content p {
+    font-size: 15px;
+  }
 }
 
 .gallery-page-section {
