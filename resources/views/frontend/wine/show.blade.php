@@ -27,7 +27,7 @@
             </div>
             <div class="col-md-6">
                 <h2>{{ $wine->title }}</h2>
-                <h5 class="text-muted">{{ $wine->price ? number_format($wine->price,2) . ' GEL' : '' }}</h5>
+                <h5 class="text-muted">{{ $wine->price }} {{ config('app.price_sign') }}</h5>
                 <div class="mt-3">
                     {!! nl2br(e($wine->description)) !!}
                 </div>
