@@ -33,6 +33,7 @@
                 </div>
             </div>
         </div>
+        <a href="{{ route('menu.index') }}" class="btn btn-outline-warning rounded-pill px-4 mt-4">Back to Menu</a>
     </div>
 </section>
 
