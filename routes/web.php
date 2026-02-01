@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\BlogController;
@@ -21,6 +21,8 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\WineCategoryController;
+use App\Http\Controllers\WinesController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 
 
@@ -42,11 +44,17 @@ Route::get('/blogs', [FrontendPageController::class, 'blogs'])->name('blog.index
 Route::get('/blogs/category/{slug}', [FrontendPageController::class, 'blogsByCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [FrontendPageController::class, 'showBlog'])->name('blog.show');
 
+Route::get('/menu', [FrontendPageController::class, 'menu'])->name('menu.index');
+Route::get('/menu/category/{slug}', [FrontendPageController::class, 'menuByCategory'])->name('menu.category');
+Route::get('/menu/{slug}', [FrontendPageController::class, 'showMenu'])->name('menu.show');
 
+Route::get('/wines', [FrontendPageController::class, 'wines'])->name('wines.index');
+Route::get('/wines/category/{slug}', [FrontendPageController::class, 'winesByCategory'])->name('wines.category');
+Route::get('/wines/{slug}', [FrontendPageController::class, 'showWine'])->name('wines.show');
 
 // Page Slug (must be last, and exclude reserved keywords like admin, blog, auth, storage, etc.)
 Route::get('/{slug}', [FrontendPageController::class, 'index'])
-    ->where('slug', '^(?!blog|email|admin|auth|storage|error).*$')
+    ->where('slug', '^(?!blog|menu|wines|email|admin|auth|storage|error).*$')
     ->name('page');
 
 // Social Login
@@ -58,7 +66,7 @@ Route::get('/error', function () {
 });
 
 
-Route::post('/leads', [LeadsController::class, 'store'])->name('leads.store');
+Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 Route::post('/reservations', [ReservationController::class, 'store']);
 Route::get('/slots/{date}', [ReservationController::class, 'slots']);
 
@@ -86,7 +94,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/gallery', GalleryImageController::class)->names('gallery');
     Route::resource('/banners', BannerController::class)->names('banners');
     Route::resource('/contacts', ContactController::class)->names('contacts');
-    Route::resource('/leads', LeadsController::class)->names('leads');
+    Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/settings', SettingController::class)->names('settings');
 
     Route::name('user-management.')->group(function () {
@@ -100,6 +108,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/tags', TagController::class);
     Route::resource('/menu-categories', MenuCategoryController::class);
     Route::resource('/menus', MenuController::class);
+    Route::resource('/wine-categories', WineCategoryController::class);
+    Route::resource('/wines', WinesController::class);
 });
 
 

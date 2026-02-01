@@ -16,10 +16,10 @@ class MenuController extends Controller
         $query = Menu::query()->with('category');
 
         if ($request->filled('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
+            $query->where('title', 'like', '%' . $request->q . '%');
         }
 
-        $menus = $query->orderBy('position', 'asc')->paginate(20)->withQueryString();
+        $menus = $query->orderBy('menu_category_id', 'asc')->paginate(20)->withQueryString();
 
         return view('admin.menus.index', compact('menus'));
     }
@@ -33,17 +33,17 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:menus,slug',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
+            'price' => 'nullable|string',
             'image' => 'nullable|image|max:4096',
             'menu_category_id' => 'nullable|exists:menu_categories,id',
             'is_active' => 'nullable|boolean',
             'position' => 'nullable|integer',
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
@@ -69,7 +69,7 @@ class MenuController extends Controller
     public function update(Request $request, Menu $menu)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:menus,slug,' . $menu->id,
             'description' => 'nullable|string',
             'price' => 'nullable|numeric',
@@ -79,7 +79,7 @@ class MenuController extends Controller
             'position' => 'nullable|integer',
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {

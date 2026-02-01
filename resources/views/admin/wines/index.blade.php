@@ -8,8 +8,8 @@
                 </form>
             </div>
             <div class="card-toolbar">
-                <a href="{{ route('admin.menus.create') }}" class="btn btn-primary">
-                    {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Menu
+                <a href="{{ route('admin.wines.create') }}" class="btn btn-primary">
+                    {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Wine
                 </a>
             </div>
         </div>
@@ -27,21 +27,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($menus as $menu)
+                        @forelse($wines as $wine)
                         <tr>
 
-                            <td>{{ $menu->title }}</td>
-                            <td>{{ $menu->category->name ?? '-' }}</td>
-                            <td>{{ $menu->price }} {{ config('app.price_sign') }}</td>
+                            <td>{{ $wine->title }}</td>
+                            <td>{{ $wine->category->name ?? '-' }}</td>
+                            <td>{{ $wine->price }} {{ config('app.price_sign') }}</td>
                             <td>
-                                {!! $menu->is_active
+                                {!! $wine->is_active
                                 ? '<span class="badge badge-success">Active</span>'
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
                             <td>
-                                <a href="{{ route('admin.menus.edit', $menu->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{{ route('admin.menus.show', $menu->id) }}" class="btn btn-sm btn-info">View</a>
-                                <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this menu item?')">
+                                <a href="{{ route('admin.wines.edit', $wine->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.wines.show', $wine->id) }}" class="btn btn-sm btn-info">View</a>
+                                <form action="{{ route('admin.wines.destroy', $wine->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this wine item?')">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-danger">Delete</button>
                                 </form>
@@ -49,14 +49,14 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center">No menu items found</td>
+                            <td colspan="6" class="text-center">No wine items found</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
 
                 <div class="mt-3">
-                    {{ $menus->links('pagination::bootstrap-4') }}
+                    {{ $wines->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ use App\Models\User;
 use App\Models\Page;
 use App\Models\GalleryImage;
 use App\Models\Banner;
-use App\Models\Lead;
+use App\Models\Bookings;
 use App\Models\ContactMessage;
 use App\Models\SeoSetting;
 use Diglactic\Breadcrumbs\Breadcrumbs;
@@ -82,14 +82,14 @@ Breadcrumbs::for('contact-messages.show', function (BreadcrumbTrail $trail, Cont
 });
 
 
-Breadcrumbs::for('admin.leads.index', function (BreadcrumbTrail $trail) {
+Breadcrumbs::for('admin.bookings.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
-    $trail->push('Leads', route('admin.leads.index'));
+    $trail->push('Bookings', route('admin.bookings.index'));
 });
 
-Breadcrumbs::for('admin.leads.show', function (BreadcrumbTrail $trail, Lead $lead) {
-    $trail->parent('admin.leads.index');
-    $trail->push('Lead: ' . $lead->name, route('admin.leads.show', $lead));
+Breadcrumbs::for('admin.bookings.show', function (BreadcrumbTrail $trail, Bookings $booking) {
+    $trail->parent('admin.bookings.index');
+    $trail->push('Booking: ' . $booking->name, route('admin.bookings.show', $booking));
 });
 
 

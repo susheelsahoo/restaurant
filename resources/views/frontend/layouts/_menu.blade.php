@@ -29,15 +29,15 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <!--<li class="nav-item">
                     <a class="nav-link {{ request()->is('kitchen') ? 'active' : '' }}" href="{{ url('kitchen') }}">
                         Kitchen
                     </a>
-                </li>
+                </li>-->
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('wine') ? 'active' : '' }}" href="{{ url('wine') }}">
-                        Wine
+                    <a class="nav-link {{ request()->is('wines') ? 'active' : '' }}" href="{{ url('wines') }}">
+                        Wines
                     </a>
                 </li>
 
@@ -52,7 +52,7 @@
                         Blogs
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="blogsDropdown">
-                        <li><a class="dropdown-item" href="{{ url('blogs') }}">All Blogs</a></li>
+                        <li><a class="dropdown-item" href="{{ url('blogs') }}">Blogs</a></li>
                         @if(isset($blogCategories) && $blogCategories->count())
                         <li>
                             <hr class="dropdown-divider">

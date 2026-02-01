@@ -147,8 +147,8 @@ body {
 }
 
 .menu-card img {
-  width: 60px;
-  height: 60px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -406,10 +406,13 @@ body {
 .menu-block {
   margin-bottom: 100px;
 }
+.menu-block a{
+  text-decoration: none;
+}
 
 .menu-title {
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
+  font-size: 2.0rem;
   color: #d8b46a;
   margin-bottom: 16px;
   letter-spacing: 1px;
@@ -1048,6 +1051,7 @@ body {
   gap:12px;
 }
 
+.filter-tabs a,
 .filter-tabs button{
   background:transparent;
   border:1px solid rgba(255,255,255,0.15);
@@ -1056,8 +1060,12 @@ body {
   border-radius:999px;
   font-size:13px;
   transition:0.3s;
+  text-decoration: none;
+  display: inline-block;
 }
 
+.filter-tabs a.active,
+.filter-tabs a:hover,
 .filter-tabs button.active,
 .filter-tabs button:hover{
   background:#d8b46a;
@@ -1173,20 +1181,6 @@ body {
   max-width: 600px;
   margin: 0 auto;
 }
-
-/* Hero animation */
-@keyframes slideUpFade {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 /* ===============================
    CONTACT INFO – 4 GOLD CARDS
 ================================ */
@@ -1273,7 +1267,35 @@ body {
   }
 }
 
-/* ---------- CONTACT FORM SECTION ---------- */
+/* Hero animation */
+@keyframes slideUpFade {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .contact-hero {
+    min-height: 60vh;
+  }
+
+  .contact-hero-content h1 {
+    font-size: 2.4rem;
+  }
+
+  .contact-hero-content p {
+    font-size: 14px;
+  }
+}
+
+/* CONTACT SECTION */
 .contact-section {
   padding: 100px 0;
   background: #000;
@@ -1832,7 +1854,77 @@ body {
   }
 }
 
-/* KITCHEN HERO */
+/* WINE MENU IMAGE - make images smaller */
+.wine-menu-img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+}
+
+.wine-menu-title {
+  font-size: 1.7rem;
+  color: #d8b46a;
+  margin-bottom: 6px;
+}
+
+.wine-menu-desc {
+  font-size: 14px;
+  color: #bbb;
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+.price {
+  color: #d8b46a;
+  font-weight: 600;
+}
+
+
+/* Responsive smaller on mobile */
+@media (max-width: 991px) {
+  .wine-menu-img {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (max-width: 991px) {
+  .wine-menu-block {
+    text-align: center;
+  }
+
+  .wine-menu-img {
+    margin: 0 auto;
+  }
+}
+
+/* Alternate layout automatically */
+.wine-menu-block:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+/* Smooth entrance animation */
+.wine-menu-block {
+  animation: fadeUp 0.8s ease both;
+}
+
+/* Delay for nicer flow */
+.wine-menu-block:nth-child(2) { animation-delay: 0.1s; }
+.wine-menu-block:nth-child(3) { animation-delay: 0.2s; }
+.wine-menu-block:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ================= KITCHEN PAGE ================= */
 .kitchen-hero {
   position: relative;
   min-height: 50vh;
@@ -2087,4 +2179,137 @@ body {
   .gallery-hero h1 { font-size: 2.6rem; }
   .gallery-page-card { height: 200px; }
   .gallery-page-card.large { height: 260px; }
+}
+/* ==================================================
+   LEGAL / STATIC PAGES (Privacy, Terms, GDPR, etc.)
+   ================================================== */
+
+.static-page-hero {
+  padding: 180px 0 120px;
+  background: radial-gradient(circle at top, #160808 0%, #020202 70%);
+  text-align: center;
+  position: relative;
+}
+
+.static-page-hero h1 {
+  font-size: 3rem;
+  color: #d8b46a;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.static-page-hero p {
+  margin-top: 12px;
+  color: #bbb;
+  font-size: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.static-page-content {
+  padding: 100px 0;
+  background: linear-gradient(180deg, #050505, #020202);
+}
+
+.static-page-box {
+  background: rgba(255,255,255,0.04);
+  border-radius: 26px;
+  padding: 60px;
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.75),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Headings */
+.static-page-box h2 {
+  font-size: 1.7rem;
+  color: #d8b46a;
+  margin-top: 40px;
+  margin-bottom: 14px;
+}
+
+.static-page-box h3 {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-top: 28px;
+  margin-bottom: 10px;
+}
+
+/* Text */
+.static-page-box p {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.85;
+  margin-bottom: 14px;
+}
+
+/* Lists */
+.static-page-box ul {
+  padding-left: 22px;
+  margin-bottom: 20px;
+}
+
+.static-page-box li {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+/* Links */
+.static-page-box a {
+  color: #d8b46a;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.static-page-box a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Highlight / Notice */
+.static-page-note {
+  background: rgba(216,180,106,0.08);
+  border-left: 4px solid #d8b46a;
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin: 30px 0;
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* Footer Meta */
+.static-page-updated {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 991px) {
+  .static-page-hero {
+    padding: 140px 0 90px;
+  }
+
+  .static-page-hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .static-page-box {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  .static-page-hero h1 {
+    font-size: 2.1rem;
+  }
+
+  .static-page-box {
+    padding: 28px;
+  }
 }
