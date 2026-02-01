@@ -42,11 +42,17 @@ Route::get('/blogs', [FrontendPageController::class, 'blogs'])->name('blog.index
 Route::get('/blogs/category/{slug}', [FrontendPageController::class, 'blogsByCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [FrontendPageController::class, 'showBlog'])->name('blog.show');
 
+Route::get('/menu', [FrontendPageController::class, 'menu'])->name('menu.index');
+Route::get('/menu/category/{slug}', [FrontendPageController::class, 'menuByCategory'])->name('menu.category');
+Route::get('/menu/{slug}', [FrontendPageController::class, 'showMenu'])->name('menu.show');
 
+Route::get('/wines', [FrontendPageController::class, 'wines'])->name('wines.index');
+Route::get('/wines/category/{slug}', [FrontendPageController::class, 'winesByCategory'])->name('wines.category');
+Route::get('/wines/{slug}', [FrontendPageController::class, 'showWine'])->name('wines.show');
 
 // Page Slug (must be last, and exclude reserved keywords like admin, blog, auth, storage, etc.)
 Route::get('/{slug}', [FrontendPageController::class, 'index'])
-    ->where('slug', '^(?!blog|email|admin|auth|storage|error).*$')
+    ->where('slug', '^(?!blog|menu|wines|email|admin|auth|storage|error).*$')
     ->name('page');
 
 // Social Login

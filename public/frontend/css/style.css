@@ -1048,6 +1048,7 @@ body {
   gap:12px;
 }
 
+.filter-tabs a,
 .filter-tabs button{
   background:transparent;
   border:1px solid rgba(255,255,255,0.15);
@@ -1056,8 +1057,12 @@ body {
   border-radius:999px;
   font-size:13px;
   transition:0.3s;
+  text-decoration: none;
+  display: inline-block;
 }
 
+.filter-tabs a.active,
+.filter-tabs a:hover,
 .filter-tabs button.active,
 .filter-tabs button:hover{
   background:#d8b46a;

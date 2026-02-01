@@ -17,10 +17,10 @@
                     @endif
 
                     <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Name</label>
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Title</label>
                         <div class="col-lg-8 fv-row">
-                            <input type="text" name="name" class="form-control form-control-lg form-control-solid"
-                                value="{{ old('name', $menu->name ?? '') }}" required />
+                            <input type="text" name="title" class="form-control form-control-lg form-control-solid"
+                                value="{{ old('title', $menu->title ?? '') }}" required />
                         </div>
                     </div>
 

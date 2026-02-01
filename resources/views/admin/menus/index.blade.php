@@ -18,8 +18,8 @@
                 <table class="table table-row-bordered table-row-dashed">
                     <thead>
                         <tr>
-                            <th>Position</th>
-                            <th>Name</th>
+                            <!--<th>Position</th>-->
+                            <th>Title</th>
                             <th>Category</th>
                             <th>Price</th>
                             <th>Status</th>
@@ -29,8 +29,8 @@
                     <tbody>
                         @forelse($menus as $menu)
                         <tr>
-                            <td>{{ $menu->position }}</td>
-                            <td>{{ $menu->name }}</td>
+
+                            <td>{{ $menu->title }}</td>
                             <td>{{ $menu->category->name ?? '-' }}</td>
                             <td>{{ $menu->price ? number_format($menu->price, 2) : '-' }}</td>
                             <td>

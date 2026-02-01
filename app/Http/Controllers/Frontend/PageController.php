@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Page;
 use App\Models\Blog;
+use App\Models\Menu;
+use App\Models\MenuCategory;
+use App\Models\Wine;
+use App\Models\WineCategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -14,7 +18,6 @@ class PageController extends Controller
 
     public function index($slug = 'home')
     {
-
         $page = Page::where('slug', $slug)->where('is_active', true)->first();
 
         if (!$page) {
@@ -93,6 +96,67 @@ class PageController extends Controller
     }
 
 
+    public function menu()
+    {
+        $menus = Menu::where('is_active', true)
+            ->orderBy('menu_category_id', 'asc')
+            ->paginate(12);
+
+        $menu_categories = MenuCategory::where('is_active', true)->get();
+        return view('frontend.menu.index', compact('menus', 'menu_categories'));
+    }
+
+    // Filter menus by category
+    public function menuByCategory($slug)
+    {
+        $category = MenuCategory::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+        $menus = Menu::where('is_active', true)
+            ->where('menu_category_id', $category->id)
+            ->orderBy('position', 'asc')
+            ->paginate(12);
+
+        $menu_categories = MenuCategory::where('is_active', true)->get();
+        return view('frontend.menu.index', compact('menus', 'menu_categories', 'category'));
+    }
+
+    // Show single menu item
+    public function showMenu($slug)
+    {
+        $menu = Menu::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        return view('frontend.menu.show', compact('menu'));
+    }
+    public function wines()
+    {
+        $wines = Wine::where('is_active', true)
+            ->orderBy('wine_category_id', 'asc')
+            ->paginate(12);
+
+        $wine_categories = WineCategory::where('is_active', true)->get();
+        return view('frontend.wine.index', compact('wines', 'wine_categories'));
+    }
+
+    // Filter wines by category
+    public function winesByCategory($slug)
+    {
+        $category = WineCategory::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+        $wines = Wine::where('is_active', true)
+            ->where('wine_category_id', $category->id)
+            ->orderBy('position', 'asc')
+            ->paginate(12);
+
+        $wine_categories = WineCategory::where('is_active', true)->get();
+        return view('frontend.wine.index', compact('wines', 'wine_categories', 'category'));
+    }
+
+    // Show single wine item
+    public function showWine($slug)
+    {
+        $wine = Wine::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $wine_categories = WineCategory::where('is_active', true)->get();
+        return view('frontend.wine.show', compact('wine', 'wine_categories'));
+    }
 
 
 

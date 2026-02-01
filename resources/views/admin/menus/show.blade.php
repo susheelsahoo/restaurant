@@ -1,7 +1,7 @@
 <x-default-layout>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ $menu->name }}</h3>
+            <h3 class="card-title">{{ $menu->title }}</h3>
         </div>
         <div class="card-body">
             <p><strong>Slug:</strong> {{ $menu->slug }}</p>
