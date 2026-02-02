@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bookings;
+use App\Models\Reservation;
 use App\Models\ContactMessage;
 
 class DashboardController extends Controller
@@ -11,8 +11,8 @@ class DashboardController extends Controller
     {
         // addVendors(['amcharts', 'amcharts-maps', 'amcharts-stock']);
 
-        $total_bookings = Bookings::count();
-        $new_bookings = Bookings::where('status', 'new')->count();
+        $total_bookings = Reservation::count();
+        $new_bookings = Reservation::where('status', 'new')->count();
 
         // Contact Counts
         $total_contact = ContactMessage::count();
