@@ -152,6 +152,97 @@
       </div>
     </section>
     <!-- About Section -->
+
+    <section id="reservation" class="reservation-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-7">
+            <div class="reservation-card">
+              <div class="text-center mb-4">
+                <h2 class="reservation-title">Reserve Your Table Today</h2>
+                <p class="reservation-subtitle">
+                  Planning a visit? Book your table easily and enjoy an
+                  authentic Georgian dining experience in Budapest.
+                </p>
+              </div>
+              <form
+                class="reservation-form"
+                action="/reserve-table"
+                method="POST"
+              >
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label>Visit Date</label>
+                    <input
+                      class="form-control"
+                      name="visit_date"
+                      required=""
+                      type="date"
+                      value="2026-11-11"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Visit Time</label>
+                    <input
+                      class="form-control"
+                      name="visit_time"
+                      required=""
+                      type="time"
+                      value="11:11"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Number of Guests</label
+                    ><select class="form-select" name="guests">
+                      <option value="1">1 Guest</option>
+                      <option value="2">2 Guests</option>
+                      <option value="3">3 Guests</option>
+                      <option selected="selected" value="4">4 Guests</option>
+                      <option value="5">5 Guests</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label>Your Name</label>
+                    <input
+                      class="form-control"
+                      name="customer_name"
+                      type="text"
+                      value="susheel"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Phone Number</label>
+                    <input
+                      class="form-control"
+                      name="phone"
+                      type="tel"
+                      value="9087654321"
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Email Address</label>
+                    <input
+                      class="form-control"
+                      name="email"
+                      type="email"
+                      value="susheelcs24@gmail.com"
+                    />
+                  </div>
+                </div>
+                <div class="text-center mt-4">
+                  <button
+                    class="btn btn-danger rounded-pill px-5"
+                    type="submit"
+                  >
+                    Reserve Table
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <section id="about" class="about-section">
       <div class="container">
         <div class="about-header text-center mb-5">
