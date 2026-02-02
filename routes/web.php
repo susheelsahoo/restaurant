@@ -65,6 +65,8 @@ Route::get('/error', function () {
     abort(500);
 });
 
+Route::post('/contact-us', [ContactController::class, 'store'])
+    ->name('contact.store');
 
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 //Route::post('/reservations', [ReservationController::class, 'store']);

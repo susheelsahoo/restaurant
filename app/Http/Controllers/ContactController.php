@@ -20,16 +20,23 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email',
-            'subject' => 'nullable|max:255',
-            'message' => 'required',
+        $request->validate([
+            'full_name'     => 'required|string|max:120',
+            'email'         => 'required|email|max:150',
+            'phone'         => 'nullable|string|max:25',
+            'subject'       => 'required|string|max:200',
+            'message'       => 'required|string|max:2000',
         ]);
 
-        ContactMessage::create($validated);
+        ContactMessage::create([
+            'name'    => $request->full_name,
+            'email'   => $request->email,
+            'phone'   => $request->phone,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ]);
 
-        return redirect()->route('admin.contacts.index')->with('success', 'Message sent successfully!');
+        return back()->with('success', 'Your message has been sent successfully!');
     }
 
     public function show($id)
