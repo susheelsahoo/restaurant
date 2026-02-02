@@ -7,6 +7,8 @@ use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Mail\BookingConfirmationMail;
+use Illuminate\Support\Facades\Mail;
 
 
 class ReservationController extends Controller
@@ -22,7 +24,7 @@ class ReservationController extends Controller
             'email'      => 'nullable|email',
         ]);
 
-        Reservation::create([
+        $reservation = Reservation::create([
             'booking_code'  => $this->generateBookingCode(),
             'visit_date' => $request->visit_date,
             'visit_time' => $request->visit_time,
@@ -31,6 +33,12 @@ class ReservationController extends Controller
             'phone'      => $request->phone,
             'email'      => $request->email,
         ]);
+
+        Mail::to(config('mail.from.address'))
+            ->send(new BookingConfirmationMail($reservation));
+
+        Mail::to($reservation->email)
+            ->send(new BookingConfirmationMail($reservation));
 
         return redirect()->back()->with('success', 'Your table has been reserved successfully!');
     }

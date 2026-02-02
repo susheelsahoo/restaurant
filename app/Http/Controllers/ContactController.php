@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use App\Mail\ContactMessageMail;
+use App\Mail\ContactAutoReplyMail;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -28,7 +31,7 @@ class ContactController extends Controller
             'message'       => 'required|string|max:2000',
         ]);
 
-        ContactMessage::create([
+        $contactMessage = ContactMessage::create([
             'name'    => $request->full_name,
             'email'   => $request->email,
             'phone'   => $request->phone,
@@ -36,6 +39,11 @@ class ContactController extends Controller
             'message' => $request->message,
         ]);
 
+        Mail::to(config('mail.from.address'))
+            ->send(new ContactMessageMail($contactMessage));
+
+        Mail::to($contactMessage->email)
+            ->send(new ContactAutoReplyMail($contactMessage));
         return back()->with('success', 'Your message has been sent successfully!');
     }
 
