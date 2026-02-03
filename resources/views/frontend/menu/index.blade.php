@@ -48,7 +48,7 @@
                                 </a>
                                 <p class="menu-desc mb-0">{{ Str::limit(strip_tags($menu->description), 120) }}</p>
 
-                                <h6 class="menu-price">{{$menu->price}} {{ config('app.price_sign') }}</h6>
+                                <h6 class="menu-price pt-5">{{$menu->price}} {{ config('app.price_sign') }}</h6>
                             </div>
                         </div>
                     </div>
