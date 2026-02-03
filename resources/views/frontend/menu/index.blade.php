@@ -5,6 +5,8 @@
 @section('content')
 @include(config('settings.FRONTED_PAGE_DIR')."/layouts/_menu")
 
+
+
 <section class="menu-hero">
     <div class="menu-hero-overlay"></div>
     <div class="container">
@@ -38,7 +40,6 @@
                     <a href="{{ route('menu.show', $menu->slug) }}">
                         <img class="menu-main-img" src="{{ $menu->image ? asset('storage/' . $menu->image) : asset('images/no-image.jpg') }}" alt="{{ $menu->title }}" loading="lazy">
                     </a>
-
                     <div class="menu-block pt-3">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -46,8 +47,7 @@
                                     <h5 class="menu-title mb-1">{{ $menu->title }}</h5>
                                 </a>
                                 <p class="menu-desc mb-0">{{ Str::limit(strip_tags($menu->description), 120) }}</p>
-                            </div>
-                            <div class="text-end">
+
                                 <h6 class="menu-price">{{$menu->price}} {{ config('app.price_sign') }}</h6>
                             </div>
                         </div>
@@ -61,7 +61,6 @@
             </div>
             @endforelse
         </div>
-
         <!-- Pagination -->
         @if($menus->hasPages())
         <div class="menu-pagination text-center mt-4">
@@ -71,4 +70,8 @@
     </div>
 </section>
 
+
+<!-- Pagination -->
+</div>
+</section>
 @endsection

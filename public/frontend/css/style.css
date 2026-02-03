@@ -169,7 +169,7 @@ body {
 }
 
 .menu-card h6 {
-   color: #d8b46a;
+  color: #d8b46a;
   font-size: 13px;
   margin: 0;
 }
@@ -454,6 +454,12 @@ body {
 
 .menu-main-img:hover {
   transform: scale(1.05) rotate(1deg);
+}
+.menu-price {
+   color: #d8b46a;
+  font-size: 17px;
+  margin-top: 8px;
+  font-weight: 700;
 }
 
 .btn-outline-warning {
