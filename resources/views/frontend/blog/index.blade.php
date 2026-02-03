@@ -91,22 +91,4 @@
 
     </div>
 </section>
-
-
-<!-- Call to Action -->
-<section>
-    <div class="custom_container_full">
-        <div class="seventh_section">
-            <div class="common_container">
-                <div class="final_headings">
-                    <h3>Ready to transform your hotel Management?</h3>
-                    <div class="final_btn_section">
-                        <p>Only 200 GEL/Month</p>
-                        <a href="#">Let’s Get Started</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 @endsection
