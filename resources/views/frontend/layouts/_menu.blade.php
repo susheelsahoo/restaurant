@@ -9,9 +9,18 @@ $isHome = request()->is('/') || request()->is('home');
             <img src="{{ asset('frontend/images/logo_wt.svg') }}" alt="Tifliso Restaurant" />
         </a>
 
-        <span class="navbar-toggler-icon" data-bs-toggle="collapse" data-bs-target="#mainNav">
+
+        <button class="navbar-toggler d-lg-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNav"
+            aria-controls="mainNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+
             <i class="fa fa-navicon" style="color:#fff; font-size:28px;"></i>
-        </span>
+
+        </button>
 
 
         <div class="collapse navbar-collapse justify-content-end" id="mainNav">

@@ -57,6 +57,11 @@ body {
 .custom-toggler.navbar-toggler {
   border-color: rgb(255,102,203);
 } 
+@media (min-width: 992px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+}
 
 
 /* Mobile menu overlay fix */
