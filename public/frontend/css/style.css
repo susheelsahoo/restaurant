@@ -1383,6 +1383,99 @@ body {
   }
 }
 
+/* CTA SECTION */
+.visit-cta {
+  padding: 60px 0;
+  background: linear-gradient(180deg, #020202, #050505);
+  position: relative;
+}
+
+.visit-cta h2 {
+  font-size: 3rem;
+  color: #d8b46a;
+  margin-bottom: 18px;
+}
+
+.cta-text {
+  color: #ccc;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 35px;
+}
+
+/* DETAILS */
+.cta-details p {
+  color: #ddd;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.cta-details strong {
+  color: #d8b46a;
+}
+
+.cta-details a {
+  color: #d8b46a;
+  text-decoration: none;
+}
+
+.cta-details a:hover {
+  text-decoration: underline;
+}
+
+/* ACTION BUTTONS */
+.cta-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* WHATSAPP */
+.whatsapp-btn {
+  background: #2d523a;
+  color: #000;
+  font-weight: 600;
+  padding: 14px 30px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: 0.3s ease;
+  box-shadow: 0 0 35px rgba(37,211,102,.4);
+}
+
+.whatsapp-btn:hover {
+  background: #2b5d3e;
+  transform: translateY(-3px);
+}
+
+/* CALL BUTTON */
+.btn-outline-gold {
+  border: 1px solid #d8b46a;
+  color: #d8b46a;
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: transparent;
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-outline-gold:hover {
+  background: #d8b46a;
+  color: #000;
+}
+
+/* MOBILE */
+@media (max-width: 991px) {
+  .visit-cta h2 {
+    font-size: 2.2rem;
+  }
+
+  .cta-text {
+    font-size: 15px;
+  }
+}
+
 /* ---------- CONTACT FORM SECTION ---------- */
 .contact-section {
   padding: 100px 0;
