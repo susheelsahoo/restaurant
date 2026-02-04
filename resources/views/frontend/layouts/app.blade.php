@@ -40,8 +40,7 @@ management software, property management systems, and enhance guest experience')
                         class="footer-logo"
                         alt="Tifliso" />
                     <p class="footer-desc">
-                        Authentic Georgian cuisine in the heart of Budapest. Experience
-                        tradition, hospitality, and unforgettable flavors.
+                        Tifliso Restaurant is a traditional Georgian restaurant in Budapest, Hungary, offering authentic Georgian food, khachapuri, Georgian bread, BBQ, fine dining, and premium Georgian wines. Visit us at Ráday utca 11 for a true Georgian dining experience.
                     </p>
                 </div>
 

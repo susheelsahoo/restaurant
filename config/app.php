@@ -19,6 +19,15 @@ return [
     'price_sign' => env('PRICE_SIGN', 'HUF'),
 
 
+    'statuses' => [
+        'new'       => 'New',
+        'confirmed' => 'Confirmed',
+        'cancelled' => 'Cancelled',
+        'complete'  => 'Complete',
+    ],
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

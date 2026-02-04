@@ -1,91 +1,117 @@
 <x-default-layout>
-    @section('title', 'Lead Details')
+    @section('title', 'Booking Details')
 
     @section('breadcrumbs')
-    {{ Breadcrumbs::render('admin.leads.show', $lead) }}
+    {{ Breadcrumbs::render('admin.bookings.show', $booking) }}
     @endsection
 
     <div class="card mb-5 mb-xl-10">
-        <div class="card-header border-0 cursor-pointer">
-            <div class="card-title m-0">
-                <h3 class="fw-bold m-0">Lead Details</h3>
+        <div class="card-header border-0">
+            <div class="card-title">
+                <h3 class="fw-bold m-0">Booking Details</h3>
             </div>
         </div>
 
         <div class="card-body border-top p-9">
-            <!-- Name -->
+
+            {{-- Booking Code --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Name</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->name }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Booking Code</label>
+                <div class="col-lg-8">
+                    <span class="fw-bold">{{ $booking->booking_code }}</span>
                 </div>
             </div>
 
-            <!-- Email -->
+            {{-- Customer Name --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Email</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->email }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Customer Name</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->customer_name }}</p>
                 </div>
             </div>
 
-            <!-- Phone -->
+            {{-- Email --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Phone</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->phone ?? 'No Phone Provided' }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Email</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->email ?? 'N/A' }}</p>
                 </div>
             </div>
 
-            <!-- Source -->
+            {{-- Phone --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Source</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->source ?? 'No Source Provided' }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Phone</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->phone }}</p>
                 </div>
             </div>
 
-            <!-- Hotel Size -->
+            {{-- Visit Date --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Hotel Size</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->hotel_size ?? 'Not Provided' }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Visit Date</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">
+                        {{ \Carbon\Carbon::parse($booking->visit_date)->format('d M Y') }}
+                    </p>
                 </div>
             </div>
 
-            <!-- Status -->
+            {{-- Visit Time --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Status</label>
-                <div class="col-lg-8 fv-row">
+                <label class="col-lg-4 fw-semibold fs-6">Visit Time</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->visit_time }}</p>
+                </div>
+            </div>
+
+            {{-- Guests --}}
+            <div class="row mb-6">
+                <label class="col-lg-4 fw-semibold fs-6">Guests</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->guests }}</p>
+                </div>
+            </div>
+
+            {{-- Status --}}
+            <div class="row mb-6">
+                <label class="col-lg-4 fw-semibold fs-6">Status</label>
+                <div class="col-lg-8">
                     @php
                     $statusColors = [
-                    'new' => 'primary',
-                    'in_progress' => 'warning',
-                    'converted' => 'success',
-                    'closed' => 'secondary',
+                    'new' => 'warning',
+                    'confirmed' => 'success',
+                    'cancelled' => 'danger',
+                    'complete' => 'primary',
                     ];
                     @endphp
-                    <span class="badge bg-{{ $statusColors[$lead->status] ?? 'dark' }}">
-                        {{ ucfirst($lead->status ?? 'NA') }}
+
+                    <span class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
+                        {{ ucfirst($booking->status) }}
                     </span>
                 </div>
             </div>
 
-            <!-- Notes -->
+            {{-- Created At --}}
             <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">Notes</label>
-                <div class="col-lg-8 fv-row">
-                    <p>{{ $lead->notes ?? 'No notes provided' }}</p>
+                <label class="col-lg-4 fw-semibold fs-6">Created At</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">
+                        {{ $booking->created_at->format('d M Y, h:i A') }}
+                    </p>
                 </div>
             </div>
+
         </div>
 
         <div class="card-footer d-flex justify-content-end py-6 px-9">
-            <a href="{{ route('admin.leads.index') }}" class="btn btn-light btn-active-light-primary me-2">
-                Back to Leads
+            <a href="{{ route('admin.bookings.index') }}"
+                class="btn btn-light me-2">
+                Back
             </a>
-            <a href="{{ route('admin.leads.edit', $lead->id) }}" class="btn btn-primary">
-                Edit Lead
+
+            <a href="{{ route('admin.bookings.edit', $booking->id) }}"
+                class="btn btn-primary">
+                Edit Booking
             </a>
         </div>
     </div>

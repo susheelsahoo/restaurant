@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingConfirmationMail;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -24,21 +27,6 @@ class BookingController extends Controller
 
         return view('pages.bookings.index', compact('bookings'));
     }
-
-    public function index_old(Request $request)
-    {
-        $query = Reservation::latest();
-
-        if ($request->has('status') && in_array($request->status, ['new', 'in_progress', 'converted', 'closed'])) {
-            $query->where('status', $request->status);
-        }
-
-        $bookings = $query->get();
-
-        return view('pages.bookings.index', compact('bookings'));
-    }
-
-
     public function create()
     {
         return view('pages.bookings.create');
@@ -47,63 +35,82 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'full_name'  => 'required|string|max:255',
-            'email'      => 'required|email|max:191',
-            'phone'      => ['required', 'regex:/^\+[1-9]\d{7,14}$/'],
-            'hotel_size' => 'required|string|max:255',
-            'notes'      => 'nullable|string',
+            'customer_name' => 'required|string|max:255',
+            'email'         => 'nullable|email|max:150',
+            'phone'         => 'required|string|max:25',
+            'visit_date'    => 'required|date',
+            'visit_time'    => 'required',
+            'guests'        => 'required|integer|min:1|max:50',
+            'notes'         => 'nullable|string|max:2000',
         ]);
 
-        $lead = Reservation::create([
-            'customer_name'       => $validated['full_name'],
-            'email'      => $validated['email'],
-            'phone'      => $validated['phone'],
-            'hotel_size' => $validated['hotel_size'],
-            'notes'      => $validated['notes'] ?? null,
-            'source'     => 'website',
-            'status'     => 'new',
+        $reservation = Reservation::create([
+            'booking_code'  => $this->generateBookingCode(),
+            'customer_name' => $validated['customer_name'],
+            'email'         => $validated['email'],
+            'phone'         => $validated['phone'],
+            'visit_date'    => $validated['visit_date'],
+            'visit_time'    => $validated['visit_time'],
+            'guests'        => $validated['guests'],
+            'notes'         => $validated['notes'] ?? null,
+            'status'        => 'new',
         ]);
 
-        // Email to customer
-        Mail::raw(
-            "Hi {$lead->name},\n\nThank you for contacting Mediator. We’ll respond soon.\n\nBest Regards,\nMediator Team",
-            fn($m) => $m->to($lead->email)->subject('Thank you for your inquiry')
-        );
+        // Admin notification
+        Mail::to(config('mail.from.address'))
+            ->send(new BookingConfirmationMail($reservation));
 
-        // Email to admin
-        Mail::raw(
-            "New Lead:\n\nName: {$lead->name}\nEmail: {$lead->email}\nPhone: {$lead->phone}\nHotel Size: {$lead->hotel_size}\nNotes: {$lead->notes}",
-            fn($m) => $m->to(env('MANAGER_EMAIL'))->subject('New Lead - Mediator')
-        );
-
-        return response()->json(['success' => true, 'message' => 'Lead submitted successfully.']);
-    }
-
-
-    public function edit(Reservation $reservation)
-    {
-        return view('pages.bookings.edit', compact('reservation'));
-    }
-
-    public function update(Request $request, Reservation $reservation)
-    {
-        $validated = $request->validate([
-            'customer_name'       => 'required|string|max:255',
-            'email'      => 'required|email|max:255',
-            'phone'      => 'nullable|string|max:20',
-            'source'     => 'nullable|string|max:100',
-            'hotel_size' => 'nullable|string|max:255',
-            'status'     => 'required|in:new,in_progress,converted,closed',
-            'notes'      => 'nullable|string',
-        ]);
-        $validated['customer_name'] = $validated['customer_name'];
-        unset($validated['customer_name']);
-        $reservation->update($validated);
+        // Customer confirmation
+        if ($reservation->email) {
+            Mail::to($reservation->email)
+                ->send(new BookingConfirmationMail($reservation));
+        }
 
         return redirect()
             ->route('admin.bookings.index')
-            ->with('success', 'Booking updated successfully!');
+            ->with('success', 'Booking created successfully!');
     }
+
+
+    public function edit(Reservation $booking)
+    {
+        return view('pages.bookings.create', compact('booking'));
+    }
+
+
+    public function update(Request $request, Reservation $reservation)
+    {
+
+        try {
+            $validated = $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'email'         => 'nullable|email|max:255',
+                'phone'         => 'nullable|string|max:25',
+                'visit_date'    => 'required|date',
+                'visit_time'    => 'required',
+                'guests'        => 'required|integer|min:1|max:50',
+                'status'        => [
+                    'required',
+                    Rule::in(array_keys(config('app.statuses')))
+                ],
+                'notes'         => 'nullable|string|max:2000',
+            ]);
+            $reservation->where('id', $request->id)->update($validated);
+            Mail::to(config('mail.from.address'))
+                ->send(new BookingConfirmationMail($reservation));
+
+            Mail::to($reservation->email)
+                ->send(new BookingConfirmationMail($reservation));
+            return redirect()
+                ->route('admin.bookings.index')
+                ->with('success', 'Booking updated successfully!');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
 
 
     public function destroy(Reservation $reservation)
@@ -116,5 +123,9 @@ class BookingController extends Controller
     {
         $booking = Reservation::findOrFail($id);
         return view('pages.bookings.show', compact('booking'));
+    }
+    private function generateBookingCode(): string
+    {
+        return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
     }
 }

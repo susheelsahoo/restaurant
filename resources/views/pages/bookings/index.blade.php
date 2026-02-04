@@ -107,6 +107,11 @@
                                     View
                                 </a>
 
+                                <a href="{{ route('admin.bookings.edit', $booking->id) }}"
+                                    class="btn btn-sm btn-warning">
+                                    Edit
+                                </a>
+
                                 <form
                                     method="POST"
                                     action="{{ route('admin.bookings.destroy', $booking->id) }}"
