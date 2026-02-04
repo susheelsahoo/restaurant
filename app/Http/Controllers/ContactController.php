@@ -44,7 +44,14 @@ class ContactController extends Controller
 
         Mail::to($contactMessage->email)
             ->send(new ContactAutoReplyMail($contactMessage));
-        return back()->with('success', 'Your message has been sent successfully!');
+
+        return redirect()
+            ->back()
+            ->with([
+                'alert_title' => 'Message Sent',
+                'alert_text'  => 'Your message has been sent successfully!',
+                'alert_icon'  => 'success',
+            ]);
     }
 
     public function show($id)

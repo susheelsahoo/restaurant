@@ -14,7 +14,7 @@ class BlogController extends Controller
     public function index()
     {
 
-        $blogs = Blog::where('status', 'published')
+        $blogs = Blog::whereIN('status', ['published', 'draft'])
             ->latest()
             ->paginate(9);
 

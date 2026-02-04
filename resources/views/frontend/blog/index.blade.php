@@ -4,6 +4,8 @@
 
 @section('content')
 @include(config('settings.FRONTED_PAGE_DIR').'/layouts/_menu')
+
+{{-- HERO --}}
 <section class="blog-hero">
     <div class="blog-hero-overlay"></div>
 
@@ -17,9 +19,7 @@
                         Discover recipes, traditions, and behind-the-scenes moments from
                         our Georgian kitchen.
                     </p>
-                    <a
-                        href="#blog-list"
-                        class="btn btn-primary-gold rounded-pill px-4">
+                    <a href="#blog-list" class="btn btn-primary-gold rounded-pill px-4">
                         Explore Blogs
                     </a>
                 </div>
@@ -28,44 +28,39 @@
     </div>
 </section>
 
-@if($featured)
-
-@endif
-
-<!-- Recent Posts -->
-<!-- Recent Posts -->
-<!-- BLOG GRID -->
-<section class="blog-grid-section">
+{{-- BLOG GRID --}}
+<section id="blog-list" class="blog-grid-section">
     <div class="container">
 
-        @if(isset($category))
+        {{-- CATEGORY HEADER (only if used later) --}}
+        @isset($category)
         <div class="row mb-4">
             <div class="col-12">
                 <h2>Category: {{ $category->name }}</h2>
-                @if($category->description)
+                @if(!empty($category->description))
                 <p>{{ $category->description }}</p>
                 @endif
             </div>
         </div>
-        @endif
+        @endisset
 
         <div class="row g-4">
 
-            @foreach($blogs as $blog)
+            @forelse($blogs as $blog)
             <div class="col-lg-4 col-md-6">
                 <article class="blog-page-card">
 
                     <img
-                        src="{{ asset('storage/' . $blog->image) }}"
+                        src="{{ $blog->image ? asset('storage/'.$blog->image) : asset('frontend/images/no-image.jpg') }}"
                         alt="{{ $blog->title }}"
                         loading="lazy" />
 
                     <div class="blog-card-body">
-                        <span>
+                        <span class="blog-date">
                             {{ $blog->created_at->format('d M Y') }}
                         </span>
 
-                        <h5>{{ $blog->title }}</h5>
+                        <h5><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h5>
 
                         <p>
                             {{ Str::limit(strip_tags($blog->content), 100) }}
@@ -78,13 +73,17 @@
 
                 </article>
             </div>
-            @endforeach
+            @empty
+            <div class="col-12 text-center">
+                <p>No blog posts found.</p>
+            </div>
+            @endforelse
 
         </div>
 
-        <!-- Pagination -->
+        {{-- PAGINATION --}}
         @if($blogs->hasPages())
-        <div class="blog-pagination">
+        <div class="blog-pagination mt-5">
             {{ $blogs->links('pagination::bootstrap-4') }}
         </div>
         @endif

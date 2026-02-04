@@ -16,22 +16,22 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'visit_date' => 'required|date',
-            'visit_time' => 'required',
-            'guests'     => 'required|integer|min:1',
-            'customer_name'       => 'required|string|max:255',
-            'phone'      => 'required|string|max:20',
-            'email'      => 'nullable|email',
+            'visit_date'        => 'required|date',
+            'visit_time'        => 'required',
+            'guests'            => 'required|integer|min:1',
+            'customer_name'     => 'required|string|max:255',
+            'phone'             => 'required|string|max:20',
+            'email'             => 'required|email',
         ]);
 
         $reservation = Reservation::create([
-            'booking_code'  => $this->generateBookingCode(),
-            'visit_date' => $request->visit_date,
-            'visit_time' => $request->visit_time,
-            'guests'     => $request->guests,
-            'customer_name'       => $request->customer_name,
-            'phone'      => $request->phone,
-            'email'      => $request->email,
+            'booking_code'      => $this->generateBookingCode(),
+            'visit_date'        => $request->visit_date,
+            'visit_time'        => $request->visit_time,
+            'guests'            => $request->guests,
+            'customer_name'     => $request->customer_name,
+            'phone'             => $request->phone,
+            'email'             => $request->email,
         ]);
 
         Mail::to(config('mail.from.address'))
@@ -40,7 +40,14 @@ class ReservationController extends Controller
         Mail::to($reservation->email)
             ->send(new BookingConfirmationMail($reservation));
 
-        return redirect()->back()->with('success', 'Your table has been reserved successfully!');
+
+        return redirect()
+            ->back()
+            ->with([
+                'alert_title' => 'Reservation Request Sent',
+                'alert_text'  => 'Thank you for booking a table at Tifliso. Our team will respond soon!',
+                'alert_icon'  => 'success',
+            ]);
     }
     private function generateBookingCode(): string
     {

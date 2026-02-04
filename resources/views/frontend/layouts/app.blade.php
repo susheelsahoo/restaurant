@@ -112,22 +112,28 @@ management software, property management systems, and enhance guest experience')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if(session('success'))
+    @if(session('alert_text'))
     <script>
         Swal.fire({
-            icon: 'success',
-            title: 'Reservation Confirmed',
-            text: '{{ session('
-            success ') }}',
-            confirmButtonColor: '#d8b46a'
+            icon: @json(session('alert_icon', 'success')),
+            title: @json(session('alert_title', 'Success')),
+            text: @json(session('alert_text')),
+            background: '#0b0b0b',
+            color: '#ffffff',
+            iconColor: '#d8b46a',
+            confirmButtonColor: '#d8b46a',
+            customClass: {
+                popup: 'rounded-4'
+            }
         });
     </script>
     @endif
+
     @if($errors->any())
     <script>
         Swal.fire({
             icon: 'error',
-            title: 'Reservation Failed',
+            title: 'Something Went Wrong',
             html: `{!! implode('<br>', $errors->all()) !!}`,
             confirmButtonColor: '#b10000'
         });

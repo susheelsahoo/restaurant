@@ -29,35 +29,21 @@ class PageController extends Controller
 
     public function blogs()
     {
-        // Featured (latest) post
-        $featured = Blog::where('is_published', true)
-            ->latest()
-            ->first();
-
-        // Side posts (next 3 latest after featured)
-        $sidePosts = Blog::where('is_published', true)
-            ->latest()
-            ->skip(1)
-            ->take(3)
-            ->get();
-
         // Recent posts (all except featured and side posts)
-        $blogs = Blog::where('is_published', true)
+        $blogs = Blog::where('status', 'published')
             ->latest()
-            ->skip(4)
             ->paginate(9);
-
-        return view('frontend.blog.index', compact('featured', 'sidePosts', 'blogs'));
+        return view('frontend.blog.index', compact('blogs'));
     }
 
     public function showBlog($slug)
     {
         $blog = Blog::where('slug', $slug)
-            ->where('is_published', true)
+            ->where('status', 'published')
             ->firstOrFail();
 
         // Get related posts (same category, excluding current)
-        $relatedBlogs = Blog::where('is_published', true)
+        $relatedBlogs = Blog::where('status', 'published')
             ->where('id', '!=', $blog->id)
             ->when($blog->category_id, function ($query) use ($blog) {
                 $query->where('category_id', $blog->category_id);
