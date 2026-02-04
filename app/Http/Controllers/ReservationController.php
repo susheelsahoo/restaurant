@@ -6,11 +6,51 @@ use App\Models\Reservation;
 use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Mail\BookingConfirmationMail;
+use Illuminate\Support\Facades\Mail;
+
 
 class ReservationController extends Controller
 {
-    public function store(Request $request, BookingService $service): JsonResponse
+    public function store(Request $request)
     {
+        $request->validate([
+            'visit_date' => 'required|date',
+            'visit_time' => 'required',
+            'guests'     => 'required|integer|min:1',
+            'customer_name'       => 'required|string|max:255',
+            'phone'      => 'required|string|max:20',
+            'email'      => 'nullable|email',
+        ]);
+
+        $reservation = Reservation::create([
+            'booking_code'  => $this->generateBookingCode(),
+            'visit_date' => $request->visit_date,
+            'visit_time' => $request->visit_time,
+            'guests'     => $request->guests,
+            'customer_name'       => $request->customer_name,
+            'phone'      => $request->phone,
+            'email'      => $request->email,
+        ]);
+
+        Mail::to(config('mail.from.address'))
+            ->send(new BookingConfirmationMail($reservation));
+
+        Mail::to($reservation->email)
+            ->send(new BookingConfirmationMail($reservation));
+
+        return redirect()->back()->with('success', 'Your table has been reserved successfully!');
+    }
+    private function generateBookingCode(): string
+    {
+        return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
+    }
+
+
+    public function store_old(Request $request, BookingService $service): JsonResponse
+    {
+        dd('ReservationController@store is deprecated. Use BookingController@store instead.');
         $validated = $request->validate([
             'visit_date' => ['required', 'date', 'after_or_equal:today'],
             'visit_time' => ['required'],

@@ -11,7 +11,7 @@ class Reservation extends Model
         'visit_date',
         'visit_time',
         'guests',
-        'name',
+        'customer_name',
         'phone',
         'email',
         'status'

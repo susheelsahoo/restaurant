@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContactMessage extends Model
 {
-    // Allow mass assignment for specified attributes
-    protected $fillable = ['name', 'email', 'subject', 'message', 'is_read'];
+    protected $table = 'contact_messages';
+
+    protected $fillable = ['name', 'email', 'phone', 'subject', 'message', 'is_read'];
 }

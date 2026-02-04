@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use App\Mail\ContactMessageMail;
+use App\Mail\ContactAutoReplyMail;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -20,16 +23,28 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email',
-            'subject' => 'nullable|max:255',
-            'message' => 'required',
+        $request->validate([
+            'full_name'     => 'required|string|max:120',
+            'email'         => 'required|email|max:150',
+            'phone'         => 'nullable|string|max:25',
+            'subject'       => 'required|string|max:200',
+            'message'       => 'required|string|max:2000',
         ]);
 
-        ContactMessage::create($validated);
+        $contactMessage = ContactMessage::create([
+            'name'    => $request->full_name,
+            'email'   => $request->email,
+            'phone'   => $request->phone,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ]);
 
-        return redirect()->route('admin.contacts.index')->with('success', 'Message sent successfully!');
+        Mail::to(config('mail.from.address'))
+            ->send(new ContactMessageMail($contactMessage));
+
+        Mail::to($contactMessage->email)
+            ->send(new ContactAutoReplyMail($contactMessage));
+        return back()->with('success', 'Your message has been sent successfully!');
     }
 
     public function show($id)
