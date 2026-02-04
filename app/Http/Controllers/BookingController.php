@@ -80,7 +80,6 @@ class BookingController extends Controller
 
     public function update(Request $request, Reservation $reservation)
     {
-
         try {
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
@@ -95,21 +94,31 @@ class BookingController extends Controller
                 ],
                 'notes'         => 'nullable|string|max:2000',
             ]);
-            $reservation->where('id', $request->id)->update($validated);
-            Mail::to(config('mail.from.address'))
-                ->send(new BookingConfirmationMail($reservation));
 
-            Mail::to($request->email)
-                ->send(new BookingConfirmationMail($reservation));
+            $oldStatus = $reservation->status;
+
+            $reservation->update($validated);
+
+            // Mail::to(config('mail.from.address'))->send(new BookingRequestMail($reservation));
+
+            if ($reservation->email && $oldStatus !== $reservation->status && $reservation->status === 'confirmed') {
+                Mail::to($reservation->email)
+                    ->send(new BookingConfirmationMail($reservation));
+            }
+            #todo cancelled mail and completed mail
+
             return redirect()
                 ->route('admin.bookings.index')
                 ->with('success', 'Booking updated successfully!');
         } catch (\Exception $e) {
+            report($e);
+
             return back()
                 ->withInput()
                 ->with('error', 'Something went wrong. Please try again.');
         }
     }
+
 
 
 

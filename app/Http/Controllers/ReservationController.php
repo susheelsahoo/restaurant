@@ -7,7 +7,7 @@ use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Mail\BookingConfirmationMail;
+use App\Mail\BookingRequestMail;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -35,10 +35,10 @@ class ReservationController extends Controller
         ]);
 
         Mail::to(config('mail.from.address'))
-            ->send(new BookingConfirmationMail($reservation));
+            ->send(new BookingRequestMail($reservation));
 
         Mail::to($reservation->email)
-            ->send(new BookingConfirmationMail($reservation));
+            ->send(new BookingRequestMail($reservation));
 
 
         return redirect()
