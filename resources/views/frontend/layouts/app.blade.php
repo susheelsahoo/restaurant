@@ -82,7 +82,7 @@ management software, property management systems, and enhance guest experience')
                     <p class="footer-address">
                         Tifliso Restaurant<br />
                         Budapest, Hungary<br />
-                        Example Street 12, 1051
+                        Budapest, Ráday utca 11
                     </p>
 
                     <div class="footer-map">
