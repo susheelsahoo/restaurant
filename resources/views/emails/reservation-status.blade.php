@@ -1,19 +1,39 @@
+@php
+use App\Models\Reservation;
+
+$messages = [
+Reservation::STATUS_NEW => [
+'title' => '📩 Reservation Request Sent',
+'text' => 'We’ve received your reservation request and will confirm it shortly.',
+],
+Reservation::STATUS_CONFIRMED => [
+'title' => '🍷 Table Reservation Confirmed',
+'text' => 'Your table has been confirmed. We look forward to welcoming you!',
+],
+Reservation::STATUS_CANCELLED => [
+'title' => '❌ Reservation Cancelled',
+'text' => 'Your reservation has been cancelled. If this is a mistake, please contact us.',
+],
+Reservation::STATUS_COMPLETE => [
+'title' => '✅ Thank You for Visiting',
+'text' => 'Thank you for dining with us. We hope to see you again soon!',
+],
+];
+
+$content = $messages[$reservation->status];
+@endphp
 <!DOCTYPE html>
 <html>
 
 <body style="margin:0; padding:0; background:#f8f8f8;">
-
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8; padding:20px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px;">
         <tr>
             <td align="center">
 
-                <!-- MAIN CARD -->
-                <table width="600" cellpadding="0" cellspacing="0"
-                    style="background:#ffffff; padding:24px; border-radius:8px; font-family:Arial, sans-serif;">
-
+                <table width="600" style="background:#fff;padding:24px;border-radius:8px;font-family:Arial">
                     <tr>
                         <td align="center">
-                            <h2 style="margin-top:0;">🍷 Table Reservation Confirmed</h2>
+                            <h2>{{ $content['title'] }}</h2>
                         </td>
                     </tr>
 
@@ -21,12 +41,9 @@
                         <td>
                             <p>Hello <strong>{{ $reservation->customer_name }}</strong>,</p>
 
-                            <p>
-                                Thank you for booking a table at
-                                <strong>Tifliso Georgian Restaurant</strong>.
-                            </p>
+                            <p>{{ $content['text'] }}</p>
 
-                            <table width="100%" cellpadding="6" cellspacing="0" style="margin-top:15px;">
+                            <table width="100%" cellpadding="6">
                                 <tr>
                                     <td><strong>Date:</strong></td>
                                     <td align="right">{{ $reservation->visit_date }}</td>
@@ -50,21 +67,14 @@
                                 📞 +36 30 123 4567
                             </p>
 
-                            <p>We look forward to welcoming you!</p>
-
-                            <p style="margin-bottom:0;">
-                                <strong>Tifliso Team</strong>
-                            </p>
+                            <p><strong>Tifliso Team</strong></p>
                         </td>
                     </tr>
-
                 </table>
-                <!-- END CARD -->
 
             </td>
         </tr>
     </table>
-
 </body>
 
 </html>

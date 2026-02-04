@@ -88,7 +88,7 @@
                             <td>
                                 @php
                                 $statusColors = [
-                                'new' => 'warning', // yellow
+                                'pending' => 'warning', // yellow
                                 'confirmed' => 'success', // green
                                 'cancelled' => 'danger', // red
                                 'complete' => 'primary', // blue

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingConfirmationMail;
+use App\Mail\ReservationStatusMail;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
@@ -58,12 +58,12 @@ class BookingController extends Controller
 
         // Admin notification
         Mail::to(config('mail.from.address'))
-            ->send(new BookingConfirmationMail($reservation));
+            ->send(new ReservationStatusMail($reservation));
 
         // Customer confirmation
         if ($reservation->email) {
             Mail::to($reservation->email)
-                ->send(new BookingConfirmationMail($reservation));
+                ->send(new ReservationStatusMail($reservation));
         }
 
         return redirect()
@@ -78,9 +78,11 @@ class BookingController extends Controller
     }
 
 
-    public function update(Request $request, Reservation $reservation)
+    public function update(Request $request)
     {
         try {
+            $reservation = Reservation::findOrFail($request->id);
+
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
                 'email'         => 'nullable|email|max:255',
@@ -96,16 +98,12 @@ class BookingController extends Controller
             ]);
 
             $oldStatus = $reservation->status;
+            $reservation->where('id', $request->id)->update($validated);
 
-            $reservation->update($validated);
-
-            // Mail::to(config('mail.from.address'))->send(new BookingRequestMail($reservation));
-
-            if ($reservation->email && $oldStatus !== $reservation->status && $reservation->status === 'confirmed') {
-                Mail::to($reservation->email)
-                    ->send(new BookingConfirmationMail($reservation));
+            if ($validated['email'] && $oldStatus !== $validated['status']) {
+                Mail::to($validated['email'])
+                    ->queue(new ReservationStatusMail($reservation->fresh()));
             }
-            #todo cancelled mail and completed mail
 
             return redirect()
                 ->route('admin.bookings.index')
@@ -122,8 +120,9 @@ class BookingController extends Controller
 
 
 
-    public function destroy(Reservation $reservation)
+    public function destroy($id)
     {
+        $reservation = Reservation::findOrFail($id);
         $reservation->delete();
         return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully!');
     }

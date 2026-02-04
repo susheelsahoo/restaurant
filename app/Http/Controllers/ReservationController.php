@@ -7,7 +7,7 @@ use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Mail\BookingRequestMail;
+use App\Mail\ReservationStatusMail;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -32,14 +32,14 @@ class ReservationController extends Controller
             'customer_name'     => $request->customer_name,
             'phone'             => $request->phone,
             'email'             => $request->email,
+            'status'            => Reservation::STATUS_NEW,
         ]);
 
         Mail::to(config('mail.from.address'))
-            ->send(new BookingRequestMail($reservation));
+            ->send(new ReservationStatusMail($reservation));
 
         Mail::to($reservation->email)
-            ->send(new BookingRequestMail($reservation));
-
+            ->send(new ReservationStatusMail($reservation));
 
         return redirect()
             ->back()

@@ -78,7 +78,7 @@
                 <div class="col-lg-8">
                     @php
                     $statusColors = [
-                    'new' => 'warning',
+                    'pending' => 'warning',
                     'confirmed' => 'success',
                     'cancelled' => 'danger',
                     'complete' => 'primary',

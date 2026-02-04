@@ -20,7 +20,7 @@ return [
 
 
     'statuses' => [
-        'new'       => 'New',
+        'pending'   => 'pending',
         'confirmed' => 'Confirmed',
         'cancelled' => 'Cancelled',
         'complete'  => 'Complete',
