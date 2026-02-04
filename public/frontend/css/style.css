@@ -488,6 +488,108 @@ body {
     margin: 0 auto;
   }
 }
+
+/* menu1 */
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+
+  padding: 10px;  
+  background: radial-gradient(circle at left, #1a1408, #050505);
+  border-radius: 26px;
+}
+.menu-card1 h6 {
+   color: #d8b46a;
+  font-size: 17px;
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.menu-block {
+  padding: 0 !important;      
+  display: flex;
+  align-items: center;          
+}
+
+.menu-block .d-flex > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.menu-title {
+  margin-top: 0;
+  margin-bottom: 40px;
+  padding-top: 60px !important;
+}
+
+.menu-desc {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.menu-price {
+  margin-top: 0;
+  padding-top: 0 !important;    
+}
+
+.menu-main-img {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;            
+}
+
+/* ================= MOBILE FIX ================= */
+
+@media (max-width: 575px ) {
+
+  .menu-card {
+    flex-direction: column;
+    padding: 22px;
+    padding-top: 60px;
+    gap: 12px;
+    text-align: center;
+  }
+
+  /* IMAGE ON TOP */
+  .menu-main-img {
+    width: 100%;
+    height: 200px;
+    border-radius: 18px;
+  }
+
+  .menu-block {
+    padding: 0;
+  }
+
+  .menu-block .d-flex {
+    flex-direction: column;
+    align-items: center !important;
+  }
+
+  .menu-title {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .menu-desc {
+    font-size: 17px;
+    line-height: 1.6;
+    padding-top: 20px !important;
+  }
+
+  .menu-price {
+    font-size: 16px;
+    margin-top: 26px;
+    padding-top: 30px !important;
+  }
+}
+
+
+
 .gallery-header {
   text-align: center;
   padding: 80px 20px 40px;
@@ -2180,35 +2282,47 @@ body {
   .gallery-page-card { height: 200px; }
   .gallery-page-card.large { height: 260px; }
 }
-/* ==================================================
-   LEGAL / STATIC PAGES (Privacy, Terms, GDPR, etc.)
-   ================================================== */
 
+
+/* ================= STATIC PAGE HERO ================= */
 .static-page-hero {
-  padding: 180px 0 120px;
-  background: radial-gradient(circle at top, #160808 0%, #020202 70%);
-  text-align: center;
   position: relative;
+  padding: 90px 0 100px;
+  background: url("../images/hero_img.png") center/cover no-repeat;
+  text-align: center;
+}
+
+.static-page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.55),
+    rgba(0,0,0,0.9)
+  );
+}
+
+.static-page-hero h1,
+.static-page-hero p {
+  position: relative;
+  z-index: 2;
 }
 
 .static-page-hero h1 {
   font-size: 3rem;
   color: #d8b46a;
   font-weight: 700;
-  letter-spacing: 1px;
 }
 
 .static-page-hero p {
   margin-top: 12px;
-  color: #bbb;
+  color: #ccc;
   font-size: 15px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
+/* ================= CONTENT ================= */
 .static-page-content {
-  padding: 100px 0;
+  padding: 60px 0;
   background: linear-gradient(180deg, #050505, #020202);
 }
 
@@ -2221,19 +2335,148 @@ body {
     inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
+.static-page-box h2 {
+  font-size: 1.7rem;
+  color: #d8b46a;
+  margin-top: 40px;
+}
+
+.static-page-box p,
+.static-page-box li {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.85;
+}
+
+.static-page-note {
+  background: rgba(216,180,106,0.08);
+  border-left: 4px solid #d8b46a;
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin: 30px 0;
+}
+
+.static-page-updated {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+/* ================= FOOTER ================= */
+.site-footer {
+  background: #020202;
+  padding: 70px 0 30px;
+  color: #aaa;
+}
+
+.site-footer h5,
+.site-footer h6 {
+  color: #d8b46a;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: #aaa;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 991px) {
+  .static-page-hero h1 { font-size: 2.4rem; }
+  .static-page-box { padding: 40px; }
+}
+
+@media (max-width: 767px) {
+  .static-page-hero h1 { font-size: 2rem; }
+  .static-page-box { padding: 28px; }
+}
+
+/* ==================================================
+   STATIC / LEGAL PAGES (Privacy, Terms, Refund, GDPR)
+   ================================================== */
+
+.static-page-hero {
+  position: relative;
+  padding: 90px 0 90px;
+  background: url("../images/hero_img.png") center / cover no-repeat;
+  text-align: center;
+}
+
+.static-page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.9)
+  );
+}
+
+.static-page-hero h1,
+.static-page-hero p {
+  position: relative;
+  z-index: 2;
+}
+
+.static-page-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #d8b46a;
+  letter-spacing: 1px;
+}
+
+.static-page-hero p {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #ccc;
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ================= CONTENT ================= */
+
+.static-page-content {
+  padding: 60px 0;
+  background: linear-gradient(180deg, #050505, #020202);
+}
+
+.static-page-box {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 26px;
+  padding: 60px;
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.75),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
 /* Headings */
 .static-page-box h2 {
   font-size: 1.7rem;
   color: #d8b46a;
   margin-top: 40px;
   margin-bottom: 14px;
-}
-
-.static-page-box h3 {
-  font-size: 1.2rem;
-  color: #fff;
-  margin-top: 28px;
-  margin-bottom: 10px;
+  font-weight: 600;
 }
 
 /* Text */
@@ -2257,21 +2500,9 @@ body {
   margin-bottom: 8px;
 }
 
-/* Links */
-.static-page-box a {
-  color: #d8b46a;
-  text-decoration: none;
-  transition: 0.3s ease;
-}
-
-.static-page-box a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
 /* Highlight / Notice */
 .static-page-note {
-  background: rgba(216,180,106,0.08);
+  background: rgba(216, 180, 106, 0.08);
   border-left: 4px solid #d8b46a;
   padding: 18px 22px;
   border-radius: 12px;
@@ -2280,7 +2511,7 @@ body {
   color: #ddd;
 }
 
-/* Footer Meta */
+/* Footer meta */
 .static-page-updated {
   margin-top: 40px;
   font-size: 12px;
@@ -2292,7 +2523,7 @@ body {
 
 @media (max-width: 991px) {
   .static-page-hero {
-    padding: 140px 0 90px;
+    padding: 150px 0 100px;
   }
 
   .static-page-hero h1 {
@@ -2306,7 +2537,107 @@ body {
 
 @media (max-width: 767px) {
   .static-page-hero h1 {
-    font-size: 2.1rem;
+    font-size: 2rem;
+  }
+
+  .static-page-box {
+    padding: 28px;
+  }
+}
+
+
+
+.gdpr-page-hero {
+  position: relative;
+  padding: 90px 0 90px;
+  background: url("../images/hero_img.png") center / cover no-repeat;
+  text-align: center;
+}
+
+.gdpr-page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.9)
+  );
+}
+
+.gdpr-page-hero h1,
+.gdpr-page-hero p {
+  position: relative;
+  z-index: 2;
+}
+
+.gdpr-page-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #d8b46a;
+}
+
+.gdpr-page-hero p {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #ccc;
+  max-width: 620px;
+  margin: auto;
+}
+
+/* ================= SHARED CONTENT ================= */
+
+.static-page-content {
+  padding: 60px 0;
+  background: linear-gradient(180deg, #050505, #020202);
+}
+
+.static-page-box {
+  background: rgba(255,255,255,0.04);
+  border-radius: 26px;
+  padding: 60px;
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.75),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.static-page-box h2 {
+  color: #d8b46a;
+  margin-top: 40px;
+}
+
+.static-page-box p,
+.static-page-box li {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.85;
+}
+
+.static-page-updated {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 991px) {
+  .gdpr-page-hero {
+    padding: 150px 0 100px;
+  }
+
+  .gdpr-page-hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .static-page-box {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  .gdpr-page-hero h1 {
+    font-size: 2rem;
   }
 
   .static-page-box {
