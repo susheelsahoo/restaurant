@@ -99,7 +99,7 @@ class BookingController extends Controller
             Mail::to(config('mail.from.address'))
                 ->send(new BookingConfirmationMail($reservation));
 
-            Mail::to($reservation->email)
+            Mail::to($request->email)
                 ->send(new BookingConfirmationMail($reservation));
             return redirect()
                 ->route('admin.bookings.index')
