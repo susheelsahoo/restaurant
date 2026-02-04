@@ -1293,6 +1293,82 @@ body {
   line-height: 1.5;
   margin: 0;
 }
+/* ---------- CONTACT INFO RIGHT SIDE ---------- */
+.visit-info {
+   border: 1px solid rgba(216, 180, 106, 0.2);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.04);
+  padding: 50px 45px;
+  border-radius: 26px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.7);
+}
+
+.visit-info h3 {
+  color: #d8b46a;
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+.visit-info h3 span {
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: #bbb;
+}
+
+.visit-info p {
+  color: #ccc;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 22px;
+}
+
+/* ADDRESS */
+.visit-address strong {
+  color: #d8b46a;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.visit-address p {
+  margin-bottom: 28px;
+}
+
+/* WHATSAPP BUTTON */
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #3d8b5a;
+  color: #000;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: 0.3s ease;
+  box-shadow: 0 0 30px rgba(37,211,102,.35);
+}
+
+.whatsapp-btn:hover {
+  background: #285a3b;
+  transform: translateY(-3px);
+  box-shadow: 0 0 45px rgba(37,211,102,.55);
+}
+
+.wa-icon {
+  font-size: 18px;
+}
+
+/* MOBILE */
+@media (max-width: 991px) {
+  .visit-info {
+    padding: 35px 25px;
+    text-align: center;
+  }
+
+  .whatsapp-btn {
+    justify-content: center;
+  }
+}
 
 /* RESPONSIVE (layout only) */
 @media (max-width: 991px) {
