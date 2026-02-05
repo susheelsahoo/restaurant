@@ -100,9 +100,7 @@
     </div>
 
     @push('scripts')
-    <!-- Place the first <script> tag in your HTML's <head> -->
-    <script src="https://cdn.tiny.cloud/1/cismxthoy7vle21aqdwdz4tgkaua80tos798n4cl379djpp4/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
-    <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+    <script src="{{ config('app.tinymce_api_url') }}" referrerpolicy="origin" crossorigin="anonymous"></script>
     <script>
         tinymce.init({
             selector: 'textarea',

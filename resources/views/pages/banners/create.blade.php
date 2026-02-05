@@ -68,7 +68,7 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.tiny.cloud/1/cismxthoy7vle21aqdwdz4tgkaua80tos798n4cl379djpp4/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="{{ config('app.tinymce_api_url') }}" referrerpolicy="origin" crossorigin="anonymous"></script>
     <script>
         tinymce.init({
             selector: '#banner-content',

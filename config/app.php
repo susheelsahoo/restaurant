@@ -17,6 +17,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
     'price_sign' => env('PRICE_SIGN', 'HUF'),
+    'tinymce_api_url' => env('TINYMCE_API_URL', 'https://cdn.tiny.cloud/1/io6s806lfrgc5jsrasv6res855m17ihgxg00p2pz2gy0v9qh/tinymce/8/tinymce.min.js'),
 
 
     'statuses' => [
