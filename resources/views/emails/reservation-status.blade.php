@@ -9,19 +9,24 @@ Reservation::STATUS_NEW => [
 ],
 Reservation::STATUS_CONFIRMED => [
 'title' => '🍷 Your Table Is Confirmed ',
-'text' => 'Your table at Tifliso Georgian Restaurant has been confirmed! We look forward to welcoming you.',
-'message' => "If you need to make any changes to your booking or have special requests, please don’t hesitate to contact us.
+'text' => 'Your table at Tifliso Georgian Restaurant has been confirmed!',
+'message' => "If you need to make any changes to your booking or have special requests, please don’t hesitate to contact us.<br>
 We look forward to hosting you soon!"
 ],
 Reservation::STATUS_DECLINED => [
 'title' => '❌ Your Booking Declined',
-'text' => 'Your reservation has been declined. If this is a mistake, please contact us.',
-'message' => "We apologize for any inconvenience. Please feel free to reach out if you have any questions or would like to make a new reservation."
+'text' => 'For the given date and time, all of our tables are fully booked. We’re very sorry for the inconvenience—maybe another time would work for you?',
+'message' => "We’d be happy to help you find an alternative time or date. Please feel free to contact us, and we’ll do our best to assist.<br />
+📍 Location: Budapest, Ráday utca 11, Budapest, Hungary<br />
+📞 Contact: +36 30 123 4567<br />
+Thank you for your understanding. We hope to welcome you soon!"
 ],
 Reservation::STATUS_COMPLETE => [
 'title' => '✅ Thank You for Visiting',
 'text' => 'Thank you for dining with us. We hope to see you again soon!',
-'message' => "We hope you had a wonderful experience at Tifliso Georgian Restaurant. We look forward to welcoming you back in the future!"
+'message' => "Thank you for dining with us! We’re happy to share Georgian hospitality with you and hope to see you again soon 🍷🇬🇪
+Your feedback means a lot to us—feel free to leave a review here: <br />
+<a href='https://g.page/r/CcEqwhtiszcgEAE/review'>Google Reviews</a>."
 ],
 ];
 
@@ -67,13 +72,10 @@ $content = $messages[$reservation->status];
                                 </tr>
                             </table>
 
-                            <p style="margin-top:20px;">
-                                📍 {{ config('app.LOCATION') }}<br>
-                                📞 {{ config('app.CONTACT_NUMBER') }}
-                            </p>
-                            <p>{{ $content['message'] }}</p>
-
+                            <p>{{ $content['message'] }}</p><br />
+                            <p>Warm regards,</p>
                             <p><strong>Tifliso Team</strong></p>
+                            <p>Authentic Georgian Restaurant in Budapest.</p>
                         </td>
                     </tr>
                 </table>
