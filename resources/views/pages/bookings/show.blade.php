@@ -80,7 +80,7 @@
                     $statusColors = [
                     'pending' => 'warning',
                     'confirmed' => 'success',
-                    'cancelled' => 'danger',
+                    'declined' => 'danger',
                     'complete' => 'primary',
                     ];
                     @endphp

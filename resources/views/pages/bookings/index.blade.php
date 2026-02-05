@@ -90,7 +90,7 @@
                                 $statusColors = [
                                 'pending' => 'warning', // yellow
                                 'confirmed' => 'success', // green
-                                'cancelled' => 'danger', // red
+                                'declined' => 'danger', // red
                                 'complete' => 'primary', // blue
                                 ];
                                 @endphp
