@@ -17,8 +17,8 @@ Reservation::STATUS_DECLINED => [
 'title' => '❌ Your Booking Declined',
 'text' => 'For the given date and time, all of our tables are fully booked. We’re very sorry for the inconvenience—maybe another time would work for you?',
 'message' => "We’d be happy to help you find an alternative time or date. Please feel free to contact us, and we’ll do our best to assist.<br />
-📍 Location: Budapest, Ráday utca 11, Budapest, Hungary<br />
-📞 Contact: +36 30 123 4567<br />
+📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>Budapest, Ráday utca 11, Budapest, Hungary</a><br />
+📞 Contact: <a href='tel:+36301234567'>+36 30 123 4567</a><br />
 Thank you for your understanding. We hope to welcome you soon!"
 ],
 Reservation::STATUS_COMPLETE => [
@@ -56,11 +56,11 @@ $content = $messages[$reservation->status];
                             <table width="100%" cellpadding="6">
                                 <tr>
                                     <td><strong>Date:</strong></td>
-                                    <td align="right">{{ $reservation->visit_date }}</td>
+                                    <td align="right">{{ \Carbon\Carbon::parse($reservation->visit_date)->format('d M Y') }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Time:</strong></td>
-                                    <td align="right">{{ $reservation->visit_time }}</td>
+                                    <td align="right">{{ \Carbon\Carbon::parse($reservation->visit_time)->format('H:i') }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Guests:</strong></td>
@@ -71,8 +71,7 @@ $content = $messages[$reservation->status];
                                     <td align="right">{{ ucfirst($reservation->status) }}</td>
                                 </tr>
                             </table>
-
-                            <p>{{ $content['message'] }}</p><br />
+                            <p>{!! $content['message'] !!}</p><br />
                             <p>Warm regards,</p>
                             <p><strong>Tifliso Team</strong></p>
                             <p>Authentic Georgian Restaurant in Budapest.</p>
