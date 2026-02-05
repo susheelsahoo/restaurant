@@ -34,10 +34,10 @@ class ReservationStatusMail extends Mailable
             'Reservation Request Received – Tifliso',
 
             Reservation::STATUS_CONFIRMED =>
-            'Table Reservation Confirmed – Tifliso',
+            'Your Table Is Confirmed – Tifliso',
 
-            Reservation::STATUS_CANCELLED =>
-            'Reservation Cancelled – Tifliso',
+            Reservation::STATUS_DECLINED =>
+            'Your Booking Declined  – Tifliso',
 
             Reservation::STATUS_COMPLETE =>
             'Thank You for Visiting Tifliso',

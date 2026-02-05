@@ -5,18 +5,23 @@ $messages = [
 Reservation::STATUS_NEW => [
 'title' => '📩 Reservation Request Sent',
 'text' => 'We’ve received your reservation request and will confirm it shortly.',
+'message' => "We appreciate your interest in dining with us. We will review your request and get back to you as soon as possible. If you have any special requests or need to make changes, please feel free to contact us."
 ],
 Reservation::STATUS_CONFIRMED => [
-'title' => '🍷 Table Reservation Confirmed',
-'text' => 'Your table has been confirmed. We look forward to welcoming you!',
+'title' => '🍷 Your Table Is Confirmed ',
+'text' => 'Your table at Tifliso Georgian Restaurant has been confirmed! We look forward to welcoming you.',
+'message' => "If you need to make any changes to your booking or have special requests, please don’t hesitate to contact us.
+We look forward to hosting you soon!"
 ],
-Reservation::STATUS_CANCELLED => [
-'title' => '❌ Reservation Cancelled',
-'text' => 'Your reservation has been cancelled. If this is a mistake, please contact us.',
+Reservation::STATUS_DECLINED => [
+'title' => '❌ Your Booking Declined',
+'text' => 'Your reservation has been declined. If this is a mistake, please contact us.',
+'message' => "We apologize for any inconvenience. Please feel free to reach out if you have any questions or would like to make a new reservation."
 ],
 Reservation::STATUS_COMPLETE => [
 'title' => '✅ Thank You for Visiting',
 'text' => 'Thank you for dining with us. We hope to see you again soon!',
+'message' => "We hope you had a wonderful experience at Tifliso Georgian Restaurant. We look forward to welcoming you back in the future!"
 ],
 ];
 
@@ -42,7 +47,7 @@ $content = $messages[$reservation->status];
                             <p>Hello <strong>{{ $reservation->customer_name }}</strong>,</p>
 
                             <p>{{ $content['text'] }}</p>
-
+                            <p>Reservation details:</p>
                             <table width="100%" cellpadding="6">
                                 <tr>
                                     <td><strong>Date:</strong></td>
@@ -63,9 +68,10 @@ $content = $messages[$reservation->status];
                             </table>
 
                             <p style="margin-top:20px;">
-                                📍 Budapest, Hungary<br>
-                                📞 +36 30 123 4567
+                                📍 {{ config('app.LOCATION') }}<br>
+                                📞 {{ config('app.CONTACT_NUMBER') }}
                             </p>
+                            <p>{{ $content['message'] }}</p>
 
                             <p><strong>Tifliso Team</strong></p>
                         </td>
