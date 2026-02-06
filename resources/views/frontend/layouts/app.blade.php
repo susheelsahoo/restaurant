@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>@yield('meta_title', 'Mediator Blog | Insights on Hotel Management Software')</title>
-    <meta name="description" content="@yield('meta_description', 'Stay updated with the Mediator Blog for expert tips and insights on hotel
-management software, property management systems, and enhance guest experience')">
-    <meta name="keywords" content="@yield('meta_keywords', 'hotel management software, hotel booking system, hotel PMS, property management system, hotel software Georgia, hotel reservation software, hospitality management software, cloud hotel management')">
-    <meta name="author" content="Mediator">
+    <title>@yield('meta_title', 'Tifliso Restaurant | Authentic Georgian Restaurant in Budapest')</title>
+    <meta name="description" content="@yield('meta_description', 'Visit Tifliso Restaurant in Budapest for authentic Georgian cuisine, khachapuri, khinkali, BBQ, homemade Georgian bread, and premium Georgian wines. Experience true Georgian hospitality in the heart of Budapest.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'Georgian restaurant Budapest, Tifliso Restaurant, Georgian food Budapest, khachapuri Budapest, khinkali Budapest, Georgian wine Budapest, authentic Georgian cuisine Hungary, Georgian BBQ Budapest, best Georgian restaurant Budapest')">
+    <meta name="author" content="Tifliso Restaurant">
+    <meta name="google-site-verification" content="gcoF8ElmNIQAoeZDmq0Slm1XVLje3crvpBSdGI4sXt0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -24,7 +23,17 @@ management software, property management systems, and enhance guest experience')
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MQ62376790"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MQ62376790');
+    </script>
 </head>
 
 <body>
