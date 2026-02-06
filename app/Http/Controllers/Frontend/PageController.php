@@ -12,6 +12,8 @@ use App\Models\Wine;
 use App\Models\WineCategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\GalleryImage;
+use Illuminate\Http\JsonResponse;
 
 class PageController extends Controller
 {
@@ -25,6 +27,20 @@ class PageController extends Controller
         }
 
         return view('frontend.page', compact('page'));
+    }
+
+    public function homePageGallery(): JsonResponse
+    {
+        $images = GalleryImage::where('home_display', 1)
+            ->where('is_active', 1)
+            ->latest()
+            ->select('id', 'image_path')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $images
+        ]);
     }
 
     public function blogs()

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->string('image_path');
-            $table->boolean('frontend_display')->default(true);
+            $table->boolean('home_display')->default(true);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

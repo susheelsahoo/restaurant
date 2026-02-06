@@ -87,6 +87,8 @@ class GalleryImageController extends Controller
 
         $image->title = $request->title;
         $image->is_active = $request->has('is_active');
+        $image->home_display = $request->has('home_display');
+        $image->gallery_display = $request->has('gallery_display');
         $image->save();
 
         return redirect()->route('admin.gallery.index')->with('success', 'Image updated successfully!');

@@ -50,9 +50,15 @@
                 </div>
 
                 <div class="form-check mb-3">
-                    <input type="checkbox" name="frontend_display" id="frontend_display" class="form-check-input"
-                        {{ old('frontend_display', $galleryImage->frontend_display ?? true) ? 'checked' : '' }}>
-                    <label for="frontend_display" class="form-check-label">Display on Frontend</label>
+                    <input type="checkbox" name="home_display" id="home_display" class="form-check-input"
+                        {{ old('home_display', $galleryImage->home_display ?? true) ? 'checked' : '' }}>
+                    <label for="home_display" class="form-check-label">Display on Home</label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="gallery_display" id="gallery_display" class="form-check-input"
+                        {{ old('gallery_display', $galleryImage->gallery_display ?? true) ? 'checked' : '' }}>
+                    <label for="gallery_display" class="form-check-label">Display in Gallery</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary">{{ isset($galleryImage) ? 'Update' : 'Save' }}</button>
@@ -60,4 +66,6 @@
             </form>
         </div>
     </div>
+
+
 </x-default-layout>

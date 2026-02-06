@@ -152,44 +152,120 @@ management software, property management systems, and enhance guest experience')
                 }
             }
         });
+        document.addEventListener("DOMContentLoaded", initGalleryRouter);
+
+        function initGalleryRouter() {
+            const routes = {
+                "/": () => loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}"),
+                "/home": () => loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}"),
+                "/gallery": () => loadGalleryData("imageGalleryContainer", "{{ route('gallery.images') }}")
+            };
+
+            const path = window.location.pathname;
+
+            if (routes[path]) routes[path]();
+        }
+        async function loadGalleryData(containerId, apiUrl, columnCount = 4) {
+
+            try {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const {
+                    data
+                } = await axios.get(apiUrl);
+                if (!data?.status) return;
+
+                const images = data.data;
+
+                const columns = splitIntoColumns(images, columnCount);
+                const {
+                    gridHTML,
+                    lightboxHTML
+                } = buildGalleryHTML(columns);
+
+                container.innerHTML = gridHTML + lightboxHTML;
+
+            } catch (error) {
+                console.error("Gallery Load Failed", error);
+            }
+        }
+
+        function splitIntoColumns(images, columnCount) {
+
+            const perColumn = Math.ceil(images.length / columnCount);
+
+            return Array.from({
+                    length: columnCount
+                }, (_, i) =>
+                images.slice(i * perColumn, (i + 1) * perColumn)
+            );
+        }
+
+        function buildGalleryHTML(columns) {
+
+            let lightboxes = [];
+
+            const gridHTML = columns.map(col => {
+
+                const colHTML = col.map((img, index) => {
+
+                    const sizeClass = index % 2 === 0 ? "small" : "tall";
+
+                    lightboxes.push(`
+                <div id="img-${img.id}" class="image-lightbox">
+                    <a href="#gallery" class="lightbox-close">×</a>
+                    <img src="/storage/${img.image_path}">
+                </div>
+            `);
+
+                    return `
+                <div class="gallery-item ${sizeClass}">
+                    <a href="#img-${img.id}">
+                        <img src="/storage/${img.image_path}" loading="lazy">
+                    </a>
+                </div>
+            `;
+                }).join("");
+
+                return `<div class="gallery-col">${colHTML}</div>`;
+
+            }).join("");
+
+            return {
+                gridHTML,
+                lightboxHTML: lightboxes.join("")
+            };
+        }
     </script>
 
     <script>
-        /* document.querySelector('[name="visit_date"]').addEventListener('change', async function() {
-            const res = await axios.get('/api/slots/' + this.value);
+        /*
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-            const timeSelect = document.querySelector('[name="visit_time"]');
+    const form = e.target;
+    const data = new FormData(form);
 
-            timeSelect.innerHTML = res.data
-                .map(t => `<option value="${t}">${t}</option>`)
-                .join('');
-        });
-    
-        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    try {
+    const res = await axios.post('/api/reservations', data);
 
-            const form = e.target;
-            const data = new FormData(form);
+    Swal.fire({
+    icon: 'success',
+    title: 'Booking Confirmed 🎉',
+    text: res.data.message,
+    });
 
-            try {
-                const res = await axios.post('/api/reservations', data);
+    form.reset();
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Booking Confirmed 🎉',
-                    text: res.data.message,
-                });
-
-                form.reset();
-
-            } catch (err) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Booking Failed',
-                    text: err.response?.data?.message || 'Something went wrong',
-                });
-            }
-        });*/
+    } catch (err) {
+    Swal.fire({
+    icon: 'error',
+    title: 'Booking Failed',
+    text: err.response?.data?.message || 'Something went wrong',
+    });
+    }
+    });*/
     </script>
 
 </body>

@@ -32,6 +32,8 @@
                             <th>Title</th>
                             <th>Image</th>
                             <th>Copy</th>
+                            <th>Home Display</th>
+                            <th>Gallery Display</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -41,12 +43,22 @@
                         <tr>
                             <td>{{ $image->title ?? 'No Title' }}</td>
                             <td>
-                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="Image" width="60" height="60" class="img-thumbnail">
+                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $image->title ?? 'Gallery Image' }}" width="60" height="60" class="img-thumbnail">
                             </td>
                             <td>
                                 <button class="badge badge-info" onclick="copyToClipboard('{{ asset('storage/' . $image->image_path) }}')">Copy Path</button>
                             </td>
 
+                            <td>
+                                {!! $image->home_display
+                                ? '<span class="badge badge-success">Yes</span>'
+                                : '<span class="badge badge-danger">No</span>' !!}
+                            </td>
+                            <td>
+                                {!! $image->gallery_display
+                                ? '<span class="badge badge-success">Yes</span>'
+                                : '<span class="badge badge-danger">No </span>' !!}
+                            </td>
                             <td>
                                 {!! $image->is_active
                                 ? '<span class="badge badge-success">Active</span>'
