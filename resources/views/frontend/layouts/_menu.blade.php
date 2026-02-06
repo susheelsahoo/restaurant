@@ -34,7 +34,7 @@ $isHome = request()->is('/') || request()->is('home');
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ url('about') }}">
-                        About
+                        About Us
                     </a>
                 </li>
 
@@ -52,7 +52,7 @@ $isHome = request()->is('/') || request()->is('home');
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('wines') ? 'active' : '' }}" href="{{ url('wines') }}">
-                        Wines
+                        Drinks
                     </a>
                 </li>
 
@@ -61,19 +61,22 @@ $isHome = request()->is('/') || request()->is('home');
                         Gallery
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('blogs') ? 'active' : '' }}" href="{{ url('blogs') }}">
-                        Blogs
-                    </a>
-                </li>
-
-
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('contact-us') ? 'active' : '' }}" href="{{ url('contact-us') }}">
                         Contact Us
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('book-a-table') ? 'active' : '' }}" href="#reservation">
+                        Book a Table
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('blogs') ? 'active' : '' }}" href="{{ url('blogs') }}">
+                        Our Blogs
+                    </a>
+                </li>
+
 
             </ul>
         </div>
