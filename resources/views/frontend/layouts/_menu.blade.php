@@ -67,7 +67,7 @@ $isHome = request()->is('/') || request()->is('home');
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('book-a-table') ? 'active' : '' }}" href="#reservation">
+                    <a class="nav-link {{ request()->is('book-a-table') ? 'active' : '' }}" href="/home#reservation">
                         Book a Table
                     </a>
                 </li>
