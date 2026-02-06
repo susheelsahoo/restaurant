@@ -50,20 +50,34 @@
                             </td>
 
                             <td>
-                                {!! $image->home_display
-                                ? '<span class="badge badge-success">Yes</span>'
-                                : '<span class="badge badge-danger">No</span>' !!}
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-switch"
+                                        type="checkbox"
+                                        data-id="{{ $image->id }}"
+                                        data-field="home_display"
+                                        {{ $image->home_display ? 'checked' : '' }}>
+                                </div>
                             </td>
                             <td>
-                                {!! $image->gallery_display
-                                ? '<span class="badge badge-success">Yes</span>'
-                                : '<span class="badge badge-danger">No </span>' !!}
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-switch"
+                                        type="checkbox"
+                                        data-id="{{ $image->id }}"
+                                        data-field="gallery_display"
+                                        {{ $image->gallery_display ? 'checked' : '' }}>
+                                </div>
                             </td>
+
                             <td>
-                                {!! $image->is_active
-                                ? '<span class="badge badge-success">Active</span>'
-                                : '<span class="badge badge-danger">Inactive</span>' !!}
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-switch"
+                                        type="checkbox"
+                                        data-id="{{ $image->id }}"
+                                        data-field="is_active"
+                                        {{ $image->is_active ? 'checked' : '' }}>
+                                </div>
                             </td>
+
                             <td>
                                 <a href="{{ route('admin.gallery.edit', $image->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                 <form method="POST" action="{{ route('admin.gallery.destroy', $image->id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this image?');">
@@ -88,12 +102,33 @@
     <script>
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                alert('Image path copied to clipboard!');
+                console.log('Image path copied to clipboard!');
             }).catch((err) => {
                 alert('Failed to copy image path.');
                 console.error('Error:', err);
             });
         }
+        document.addEventListener("change", async function(e) {
+
+            if (!e.target.classList.contains("toggle-switch")) return;
+
+            const checkbox = e.target;
+
+            try {
+
+                await axios.post("{{ route('admin.gallery.toggle') }}", {
+                    id: checkbox.dataset.id,
+                    field: checkbox.dataset.field
+                });
+
+            } catch (error) {
+
+                alert("Update failed");
+                checkbox.checked = !checkbox.checked; // rollback UI
+
+                console.error(error);
+            }
+        });
     </script>
     @endpush
 

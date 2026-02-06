@@ -101,6 +101,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::resource('/pages', PageController::class)->names('pages');
     Route::resource('/gallery', GalleryImageController::class)->names('gallery');
+    Route::post('/gallery/toggle', [GalleryImageController::class, 'toggle'])->name('gallery.toggle');
+
     Route::resource('/banners', BannerController::class)->names('banners');
     Route::resource('/contacts', ContactController::class)->names('contacts');
     Route::resource('/bookings', BookingController::class)->names('bookings');

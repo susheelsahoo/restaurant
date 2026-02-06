@@ -93,6 +93,24 @@ class GalleryImageController extends Controller
 
         return redirect()->route('admin.gallery.index')->with('success', 'Image updated successfully!');
     }
+    public function toggle(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:gallery_images,id',
+            'field' => 'required|in:home_display,gallery_display,is_active',
+        ]);
+
+        $image = GalleryImage::findOrFail($request->id);
+
+        $image->{$request->field} = !$image->{$request->field};
+        $image->save();
+
+        return response()->json([
+            'status' => true,
+            'value' => $image->{$request->field}
+        ]);
+    }
+
 
     public function destroy($id)
     {
