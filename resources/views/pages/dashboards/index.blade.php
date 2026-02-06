@@ -8,45 +8,113 @@
     @endsection
 
     <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
-        <div class="col-md-3 col-lg-3 col-xl-3 col-xxl-3">
-            <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10" style="padding-bottom: 100px; background-color: #F1416C;background-image:url('assets/media/patterns/vector-1.png')">
-                <div class="card-header pt-5">
-                    <div class="card-title d-flex flex-column">
-                        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ $total_bookings }}</span>
-                        <span class="text-white opacity-75 pt-1 fw-semibold fs-6">Total Booking</span>
+
+        {{-- Total Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:#F1416C;">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $total_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Total Booking</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3 col-lg-3 col-xl-3 col-xxl-3">
-            <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10" style="padding-bottom: 100px; background-color:rgb(91, 14, 168);background-image:url('assets/media/patterns/vector-1.png')">
-                <div class="card-header pt-5">
-                    <div class="card-title d-flex flex-column">
-                        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ $new_bookings }}</span>
-                        <span class="text-white opacity-75 pt-1 fw-semibold fs-6">New Bookings </span>
+
+        {{-- New Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=pending') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:rgb(91,14,168);">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $new_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">New Booking</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3 col-lg-3 col-xl-3 col-xxl-3">
-            <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10" style="padding-bottom: 100px; background-color:rgb(18, 78, 3);background-image:url('assets/media/patterns/vector-1.png')">
-                <div class="card-header pt-5">
-                    <div class="card-title d-flex flex-column">
-                        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ $total_contact }}</span>
-                        <span class="text-white opacity-75 pt-1 fw-semibold fs-6">Total Contacts</span>
+
+        {{-- Confirmed Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=confirmed') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:#17a2b8;">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $confirmed_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Confirmed Booking</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3 col-lg-3 col-xl-3 col-xxl-3">
-            <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10" style="padding-bottom: 100px; background-color:rgb(1, 41, 44);background-image:url('assets/media/patterns/vector-1.png')">
-                <div class="card-header pt-5">
-                    <div class="card-title d-flex flex-column">
-                        <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ $new_contact }}</span>
-                        <span class="text-white opacity-75 pt-1 fw-semibold fs-6">New Contacts</span>
+
+        {{-- Cancelled Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=cancelled') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:#ffc107;">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $cancelled_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Cancelled Booking</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+
+
+        {{-- Total Contacts --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/contacts') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:rgb(18,78,3);">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $total_contact }}</span>
+                            <span class="text-white opacity-75 fs-6">Total Contacts</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- New Contacts --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/contacts?filter=new') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:#007bff;">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $new_contact }}</span>
+                            <span class="text-white opacity-75 fs-6">New Contacts</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{-- Read Contacts --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/contacts?filter=read') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:#6c757d;">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $read_contact }}</span>
+                            <span class="text-white opacity-75 fs-6">Read Contacts</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
+
 </x-default-layout>

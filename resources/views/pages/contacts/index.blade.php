@@ -7,6 +7,20 @@
     {{ Breadcrumbs::render('admin.contacts.index') }}
     @endsection
 
+    <form method="GET" action="{{ route('admin.contacts.index') }}" class="mb-4">
+        <select name="is_read" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
+            <option value="">All Status</option>
+
+            <option value="0" {{ request('is_read') === '0' ? 'selected' : '' }}>
+                New Query
+            </option>
+
+            <option value="1" {{ request('is_read') === '1' ? 'selected' : '' }}>
+                Read Query
+            </option>
+        </select>
+
+    </form>
     <div class="card">
         <div class="card-header border-0 pt-6">
             <div class="card-title">

@@ -10,9 +10,19 @@ use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $contacts = ContactMessage::latest()->get();
+        $query = ContactMessage::query();
+
+        if ($request->filled('is_read')) {
+            $query->where('is_read', $request->is_read);
+        }
+
+        $contacts = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('pages.contacts.index', compact('contacts'));
     }
 
