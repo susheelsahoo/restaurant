@@ -35,7 +35,7 @@ class ReservationController extends Controller
             'status'            => Reservation::STATUS_NEW,
         ]);
 
-        Mail::to(config('mail.from.address'))
+        Mail::to(config('app.HOTEL_EMAIL'))
             ->send(new ReservationStatusMail($reservation));
 
         Mail::to($reservation->email)
