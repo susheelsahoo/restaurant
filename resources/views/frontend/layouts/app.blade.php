@@ -152,6 +152,16 @@
     <script>
         document.addEventListener('submit', function(e) {
             if (e.target.tagName === 'FORM') {
+
+                // Prevent double submit
+                if (e.target.dataset.submitted === 'true') {
+                    e.preventDefault();
+                    return;
+                }
+
+                e.target.dataset.submitted = 'true';
+
+                // Add CSRF token if missing
                 if (!e.target.querySelector('input[name="_token"]')) {
                     let token = document.createElement('input');
                     token.type = 'hidden';
@@ -159,8 +169,17 @@
                     token.value = document.querySelector('meta[name="csrf-token"]').content;
                     e.target.appendChild(token);
                 }
+
+                // Disable submit button + show loader text
+                let btn = e.target.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.dataset.originalText = btn.innerHTML;
+                    btn.innerHTML = 'Processing...';
+                }
             }
         });
+
         document.addEventListener("DOMContentLoaded", initGalleryRouter);
 
         function initGalleryRouter() {
