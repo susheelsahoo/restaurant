@@ -10,8 +10,8 @@
         <select name="status" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
             <option value="">All Status</option>
 
-            <option value="new" {{ request('status') === 'new' ? 'selected' : '' }}>
-                New
+            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>
+                Pending
             </option>
 
             <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>
