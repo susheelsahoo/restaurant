@@ -9,22 +9,11 @@
     <form method="GET" action="{{ route('admin.bookings.index') }}" class="mb-4">
         <select name="status" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
             <option value="">All Status</option>
-
-            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>
-                Pending
+            @foreach (config('app.statuses') as $statusKey => $statusValue)
+            <option value="{{ $statusKey }}" {{ request('status') === $statusKey ? 'selected' : '' }}>
+                {{ $statusValue }}
             </option>
-
-            <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>
-                Confirmed
-            </option>
-
-            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>
-                Cancelled
-            </option>
-
-            <option value="complete" {{ request('status') === 'complete' ? 'selected' : '' }}>
-                Complete
-            </option>
+            @endforeach
         </select>
 
     </form>

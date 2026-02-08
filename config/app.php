@@ -24,7 +24,7 @@ return [
     'HOTEL_EMAIL' => env('HOTEL_EMAIL', 'tifliszorestaurant@gmail.com'),
 
     'statuses' => [
-        'pending'   => 'pending',
+        'pending'   => 'Pending',
         'confirmed' => 'Confirmed',
         'declined'  => 'Declined',
         'complete'  => 'Complete',
