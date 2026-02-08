@@ -53,11 +53,11 @@ class BookingController extends Controller
             'visit_time'    => $validated['visit_time'],
             'guests'        => $validated['guests'],
             'notes'         => $validated['notes'] ?? null,
-            'status'        => 'new',
+            'status'        => 'pending',
         ]);
 
         // Admin notification
-        Mail::to(config('mail.from.address'))
+        Mail::to(config('app.HOTEL_EMAIL'))
             ->send(new ReservationStatusMail($reservation));
 
         // Customer confirmation
