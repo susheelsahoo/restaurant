@@ -59,14 +59,24 @@ var KTModalUserSearch = function () {
             resultsElement = element.querySelector('[data-kt-search-element="results"]');
             emptyElement = element.querySelector('[data-kt-search-element="empty"]');
 
-            // Initialize search handler
-            searchObject = new KTSearch(element);
+            if (typeof KTSearch === "undefined") return;
+
+            let searchInstance = KTSearch.getInstance(element);
+
+            if (!searchInstance) {
+                searchInstance = new KTSearch(element);
+            }
+
+            searchObject = searchInstance;
+
+            if (!searchObject || typeof searchObject.on !== "function") return;
 
             // Search handler
             searchObject.on('kt.search.process', processs);
 
             // Clear handler
             searchObject.on('kt.search.clear', clear);
+
         }
     };
 }();

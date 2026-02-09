@@ -17,9 +17,19 @@ var KTCreateApp = function () {
 
 	// Private Functions
 	var initStepper = function () {
-		// Initialize Stepper
-		stepperObj = new KTStepper(stepper);
 
+		if (!stepper) return;
+		if (typeof KTStepper === "undefined") return;
+
+		let stepperInstance = KTStepper.getInstance(stepper);
+
+		if (!stepperInstance) {
+			stepperInstance = new KTStepper(stepper);
+		}
+
+		stepperObj = stepperInstance;
+
+		if (!stepperObj || typeof stepperObj.on !== "function") return;
 		// Stepper change event(handle hiding submit button for the last step)
 		stepperObj.on('kt.stepper.changed', function (stepper) {
 			if (stepperObj.getCurrentStepIndex() === 4) {

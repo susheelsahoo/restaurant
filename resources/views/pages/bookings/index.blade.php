@@ -6,32 +6,72 @@
     @endsection
 
     {{-- FILTER --}}
-    <form method="GET" action="{{ route('admin.bookings.index') }}" class="mb-4">
-        <select name="status" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
-            <option value="">All Status</option>
-            @foreach (config('app.statuses') as $statusKey => $statusValue)
-            <option value="{{ $statusKey }}" {{ request('status') === $statusKey ? 'selected' : '' }}>
-                {{ $statusValue }}
-            </option>
-            @endforeach
-        </select>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    </form>
+        {{-- LEFT SIDE — Filters + Search --}}
+        <form method="GET"
+            action="{{ route('admin.bookings.index') }}"
+            class="d-flex gap-3 align-items-center">
+
+            {{-- Status --}}
+            <select name="status"
+                onchange="this.form.submit()"
+                class="form-select w-auto">
+                <option value="">All Status</option>
+                @foreach (config('app.statuses') as $statusKey => $statusValue)
+                <option value="{{ $statusKey }}"
+                    {{ request('status') === $statusKey ? 'selected' : '' }}>
+                    {{ $statusValue }}
+                </option>
+                @endforeach
+            </select>
+
+            {{-- Date --}}
+            <input type="date"
+                name="visit_date"
+                value="{{ request('visit_date') }}"
+                class="form-control w-auto"
+                onchange="this.form.submit()">
+
+            {{-- Search --}}
+            <input type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search Booking Code / Name"
+                class="form-control w-250px"
+                onkeyup="if(event.key==='Enter'){this.form.submit()}">
+
+            <button type="submit" class="btn btn-sm btn-primary">
+                Search
+            </button>
+
+            {{-- Clear --}}
+            <a href="{{ route('admin.bookings.index') }}"
+                class="btn btn-sm btn-dark">
+                Clear
+            </a>
+
+
+
+        </form>
+
+        {{-- RIGHT SIDE — Button --}}
+        <div>
+            <a href="{{ route('admin.bookings.create') }}"
+                class="btn btn-primary">
+                Add Booking
+            </a>
+        </div>
+
+    </div>
+
+
 
     <div class="card">
         <div class="card-header border-0 pt-6">
-            <div class="card-title">
-                <input
-                    type="text"
-                    class="form-control form-control-solid w-250px"
-                    placeholder="Search Booking Code / Name" />
-            </div>
 
-            <div class="card-toolbar">
-                <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">
-                    Add Booking
-                </a>
-            </div>
+
+
         </div>
 
         <div class="card-body py-4">
@@ -127,7 +167,7 @@
 
             {{-- PAGINATION --}}
             <div class="mt-4">
-                {{ $bookings->links() }}
+                {{ $bookings->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>
     </div>

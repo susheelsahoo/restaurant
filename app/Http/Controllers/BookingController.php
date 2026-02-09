@@ -16,17 +16,36 @@ class BookingController extends Controller
     {
         $query = Reservation::query();
 
+        // Status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Date filter
+        if ($request->filled('visit_date')) {
+            $query->whereDate('visit_date', $request->visit_date);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('booking_code', 'LIKE', "%{$search}%")
+                    ->orWhere('customer_name', 'LIKE', "%{$search}%")
+                    ->orWhere('phone', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Order by Date + Time DESC
         $bookings = $query
             ->orderBy('visit_date', 'desc')
-            ->paginate(10)     // ✅ IMPORTANT
+            ->orderBy('visit_time', 'desc')
+            ->paginate(10)
             ->withQueryString();
 
         return view('pages.bookings.index', compact('bookings'));
     }
+
     public function create()
     {
         return view('pages.bookings.create');
