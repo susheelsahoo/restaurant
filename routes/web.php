@@ -40,10 +40,9 @@ use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 Route::get('/', [FrontendPageController::class, 'index'])->name('home');
 // Route::get('/about', [FrontendPageController::class, 'index'])->name('about');
 
-Route::get('/home-gallery', [FrontendPageController::class, 'homePageGallery'])
-    ->name('home.gallery');
-Route::get('/gallery.image', [FrontendPageController::class, 'homePageGallery'])
-    ->name('gallery.images');
+Route::get('/home-gallery', [FrontendPageController::class, 'homePageGallery'])->name('home.gallery');
+Route::get('/home-blog', [FrontendPageController::class, 'homePageBlog'])->name('home.latest.blogs');
+Route::get('/gallery.image', [FrontendPageController::class, 'homePageGallery'])->name('gallery.images');
 Route::get('/blogs', [FrontendPageController::class, 'blogs'])->name('blog.index');
 Route::get('/blogs/category/{slug}', [FrontendPageController::class, 'blogsByCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [FrontendPageController::class, 'showBlog'])->name('blog.show');

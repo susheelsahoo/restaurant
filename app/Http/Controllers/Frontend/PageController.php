@@ -42,6 +42,18 @@ class PageController extends Controller
             'data'   => $images
         ]);
     }
+    public function homePageBlog(): JsonResponse
+    {
+        $blogs = Blog::where('status', 'published')
+            ->latest()
+            ->take(3)
+            ->get(['id', 'title', 'slug', 'content', 'image', 'created_at']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $blogs
+        ]);
+    }
 
     public function blogs()
     {

@@ -184,8 +184,14 @@
 
         function initGalleryRouter() {
             const routes = {
-                "/": () => loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}"),
-                "/home": () => loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}"),
+                "/": () => {
+                    loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}");
+                    loadLatestBlogs("homeBlogContainer", "{{ route('home.latest.blogs') }}");
+                },
+                "/home": () => {
+                    loadGalleryData("homeGalleryContainer", "{{ route('home.gallery') }}");
+                    loadLatestBlogs("homeBlogContainer", "{{ route('home.latest.blogs') }}");
+                },
                 "/gallery": () => loadGalleryData("imageGalleryContainer", "{{ route('gallery.images') }}")
             };
 
@@ -265,35 +271,68 @@
                 lightboxHTML: lightboxes.join("")
             };
         }
-    </script>
+        async function loadLatestBlogs(containerId, apiUrl) {
+            try {
+                const container = document.getElementById(containerId);
+                if (!container) return;
 
-    <script>
-        /*
-    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+                const {
+                    data
+                } = await axios.get(apiUrl);
 
-    const form = e.target;
-    const data = new FormData(form);
+                if (!data?.status) return;
 
-    try {
-    const res = await axios.post('/api/reservations', data);
+                const blogs = data.data;
 
-    Swal.fire({
-    icon: 'success',
-    title: 'Booking Confirmed 🎉',
-    text: res.data.message,
-    });
+                container.innerHTML = buildBlogHTML(blogs);
 
-    form.reset();
+            } catch (error) {
+                console.error("Blog Load Failed", error);
+            }
+        }
 
-    } catch (err) {
-    Swal.fire({
-    icon: 'error',
-    title: 'Booking Failed',
-    text: err.response?.data?.message || 'Something went wrong',
-    });
-    }
-    });*/
+        function buildBlogHTML(blogs) {
+
+            return blogs.map(blog => {
+
+                const date = new Date(blog.created_at)
+                    .toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    });
+
+                return `
+                    <div class="col-lg-4 col-md-6">
+                        <article class="blog-card">
+
+                            <div class="blog-img">
+                                <img src="/storage/${blog.image}"
+                                    alt="${blog.title}"
+                                    loading="lazy">
+                            </div>
+
+                            <div class="blog-content">
+
+                                <span class="blog-date">${date}</span>
+
+                                <h3>${blog.title}</h3>
+
+                                <p>${blog.short_description ?? ''}</p>
+
+                                <a class="read-more"
+                                href="/blogs/${blog.slug}">
+                                Read More →
+                                </a>
+
+                            </div>
+
+                        </article>
+                    </div>
+                    `;
+
+            }).join('');
+        }
     </script>
 
 </body>
