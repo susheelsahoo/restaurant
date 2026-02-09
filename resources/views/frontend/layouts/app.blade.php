@@ -321,7 +321,7 @@
                                 <p>${blog.short_description ?? ''}</p>
 
                                 <a class="read-more"
-                                href="/blogs/${blog.slug}">
+                                href="/blog/${blog.slug}">
                                 Read More →
                                 </a>
 
