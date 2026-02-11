@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\Customer;
 use App\Services\BookingService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,6 +16,67 @@ use Illuminate\Support\Facades\Mail;
 class ReservationController extends Controller
 {
     public function store(Request $request)
+    {
+        $request->validate([
+            'visit_date'        => 'required|date',
+            'visit_time'        => 'required',
+            'guests'            => 'required|integer|min:1',
+            'customer_name'     => 'required|string|max:255',
+            'phone'             => 'required|string|max:20',
+            'email'             => 'required|email',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $nameParts = explode(' ', trim($request->customer_name), 2);
+
+            $firstName = $nameParts[0];
+            $lastName  = $nameParts[1] ?? null;
+            $customer = Customer::where('email', $request->email)
+                ->orWhere('phone', $request->phone)
+                ->first();
+
+            if (!$customer) {
+
+                $customer = Customer::create([
+                    'first_name' => $firstName,
+                    'last_name'  => $lastName,
+                    'email'      => $request->email,
+                    'phone'      => $request->phone,
+                    'is_active'  => 1,
+                ]);
+            }
+            $reservation = Reservation::create([
+                'booking_code'  => $this->generateBookingCode(),
+                'customer_id'   => $customer->id,
+                'visit_date'    => $request->visit_date,
+                'visit_time'    => $request->visit_time,
+                'guests'        => $request->guests,
+                #'customer_name' => $request->customer_name,
+                #'phone'         => $request->phone,
+                #'email'         => $request->email,
+                'status'        => Reservation::STATUS_NEW,
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            throw $e;
+        }
+        Mail::to(config('app.HOTEL_EMAIL'))
+            ->send(new ReservationStatusMail($reservation));
+
+        Mail::to($customer->email)
+            ->send(new ReservationStatusMail($reservation));
+
+        return redirect()->back()->with([
+            'alert_title' => 'Reservation Request Sent',
+            'alert_text'  => 'Thank you for booking a table at Tifliso. Our team will respond soon!',
+            'alert_icon'  => 'success',
+        ]);
+    }
+    public function storeOld(Request $request)
     {
         $request->validate([
             'visit_date'        => 'required|date',

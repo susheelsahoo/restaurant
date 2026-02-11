@@ -14,37 +14,41 @@ class BookingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Reservation::query();
-
-        // Status filter
+        $query = Reservation::with('customer');
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
-        // Date filter
         if ($request->filled('visit_date')) {
             $query->whereDate('visit_date', $request->visit_date);
         }
         if ($request->filled('search')) {
+
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
+
                 $q->where('booking_code', 'LIKE', "%{$search}%")
                     ->orWhere('customer_name', 'LIKE', "%{$search}%")
                     ->orWhere('phone', 'LIKE', "%{$search}%")
-                    ->orWhere('email', 'LIKE', "%{$search}%");
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhereHas('customer', function ($cq) use ($search) {
+                        $cq->where('first_name', 'LIKE', "%{$search}%")
+                            ->orWhere('last_name', 'LIKE', "%{$search}%")
+                            ->orWhere('email', 'LIKE', "%{$search}%")
+                            ->orWhere('phone', 'LIKE', "%{$search}%");
+                    });
             });
         }
 
-        // Order by Date + Time DESC
         $bookings = $query
-            ->orderBy('visit_date', 'desc')
-            ->orderBy('visit_time', 'desc')
+            ->orderByDesc('visit_date')
+            ->orderByDesc('visit_time')
             ->paginate(10)
             ->withQueryString();
 
         return view('pages.bookings.index', compact('bookings'));
     }
+
 
     public function create()
     {

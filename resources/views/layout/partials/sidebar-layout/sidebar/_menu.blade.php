@@ -8,24 +8,11 @@
 				</a>
 			</div>
 			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.banners.index') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
-					<span class="menu-icon">{!! getIcon('photoshop', 'fs-2') !!}</span>
-					<span class="menu-title">Notification</span>
+				<a class="menu-link {{ request()->routeIs('admin.bookings.index') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
+					<span class="menu-icon">{!! getIcon('chart', 'fs-2') !!}</span>
+					<span class="menu-title">Bookings</span>
 				</a>
 			</div>
-			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.pages.index') ? 'active' : '' }}" href="{{ route('admin.pages.index') }}">
-					<span class="menu-icon">{!! getIcon('abstract-26', 'fs-2') !!}</span>
-					<span class="menu-title">Pages</span>
-				</a>
-			</div>
-			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.gallery.index') ? 'active' : '' }}" href="{{ route('admin.gallery.index') }}">
-					<span class="menu-icon">{!! getIcon('picture', 'fs-2') !!}</span>
-					<span class="menu-title">Gallery</span>
-				</a>
-			</div>
-
 			<div class="menu-item">
 				<a class="menu-link {{ request()->routeIs('admin.contacts.index') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
 					<span class="menu-icon">{!! getIcon('sms', 'fs-2') !!}</span>
@@ -33,9 +20,9 @@
 				</a>
 			</div>
 			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.bookings.index') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
-					<span class="menu-icon">{!! getIcon('chart', 'fs-2') !!}</span>
-					<span class="menu-title">Bookings</span>
+				<a class="menu-link {{ request()->routeIs('admin.customers.index') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}">
+					<span class="menu-icon">{!! getIcon('user', 'fs-2') !!}</span>
+					<span class="menu-title">Customers</span>
 				</a>
 			</div>
 			<!-- <div class="menu-item">
@@ -49,11 +36,16 @@
 					<span class="menu-heading fw-bold text-uppercase fs-7">Content</span>
 				</div>
 			</div>
-
+			<div class="menu-item">
+				<a class="menu-link {{ request()->routeIs('admin.pages.index') ? 'active' : '' }}" href="{{ route('admin.pages.index') }}">
+					<span class="menu-icon">{!! getIcon('abstract-26', 'fs-2') !!}</span>
+					<span class="menu-title">Pages</span>
+				</a>
+			</div>
 			<div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('admin.blogs.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.tags.*') ? 'here show' : '' }}">
 				<span class="menu-link">
 					<span class="menu-icon">{!! getIcon('text-align-left', 'fs-2') !!}</span>
-					<span class="menu-title">Blog</span>
+					<span class="menu-title">Blogs</span>
 					<span class="menu-arrow"></span>
 				</span>
 				<div class="menu-sub menu-sub-accordion">
@@ -141,6 +133,20 @@
 					<span class="menu-heading fw-bold text-uppercase fs-7">Apps</span>
 				</div>
 			</div>
+
+			<div class="menu-item">
+				<a class="menu-link {{ request()->routeIs('admin.gallery.index') ? 'active' : '' }}" href="{{ route('admin.gallery.index') }}">
+					<span class="menu-icon">{!! getIcon('picture', 'fs-2') !!}</span>
+					<span class="menu-title">Gallery</span>
+				</a>
+			</div>
+			<div class="menu-item">
+				<a class="menu-link {{ request()->routeIs('admin.banners.index') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
+					<span class="menu-icon">{!! getIcon('photoshop', 'fs-2') !!}</span>
+					<span class="menu-title">Notification</span>
+				</a>
+			</div>
+
 			<div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('admin.user-management.*') ? 'here show' : '' }}">
 				<span class="menu-link">
 					<span class="menu-icon">{!! getIcon('abstract-28', 'fs-2') !!}</span>

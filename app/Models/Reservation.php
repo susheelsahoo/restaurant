@@ -13,7 +13,7 @@ class Reservation extends Model
 
     protected $fillable = [
         'booking_code',
-        'customer_name',
+        'customer_id',
         'visit_date',
         'visit_time',
         'phone',
@@ -22,4 +22,13 @@ class Reservation extends Model
         'status',
         'notes',
     ];
+    protected $casts = [
+        'visit_date' => 'date',
+    ];
+
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }

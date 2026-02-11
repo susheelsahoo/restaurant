@@ -1,3 +1,38 @@
+CREATE TABLE customers (
+id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+first_name VARCHAR(100) NOT NULL,
+last_name VARCHAR(100) NULL,
+email VARCHAR(150) NOT NULL UNIQUE,
+phone VARCHAR(20) NULL,
+date_of_birth DATE NULL,
+date_of_anniversary DATE NULL,
+gender ENUM('male','female','other') NULL,
+address_line1 VARCHAR(255) NULL,
+address_line2 VARCHAR(255) NULL,
+city VARCHAR(100) NULL,
+state VARCHAR(100) NULL,
+postal_code VARCHAR(20) NULL,
+country VARCHAR(100) NULL,
+is_active TINYINT(1) DEFAULT 1,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+INDEX idx_email (email),
+INDEX idx_phone (phone)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE reservations
+ADD customer_id BIGINT UNSIGNED NULL AFTER id;
+
+ALTER TABLE reservations
+ADD CONSTRAINT fk_reservation_customer
+FOREIGN KEY (customer_id) REFERENCES customers(id)
+ON DELETE SET NULL;
+
+ALTER TABLE `reservations` CHANGE `customer_name` `customer_name` VARCHAR(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL, CHANGE `phone` `phone` VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL, CHANGE `email` `email` VARCHAR(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+
 ALTER TABLE `gallery_images` CHANGE `frontend_display` `home_display` TINYINT(1) NOT NULL DEFAULT '1';
 ALTER TABLE `gallery_images` ADD `gallery_display` TINYINT(1) NOT NULL DEFAULT '1' AFTER `home_display`;
 

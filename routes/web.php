@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\GalleryImageController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SettingController;
@@ -102,6 +103,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/gallery', GalleryImageController::class)->names('gallery');
     Route::post('/gallery/toggle', [GalleryImageController::class, 'toggle'])->name('gallery.toggle');
 
+    Route::resource('/customers', CustomersController::class)->names('customers');
     Route::resource('/banners', BannerController::class)->names('banners');
     Route::resource('/contacts', ContactController::class)->names('contacts');
     Route::resource('/bookings', BookingController::class)->names('bookings');

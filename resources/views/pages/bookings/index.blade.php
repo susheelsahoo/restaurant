@@ -91,22 +91,28 @@
 
                     <tbody>
                         @forelse($bookings as $booking)
+
                         <tr>
                             <td>
                                 <strong>{{ $booking->booking_code }}</strong>
                             </td>
 
                             <td>
-                                {{ $booking->customer_name }}
+                                {{ $booking->customer->first_name ?? $booking->customer_name }}
+                                {{ $booking->customer->last_name ?? '' }}
                             </td>
 
                             <td>
-                                {{ $booking->phone }}<br>
-                                <small class="text-muted">{{ $booking->email }}</small>
+                                {{ $booking->customer->phone ?? $booking->phone }}<br>
+                                <small class="text-muted">
+                                    {{ $booking->customer->email ?? $booking->email }}
+                                </small>
+
                             </td>
 
                             <td>
-                                {{ \Carbon\Carbon::parse($booking->visit_date)->format('d M Y') }}<br>
+                                {{ $booking->visit_date->format('d M Y') }}
+                                <br>
                                 <small class="text-muted">{{ $booking->visit_time }}</small>
                             </td>
 

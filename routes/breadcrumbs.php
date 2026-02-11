@@ -3,6 +3,9 @@
 use App\Models\User;
 use App\Models\Page;
 use App\Models\GalleryImage;
+use App\Models\Contact;
+use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Banner;
 use App\Models\Reservation;
 use App\Models\ContactMessage;
@@ -54,6 +57,22 @@ Breadcrumbs::for('banners.create', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('banners.edit', function (BreadcrumbTrail $trail, Banner $banner) {
     $trail->parent('banners.index');
     $trail->push('Edit Banner', route('admin.banners.edit', $banner));
+});
+
+
+Breadcrumbs::for('admin.customers.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Customers', route('admin.customers.index'));
+});
+
+Breadcrumbs::for('customers.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('customers.index');
+    $trail->push('Create Customer', route('admin.customers.create'));
+});
+
+Breadcrumbs::for('customers.edit', function (BreadcrumbTrail $trail, Customer $customer) {
+    $trail->parent('customers.index');
+    $trail->push('Edit Customer', route('admin.customers.edit', $customer));
 });
 
 
