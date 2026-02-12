@@ -48,12 +48,15 @@ class ContactController extends Controller
             'subject' => $request->subject,
             'message' => $request->message,
         ]);
+        try {
+            Mail::to(config('mail.from.address'))
+                ->send(new ContactMessageMail($contactMessage));
 
-        Mail::to(config('mail.from.address'))
-            ->send(new ContactMessageMail($contactMessage));
-
-        Mail::to($contactMessage->email)
-            ->send(new ContactAutoReplyMail($contactMessage));
+            Mail::to($contactMessage->email)
+                ->send(new ContactAutoReplyMail($contactMessage));
+        } catch (\Exception $e) {
+            report($e);
+        }
 
         return redirect()
             ->back()

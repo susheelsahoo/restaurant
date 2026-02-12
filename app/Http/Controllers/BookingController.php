@@ -79,15 +79,19 @@ class BookingController extends Controller
         ]);
 
         // Admin notification
-        Mail::to(config('app.HOTEL_EMAIL'))
-            ->send(new ReservationStatusMail($reservation));
-
-        // Customer confirmation
-        if ($reservation->email) {
-            Mail::to($reservation->email)
+        try {
+            Mail::to(config('app.HOTEL_EMAIL'))
                 ->send(new ReservationStatusMail($reservation));
-        }
 
+            // Customer confirmation
+            if ($reservation->email) {
+                Mail::to($reservation->email)
+                    ->send(new ReservationStatusMail($reservation));
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't fail the booking creation
+            report($e);
+        }
         return redirect()
             ->route('admin.bookings.index')
             ->with('success', 'Booking created successfully!');
@@ -121,10 +125,13 @@ class BookingController extends Controller
             $oldStatus = $booking->status;
 
             $booking->update($validated);
-
-            if (!empty($validated['email']) && $oldStatus !== $validated['status']) {
-                Mail::to($validated['email'])
-                    ->queue(new ReservationStatusMail($booking->fresh()));
+            try {
+                if (!empty($validated['email']) && $oldStatus !== $validated['status']) {
+                    Mail::to($validated['email'])
+                        ->queue(new ReservationStatusMail($booking->fresh()));
+                }
+            } catch (\Exception $e) {
+                report($e);
             }
             $redirect_to = $request->redirect_to;
             return redirect()
