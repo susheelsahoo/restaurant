@@ -13,10 +13,9 @@
             @if(isset($booking)) @method('PUT') @endif
 
             <div class="card-body border-top p-9">
-                <input type="text"
+                <input type="hidden"
                     name="redirect_to"
                     value="{{ request('status') }}">
-
 
                 {{-- Customer Name --}}
                 <div class="row mb-6">
