@@ -91,7 +91,6 @@
 
                     <tbody>
                         @forelse($bookings as $booking)
-
                         <tr>
                             <td>
                                 <strong>{{ $booking->booking_code }}</strong>

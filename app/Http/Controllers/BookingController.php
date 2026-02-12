@@ -49,7 +49,6 @@ class BookingController extends Controller
         return view('pages.bookings.index', compact('bookings'));
     }
 
-
     public function create()
     {
         return view('pages.bookings.create');
