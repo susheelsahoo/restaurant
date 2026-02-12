@@ -8,16 +8,10 @@
             </div>
         </div>
 
-        <form method="POST"
-            action="{{ isset($booking) ? route('admin.bookings.update', $booking->id) : route('admin.bookings.store') }}"
-            class="form">
+        <form method="POST" action="{{ isset($booking) ? route('admin.bookings.update', $booking): route('admin.bookings.store') }}" class="form">
             @csrf
             @if(isset($booking)) @method('PUT') @endif
 
-            <input type="hidden"
-                name="id"
-                class="form-control form-control-lg form-control-solid"
-                value="{{ old('id', $booking->id ?? '') }}">
             <div class="card-body border-top p-9">
 
                 {{-- Customer Name --}}
@@ -27,7 +21,8 @@
                         <input type="text"
                             name="customer_name"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('customer_name', $booking->customer_name ?? '') }}"
+                            value="{{ old('customer_name', $booking->customer->first_name ?? $booking->customer_name ?? '') }}"
+
                             required>
                     </div>
                 </div>
@@ -39,7 +34,7 @@
                         <input type="email"
                             name="email"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('email', $booking->email ?? '') }}">
+                            value="{{ old('email', $booking->customer->email ?? $booking->email ?? '') }}">
                     </div>
                 </div>
 
@@ -50,7 +45,7 @@
                         <input type="text"
                             name="phone"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('phone', $booking->phone ?? '') }}"
+                            value="{{ old('phone',$booking->customer->phone ?? $booking->phone ?? '') }}"
                             required>
                     </div>
                 </div>
@@ -62,7 +57,7 @@
                         <input type="date"
                             name="visit_date"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('visit_date', $booking->visit_date ?? '') }}"
+                            value="{{ old('visit_date', isset($booking) && $booking->visit_date ? $booking->visit_date->format('Y-m-d'): '') }}"
                             required>
                     </div>
                 </div>
@@ -74,7 +69,7 @@
                         <input type="time"
                             name="visit_time"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('visit_time', $booking->visit_time ?? '') }}"
+                            value="{{ old('visit_time', isset($booking) ? $booking->visit_time : '') }}"
                             required>
                     </div>
                 </div>

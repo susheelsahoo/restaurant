@@ -76,42 +76,6 @@ class ReservationController extends Controller
             'alert_icon'  => 'success',
         ]);
     }
-    public function storeOld(Request $request)
-    {
-        $request->validate([
-            'visit_date'        => 'required|date',
-            'visit_time'        => 'required',
-            'guests'            => 'required|integer|min:1',
-            'customer_name'     => 'required|string|max:255',
-            'phone'             => 'required|string|max:20',
-            'email'             => 'required|email',
-        ]);
-
-        $reservation = Reservation::create([
-            'booking_code'      => $this->generateBookingCode(),
-            'visit_date'        => $request->visit_date,
-            'visit_time'        => $request->visit_time,
-            'guests'            => $request->guests,
-            'customer_name'     => $request->customer_name,
-            'phone'             => $request->phone,
-            'email'             => $request->email,
-            'status'            => Reservation::STATUS_NEW,
-        ]);
-
-        Mail::to(config('app.HOTEL_EMAIL'))
-            ->send(new ReservationStatusMail($reservation));
-
-        Mail::to($reservation->email)
-            ->send(new ReservationStatusMail($reservation));
-
-        return redirect()
-            ->back()
-            ->with([
-                'alert_title' => 'Reservation Request Sent',
-                'alert_text'  => 'Thank you for booking a table at Tifliso. Our team will respond soon!',
-                'alert_icon'  => 'success',
-            ]);
-    }
     private function generateBookingCode(): string
     {
         return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));

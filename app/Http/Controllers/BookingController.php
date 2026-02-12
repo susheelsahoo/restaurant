@@ -96,14 +96,15 @@ class BookingController extends Controller
 
     public function edit(Reservation $booking)
     {
-        return view('pages.bookings.create', compact('booking'));
+        //dd($booking);
+        return view('pages.bookings.create', [
+            'booking' => $booking
+        ]);
     }
 
-
-    public function update(Request $request)
+    public function update(Request $request, Reservation $booking)
     {
         try {
-            $reservation = Reservation::findOrFail($request->id);
 
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
@@ -119,18 +120,20 @@ class BookingController extends Controller
                 'notes'         => 'nullable|string|max:2000',
             ]);
 
-            $oldStatus = $reservation->status;
-            $reservation->where('id', $request->id)->update($validated);
+            $oldStatus = $booking->status;
 
-            if ($validated['email'] && $oldStatus !== $validated['status']) {
+            $booking->update($validated);
+
+            if (!empty($validated['email']) && $oldStatus !== $validated['status']) {
                 Mail::to($validated['email'])
-                    ->queue(new ReservationStatusMail($reservation->fresh()));
+                    ->queue(new ReservationStatusMail($booking->fresh()));
             }
 
             return redirect()
                 ->route('admin.bookings.index')
                 ->with('success', 'Booking updated successfully!');
         } catch (\Exception $e) {
+
             report($e);
 
             return back()
@@ -138,9 +141,6 @@ class BookingController extends Controller
                 ->with('error', 'Something went wrong. Please try again.');
         }
     }
-
-
-
 
     public function destroy($id)
     {
