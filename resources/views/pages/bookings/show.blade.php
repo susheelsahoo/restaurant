@@ -26,7 +26,11 @@
             <div class="row mb-6">
                 <label class="col-lg-4 fw-semibold fs-6">Customer Name</label>
                 <div class="col-lg-8">
-                    <p class="mb-0">{{ $booking->customer_name }}</p>
+                    <p class="mb-0">
+                        {{ $booking->customer->first_name ?? $booking->customer_name }}
+                        {{ $booking->customer->last_name ?? '' }}
+                    </p>
+
                 </div>
             </div>
 
@@ -34,7 +38,10 @@
             <div class="row mb-6">
                 <label class="col-lg-4 fw-semibold fs-6">Email</label>
                 <div class="col-lg-8">
-                    <p class="mb-0">{{ $booking->email ?? 'N/A' }}</p>
+                    <p class="mb-0">
+                        {{ $booking->customer->email ?? $booking->email ?? 'N/A' }}
+                    </p>
+
                 </div>
             </div>
 
@@ -42,7 +49,7 @@
             <div class="row mb-6">
                 <label class="col-lg-4 fw-semibold fs-6">Phone</label>
                 <div class="col-lg-8">
-                    <p class="mb-0">{{ $booking->phone }}</p>
+                    <p class="mb-0">{{ $booking->customer->phone ?? $booking->phone ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -51,8 +58,9 @@
                 <label class="col-lg-4 fw-semibold fs-6">Visit Date</label>
                 <div class="col-lg-8">
                     <p class="mb-0">
-                        {{ \Carbon\Carbon::parse($booking->visit_date)->format('d M Y') }}
+                        {{ $booking->visit_date->format('d M Y') }}
                     </p>
+
                 </div>
             </div>
 
@@ -60,7 +68,10 @@
             <div class="row mb-6">
                 <label class="col-lg-4 fw-semibold fs-6">Visit Time</label>
                 <div class="col-lg-8">
-                    <p class="mb-0">{{ $booking->visit_time }}</p>
+                    <p class="mb-0">
+                        {{ $booking->visit_time->format('g:i A') }}
+                    </p>
+
                 </div>
             </div>
 
@@ -104,12 +115,12 @@
         </div>
 
         <div class="card-footer d-flex justify-content-end py-6 px-9">
-            <a href="{{ route('admin.bookings.index') }}"
+            <a href="{{ route('admin.bookings.index', ['status' => request('status')]) }}"
                 class="btn btn-light me-2">
                 Back
             </a>
 
-            <a href="{{ route('admin.bookings.edit', $booking->id) }}"
+            <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status') ]) }}"
                 class="btn btn-primary">
                 Edit Booking
             </a>

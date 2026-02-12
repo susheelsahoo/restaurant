@@ -112,7 +112,8 @@
                             <td>
                                 {{ $booking->visit_date->format('d M Y') }}
                                 <br>
-                                <small class="text-muted">{{ $booking->visit_time }}</small>
+                                <small class="text-muted">{{ $booking->visit_time->format('g:i A') }} </small>
+
                             </td>
 
                             <td>
@@ -141,12 +142,8 @@
                                     View
                                 </a>
 
-                                <a href="{{ route('admin.bookings.edit', [
-    'booking' => $booking->id,
-    'status' => request('status')
-]) }}"
+                                <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status')]) }}"
                                     class="btn btn-sm btn-warning">
-
                                     Edit
                                 </a>
 

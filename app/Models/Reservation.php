@@ -24,6 +24,7 @@ class Reservation extends Model
     ];
     protected $casts = [
         'visit_date' => 'date',
+        'visit_time' => 'datetime:H:i:s',
     ];
 
 

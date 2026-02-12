@@ -73,7 +73,7 @@
                         <input type="time"
                             name="visit_time"
                             class="form-control form-control-lg form-control-solid"
-                            value="{{ old('visit_time', isset($booking) ? $booking->visit_time : '') }}"
+                            value="{{ old('visit_time', isset($booking) && $booking->visit_time ? $booking->visit_time->format('H:i'): '') }}"
                             required>
                     </div>
                 </div>

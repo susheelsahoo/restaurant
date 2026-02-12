@@ -43,7 +43,7 @@ class BookingController extends Controller
         $bookings = $query
             ->orderByDesc('visit_date')
             ->orderByDesc('visit_time')
-            ->paginate(10)
+            ->paginate(50)
             ->withQueryString();
 
         return view('pages.bookings.index', compact('bookings'));
@@ -146,6 +146,7 @@ class BookingController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $reservation->delete();
+
         return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
