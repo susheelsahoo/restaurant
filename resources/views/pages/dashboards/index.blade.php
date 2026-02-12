@@ -39,13 +39,13 @@
         </div>
         {{-- Cancelled Booking --}}
         <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=cancelled') }}" class="text-decoration-none">
+            <a href="{{ url('/admin/bookings?status=declined') }}" class="text-decoration-none">
                 <div class="card card-flush h-md-50 mb-5"
                     style="padding-bottom:100px;background-color:#ffc107;">
                     <div class="card-header pt-5">
                         <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $cancelled_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Cancelled Booking</span>
+                            <span class="fs-2hx fw-bold text-white">{{ $declined_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Declined Booking</span>
                         </div>
                     </div>
                 </div>
@@ -81,13 +81,13 @@
         </div>
         {{-- Todays upcoming Booking --}}
         <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=cancelled&visit_date=' . \Carbon\Carbon::today()->format('Y-m-d')) }}" class="text-decoration-none">
+            <a href="{{ url('/admin/bookings?status=declined&visit_date=' . \Carbon\Carbon::today()->format('Y-m-d')) }}" class="text-decoration-none">
                 <div class="card card-flush h-md-50 mb-5"
                     style="padding-bottom:100px;background-color:#ffc107;">
                     <div class="card-header pt-5">
                         <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $today_cancelled_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Today's Cancelled Booking</span>
+                            <span class="fs-2hx fw-bold text-white">{{ $today_declined_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Today's Declined Booking</span>
                         </div>
                     </div>
                 </div>

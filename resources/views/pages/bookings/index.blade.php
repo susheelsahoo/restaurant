@@ -136,19 +136,23 @@
                             </td>
 
                             <td class="text-end">
-                                <a href="{{ route('admin.bookings.show', $booking->id) }}"
+                                <a href="{{ route('admin.bookings.show', [ 'booking' => $booking->id, 'status' => request('status') ]) }}"
                                     class="btn btn-sm btn-info">
                                     View
                                 </a>
 
-                                <a href="{{ route('admin.bookings.edit', $booking->id) }}"
+                                <a href="{{ route('admin.bookings.edit', [
+    'booking' => $booking->id,
+    'status' => request('status')
+]) }}"
                                     class="btn btn-sm btn-warning">
+
                                     Edit
                                 </a>
 
                                 <form
                                     method="POST"
-                                    action="{{ route('admin.bookings.destroy', $booking->id) }}"
+                                    action="{{ route('admin.bookings.destroy', ['booking' => $booking->id, 'status' => request('status')]) }}"
                                     class="d-inline"
                                     onsubmit="return confirm('Are you sure you want to delete this booking?');">
                                     @csrf

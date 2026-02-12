@@ -64,12 +64,15 @@ class ReservationController extends Controller
             DB::rollBack();
             throw $e;
         }
-        Mail::to(config('app.HOTEL_EMAIL'))
-            ->send(new ReservationStatusMail($reservation));
+        try {
+            Mail::to(config('app.HOTEL_EMAIL'))
+                ->send(new ReservationStatusMail($reservation));
 
-        Mail::to($customer->email)
-            ->send(new ReservationStatusMail($reservation));
-
+            Mail::to($customer->email)
+                ->send(new ReservationStatusMail($reservation));
+        } catch (\Exception $e) {
+            //\Log::error('Admin mail failed: ' . $e->getMessage());
+        }
         return redirect()->back()->with([
             'alert_title' => 'Reservation Request Sent',
             'alert_text'  => 'Thank you for booking a table at Tifliso. Our team will respond soon!',

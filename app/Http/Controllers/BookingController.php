@@ -96,7 +96,6 @@ class BookingController extends Controller
 
     public function edit(Reservation $booking)
     {
-        //dd($booking);
         return view('pages.bookings.create', [
             'booking' => $booking
         ]);
@@ -105,7 +104,6 @@ class BookingController extends Controller
     public function update(Request $request, Reservation $booking)
     {
         try {
-
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
                 'email'         => 'nullable|email|max:255',
@@ -128,9 +126,11 @@ class BookingController extends Controller
                 Mail::to($validated['email'])
                     ->queue(new ReservationStatusMail($booking->fresh()));
             }
-
+            $redirect_to = $request->redirect_to;
             return redirect()
-                ->route('admin.bookings.index')
+                ->route('admin.bookings.index', [
+                    'status' => $redirect_to
+                ])
                 ->with('success', 'Booking updated successfully!');
         } catch (\Exception $e) {
 

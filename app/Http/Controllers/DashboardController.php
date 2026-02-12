@@ -14,10 +14,10 @@ class DashboardController extends Controller
         $total_bookings = Reservation::count();
         $new_bookings = Reservation::where('status', 'pending')->count();
         $confirmed_bookings = Reservation::where('status', 'confirmed')->count();
-        $cancelled_bookings = Reservation::where('status', 'declined')->count();
+        $declined_bookings = Reservation::where('status', 'declined')->count();
         $complete_bookings = Reservation::where('status', 'complete')->count();
         $today_pending_bookings = Reservation::where('status', 'pending')->whereDate('visit_date', now()->toDateString())->count();
-        $today_cancelled_bookings = Reservation::where('status', 'declined')->whereDate('visit_date', now()->toDateString())->count();
+        $today_declined_bookings = Reservation::where('status', 'declined')->whereDate('visit_date', now()->toDateString())->count();
         $today_complete_bookings = Reservation::where('status', 'complete')->whereDate('visit_date', now()->toDateString())->count();
 
         // Contact Counts
@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
         return view(
             'pages.dashboards.index',
-            compact('total_bookings', 'new_bookings', 'confirmed_bookings', 'cancelled_bookings', 'complete_bookings', 'today_pending_bookings', 'today_cancelled_bookings', 'today_complete_bookings', 'total_contact', 'new_contact', 'read_contact')
+            compact('total_bookings', 'new_bookings', 'confirmed_bookings', 'declined_bookings', 'complete_bookings', 'today_pending_bookings', 'today_declined_bookings', 'today_complete_bookings', 'total_contact', 'new_contact', 'read_contact')
         );
     }
 }

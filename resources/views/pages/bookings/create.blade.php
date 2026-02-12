@@ -13,13 +13,18 @@
             @if(isset($booking)) @method('PUT') @endif
 
             <div class="card-body border-top p-9">
+                <input type="text"
+                    name="redirect_to"
+                    value="{{ request('status') }}">
+
 
                 {{-- Customer Name --}}
                 <div class="row mb-6">
-                    <label class="col-lg-4 col-form-label required fw-semibold">Customer Name</label>
+                    <label class="col-lg-4 col-form-label required fw-semibold" for="customer_name">Customer Name</label>
                     <div class="col-lg-8">
                         <input type="text"
                             name="customer_name"
+                            id="customer_name"
                             class="form-control form-control-lg form-control-solid"
                             value="{{ old('customer_name', $booking->customer->first_name ?? $booking->customer_name ?? '') }}"
 
