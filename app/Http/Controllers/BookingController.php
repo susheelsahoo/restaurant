@@ -138,7 +138,7 @@ class BookingController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Something went wrong. Please try again.');
+                ->with('error', 'Something went wrong. Please try again.' . $e->getMessage());
         }
     }
 
