@@ -30,4 +30,8 @@ class Customer extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+    public function notes()
+    {
+        return $this->hasMany(CustomerNote::class)->latest();
+    }
 }

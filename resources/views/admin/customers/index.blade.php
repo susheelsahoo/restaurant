@@ -47,6 +47,7 @@
                             <th>DOB</th>
                             <th>Anniversary</th>
                             <th>Status</th>
+                            <th>view Note</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -76,7 +77,14 @@
                                 ? '<span class="badge badge-success">Active</span>'
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
+                            <td>
+                                <button
+                                    class="btn btn-sm btn-info view-notes-btn"
+                                    data-customer-id="{{ $customer->id }}">
+                                    View Notes
+                                </button>
 
+                            </td>
                             <td class="text-end">
 
                                 <a href="{{ route('admin.customers.edit', $customer->id) }}"
@@ -121,5 +129,55 @@
 
         </div>
     </div>
+
+    <div class="modal fade" id="customerNotesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Customer Notes</h5>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" id="customer-notes-content">
+                    Loading...
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            document.querySelectorAll('.view-notes-btn').forEach(btn => {
+
+                btn.addEventListener('click', function() {
+
+                    let customerId = this.dataset.customerId;
+
+                    fetch(`/admin/customer-notes/${customerId}`)
+                        .then(res => res.text())
+                        .then(html => {
+
+                            document.getElementById('customer-notes-content').innerHTML = html;
+
+                            let modal = new bootstrap.Modal(
+                                document.getElementById('customerNotesModal')
+                            );
+
+                            modal.show();
+
+                        });
+
+                });
+
+            });
+
+        });
+    </script>
+    @endpush
+
 
 </x-default-layout>

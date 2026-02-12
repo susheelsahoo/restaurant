@@ -1,3 +1,26 @@
+CREATE TABLE customer_notes (
+id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+customer_id BIGINT UNSIGNED NOT NULL,
+
+note TEXT NOT NULL,
+note_type VARCHAR(50) NULL, -- info, complaint, vip, allergy, etc
+
+created_by BIGINT UNSIGNED NULL, -- admin user id (optional)
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+INDEX idx_customer_id (customer_id),
+
+CONSTRAINT fk_customer_notes_customer
+FOREIGN KEY (customer_id) REFERENCES customers(id)
+ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+
 CREATE TABLE customers (
 id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
