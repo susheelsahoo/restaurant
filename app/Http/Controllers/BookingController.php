@@ -44,7 +44,7 @@ class BookingController extends Controller
 
         $bookings = $query
             ->orderByDesc('visit_date')
-            ->orderByDesc('visit_time')
+            ->orderBy('visit_time')
             ->paginate(50)
             ->withQueryString();
 
