@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
@@ -66,37 +68,58 @@ class BookingController extends Controller
             'notes'         => 'nullable|string|max:2000',
         ]);
 
-        $reservation = Reservation::create([
-            'booking_code'  => $this->generateBookingCode(),
-            'customer_name' => $validated['customer_name'],
-            'email'         => $validated['email'],
-            'phone'         => $validated['phone'],
-            'visit_date'    => $validated['visit_date'],
-            'visit_time'    => $validated['visit_time'],
-            'guests'        => $validated['guests'],
-            'notes'         => $validated['notes'] ?? null,
-            'status'        => 'pending',
-        ]);
+        DB::beginTransaction();
 
-        // Admin notification
+        try {
+            $nameParts = explode(' ', trim($validated['customer_name']), 2);
+            $firstName = $nameParts[0];
+            $lastName  = $nameParts[1] ?? null;
+            $customer = Customer::where('email', $validated['email'])
+                ->orWhere('phone', $validated['phone'])
+                ->first();
+
+            if (!$customer) {
+                $customer = Customer::create([
+                    'first_name' => $firstName,
+                    'last_name'  => $lastName,
+                    'email'      => $validated['email'],
+                    'phone'      => $validated['phone'],
+                    'is_active'  => 1,
+                ]);
+            }
+            $reservation = Reservation::create([
+                'booking_code' => $this->generateBookingCode(),
+                'customer_id'  => $customer->id,
+                'visit_date'   => $validated['visit_date'],
+                'visit_time'   => $validated['visit_time'],
+                'guests'       => $validated['guests'],
+                'notes'        => $validated['notes'] ?? null,
+                'status'       => 'pending',
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            throw $e;
+        }
+
         try {
             Mail::to(config('app.HOTEL_EMAIL'))
                 ->send(new ReservationStatusMail($reservation));
 
-            // Customer confirmation
-            if ($reservation->email) {
-                Mail::to($reservation->email)
+            if (!empty($customer->email)) {
+                Mail::to($customer->email)
                     ->send(new ReservationStatusMail($reservation));
             }
         } catch (\Exception $e) {
-            // Log the error but don't fail the booking creation
             report($e);
         }
+
         return redirect()
             ->route('admin.bookings.index')
             ->with('success', 'Booking created successfully!');
     }
-
 
     public function edit(Reservation $booking)
     {

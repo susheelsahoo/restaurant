@@ -49,7 +49,7 @@ $content = $messages[$reservation->status];
 
                     <tr>
                         <td>
-                            <p>Hello <strong>{{ $reservation->customer_name }}</strong>,</p>
+                            <p>Hello <strong>{{ ucfirst($reservation->customer->first_name ?? 'Guest') }}</strong>,</p>
 
                             <p>{{ $content['text'] }}</p>
                             <p>Reservation details:</p>
