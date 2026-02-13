@@ -37,4 +37,12 @@ class CustomerNoteController extends Controller
             ->route('admin.customers.index')
             ->with('success', 'Note added successfully');
     }
+
+    public function destroy($id)
+    {
+        $note = CustomerNote::findOrFail($id);
+        $note->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

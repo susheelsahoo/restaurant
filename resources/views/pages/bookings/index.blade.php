@@ -99,6 +99,13 @@
                             <td>
                                 {{ $booking->customer->first_name ?? $booking->customer_name }}
                                 {{ $booking->customer->last_name ?? '' }}
+                                @if($booking->customer_id)
+                                <span class="view-notes-btn ms-2 text-primary"
+                                    style="cursor:pointer"
+                                    data-customer-id="{{ $booking->customer_id }}">
+                                    <i class="fas fa-sticky-note"></i>
+                                </span>
+                                @endif
                             </td>
 
                             <td>
@@ -177,4 +184,6 @@
             </div>
         </div>
     </div>
+    <x-customer-notes />
+
 </x-default-layout>
