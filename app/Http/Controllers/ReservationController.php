@@ -65,10 +65,8 @@ class ReservationController extends Controller
             throw $e;
         }
         try {
-            Mail::to(config('app.HOTEL_EMAIL'))
-                ->send(new ReservationStatusMail($reservation));
-
             Mail::to($customer->email)
+                ->bcc(config('app.HOTEL_EMAIL'))
                 ->send(new ReservationStatusMail($reservation));
         } catch (\Exception $e) {
             //\Log::error('Admin mail failed: ' . $e->getMessage());

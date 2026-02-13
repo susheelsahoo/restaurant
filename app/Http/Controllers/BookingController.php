@@ -105,11 +105,9 @@ class BookingController extends Controller
         }
 
         try {
-            Mail::to(config('app.HOTEL_EMAIL'))
-                ->send(new ReservationStatusMail($reservation));
-
             if (!empty($customer->email)) {
                 Mail::to($customer->email)
+                    ->bcc(config('app.HOTEL_EMAIL'))
                     ->send(new ReservationStatusMail($reservation));
             }
         } catch (\Exception $e) {
@@ -151,6 +149,7 @@ class BookingController extends Controller
             try {
                 if (!empty($validated['email']) && $oldStatus !== $validated['status']) {
                     Mail::to($validated['email'])
+                        ->bcc(config('app.HOTEL_EMAIL'))
                         ->queue(new ReservationStatusMail($booking->fresh()));
                 }
             } catch (\Exception $e) {

@@ -49,10 +49,9 @@ class ContactController extends Controller
             'message' => $request->message,
         ]);
         try {
-            Mail::to(config('mail.from.address'))
-                ->send(new ContactMessageMail($contactMessage));
 
             Mail::to($contactMessage->email)
+                ->bcc(config('app.HOTEL_EMAIL'))
                 ->send(new ContactAutoReplyMail($contactMessage));
         } catch (\Exception $e) {
             report($e);
