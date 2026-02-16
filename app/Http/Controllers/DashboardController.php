@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $pendingStatus = ReservationStatus::where('name', 'pending')->first();
         $confirmedStatus = ReservationStatus::where('name', 'confirmed')->first();
         $inHouseStatus = ReservationStatus::where('name', 'in-house')->first();
-        $declinedStatus = ReservationStatus::where('name', 'declined')->first();
+        $declinedStatus = ReservationStatus::where('name', 'canceled')->first();
         $completeStatus = ReservationStatus::where('name', 'complete')->first();
 
         // Color mapping from Bootstrap badge colors to hex codes
