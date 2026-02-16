@@ -562,13 +562,6 @@ body {
   padding-top: 0 !important;    
 }
 
-.menu-main-img {
-  height: 160px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;            
-}
-
 /* ================= MOBILE FIX ================= */
 
 @media (max-width: 575px ) {
