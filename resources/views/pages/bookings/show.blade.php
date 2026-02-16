@@ -110,12 +110,12 @@
         </div>
 
         <div class="card-footer d-flex justify-content-end py-6 px-9">
-            <a href="{{ route('admin.bookings.index', ['status' => request('status')]) }}"
+            <a href="{{ route('admin.bookings.index', $filterParams ?? []) }}"
                 class="btn btn-light me-2">
                 Back
             </a>
 
-            <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status') ]) }}"
+            <a href="{{ route('admin.bookings.edit', array_merge(['booking' => $booking->id], $filterParams ?? [])) }}"
                 class="btn btn-primary">
                 Edit Booking
             </a>

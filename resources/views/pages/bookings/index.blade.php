@@ -142,19 +142,19 @@
                             </td>
 
                             <td class="text-end">
-                                <a href="{{ route('admin.bookings.show', [ 'booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date') ]) }}"
+                                <a href="{{ route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-info">
                                     View
                                 </a>
 
-                                <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date')]) }}"
+                                <a href="{{ route('admin.bookings.edit', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-warning">
                                     Edit
                                 </a>
 
                                 <form
                                     method="POST"
-                                    action="{{ route('admin.bookings.destroy', ['booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date')]) }}"
+                                    action="{{ route('admin.bookings.destroy', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="d-inline"
                                     onsubmit="return confirm('Are you sure you want to delete this booking?');">
                                     @csrf
