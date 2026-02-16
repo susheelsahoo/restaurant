@@ -13,8 +13,8 @@ $messages = [
 'message' => "If you need to make any changes to your booking or have special requests, please don’t hesitate to contact us.<br>
 We look forward to hosting you soon!"
 ],
-'declined' => [
-'title' => '❌ Your Booking Declined',
+'canceled' => [
+'title' => '❌ Your Booking Canceled',
 'text' => 'For the given date and time, all of our tables are fully booked. We’re very sorry for the inconvenience—maybe another time would work for you?',
 'message' => "We’d be happy to help you find an alternative time or date. Please feel free to contact us, and we’ll do our best to assist.<br />
 📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>Budapest, Ráday utca 11, Budapest, Hungary</a><br />
