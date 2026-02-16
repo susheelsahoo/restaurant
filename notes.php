@@ -12,9 +12,24 @@ updated_at TIMESTAMP NULL DEFAULT NULL
 
 ALTER TABLE reservations
 ADD COLUMN status_id BIGINT UNSIGNED NULL AFTER id;
-ALTER TABLE reservations DROP COLUMN status;
+
 ALTER TABLE reservations
 ADD CONSTRAINT fk_reservations_status_id
 FOREIGN KEY (status_id)
 REFERENCES reservation_statuses(id)
 ON DELETE RESTRICT;
+INSERT INTO reservation_statuses
+(name, label, color, sort_order, is_active, created_at, updated_at)
+VALUES
+('pending', 'Pending', 'warning', 1, 1, NOW(), NOW()),
+('confirmed', 'Confirmed', 'success', 2, 1, NOW(), NOW()),
+('declined', 'Declined', 'danger', 3, 1, NOW(), NOW()),
+('in-house', 'In-House', 'info', 4, 1, NOW(), NOW()),
+('complete', 'Complete', 'primary', 5, 1, NOW(), NOW());
+
+UPDATE reservations r
+JOIN reservation_statuses rs
+ON rs.name = r.status
+SET r.status_id = rs.id
+WHERE r.status IS NOT NULL;
+ALTER TABLE reservations DROP COLUMN status;
