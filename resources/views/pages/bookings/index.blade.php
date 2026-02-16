@@ -18,18 +18,21 @@
                 onchange="this.form.submit()"
                 class="form-select w-auto">
                 <option value="">All Status</option>
-                @foreach (config('app.statuses') as $statusKey => $statusValue)
-                <option value="{{ $statusKey }}"
-                    {{ request('status') === $statusKey ? 'selected' : '' }}>
-                    {{ $statusValue }}
+                @php
+                $statuses = \App\Models\ReservationStatus::active()->ordered()->get();
+                @endphp
+                @foreach ($statuses as $status)
+                <option value="{{ $status->name }}"
+                    {{ request('status') === $status->name ? 'selected' : '' }}>
+                    {{ $status->label }}
                 </option>
                 @endforeach
             </select>
 
             {{-- Date --}}
             <input type="date"
-                name="visit_date"
-                value="{{ request('visit_date') }}"
+                name="select_date"
+                value="{{ request('select_date') }}"
                 class="form-control w-auto"
                 onchange="this.form.submit()">
 
@@ -129,34 +132,29 @@
 
                             <td>
                                 @php
-                                $statusColors = [
-                                'pending' => 'warning', // yellow
-                                'confirmed' => 'success', // green
-                                'declined' => 'danger', // red
-                                'complete' => 'primary', // blue
-                                ];
+                                $status = $booking->reservationStatus;
                                 @endphp
 
-                                <span class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
-                                    {{ ucfirst($booking->status) }}
+                                <span class="badge bg-{{ $status->color ?? 'secondary' }}">
+                                    {{ $status->label ?? 'Unknown' }}
                                 </span>
 
                             </td>
 
                             <td class="text-end">
-                                <a href="{{ route('admin.bookings.show', [ 'booking' => $booking->id, 'status' => request('status') ]) }}"
+                                <a href="{{ route('admin.bookings.show', [ 'booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date') ]) }}"
                                     class="btn btn-sm btn-info">
                                     View
                                 </a>
 
-                                <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status')]) }}"
+                                <a href="{{ route('admin.bookings.edit', [ 'booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date')]) }}"
                                     class="btn btn-sm btn-warning">
                                     Edit
                                 </a>
 
                                 <form
                                     method="POST"
-                                    action="{{ route('admin.bookings.destroy', ['booking' => $booking->id, 'status' => request('status')]) }}"
+                                    action="{{ route('admin.bookings.destroy', ['booking' => $booking->id, 'status' => request('status'), 'select_date' => request('select_date')]) }}"
                                     class="d-inline"
                                     onsubmit="return confirm('Are you sure you want to delete this booking?');">
                                     @csrf

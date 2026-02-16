@@ -12,11 +12,53 @@
         <div class="col-md-3">
             <a href="{{ url('/admin/bookings?status=pending') }}" class="text-decoration-none">
                 <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:rgb(91,14,168);">
+                    style="padding-bottom:100px;background-color:{{ $colorMap[$pendingStatus->color] ?? '#5b0ea8' }};">
                     <div class="card-header pt-5">
                         <div class="card-title d-flex flex-column">
                             <span class="fs-2hx fw-bold text-white">{{ $new_bookings }}</span>
                             <span class="text-white opacity-75 fs-6">New Booking</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{-- Confirmed Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=confirmed') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:{{ $colorMap[$confirmedStatus->color] ?? '#17a2b8' }};">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $confirmed_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Confirmed Booking</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{-- InHouse Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=in-house&visit_date=' . now()->toDateString()) }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:{{ $colorMap[$inHouseStatus->color] ?? '#17a2b8' }};">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $in_house_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">In-House Booking</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{-- Complete Booking --}}
+        <div class="col-md-3">
+            <a href="{{ url('/admin/bookings?status=complete') }}" class="text-decoration-none">
+                <div class="card card-flush h-md-50 mb-5"
+                    style="padding-bottom:100px;background-color:{{ $colorMap[$completeStatus->color] ?? '#17a2b8' }};">
+                    <div class="card-header pt-5">
+                        <div class="card-title d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-white">{{ $complete_bookings }}</span>
+                            <span class="text-white opacity-75 fs-6">Complete Booking</span>
                         </div>
                     </div>
                 </div>
@@ -37,11 +79,11 @@
                 </div>
             </a>
         </div>
-        {{-- Cancelled Booking --}}
+        {{-- Declined Booking --}}
         <div class="col-md-3">
             <a href="{{ url('/admin/bookings?status=declined') }}" class="text-decoration-none">
                 <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:#ffc107;">
+                    style="padding-bottom:100px;background-color:{{ $colorMap[$declinedStatus->color] ?? '#ffc107' }};">
                     <div class="card-header pt-5">
                         <div class="card-title d-flex flex-column">
                             <span class="fs-2hx fw-bold text-white">{{ $declined_bookings }}</span>
@@ -51,64 +93,6 @@
                 </div>
             </a>
         </div>
-        {{-- Confirmed Booking --}}
-        <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=confirmed') }}" class="text-decoration-none">
-                <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:#17a2b8;">
-                    <div class="card-header pt-5">
-                        <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $confirmed_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Confirmed Booking</span>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {{-- Todays pending Booking --}}
-        <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=pending&visit_date=' . \Carbon\Carbon::today()->format('Y-m-d')) }}" class="text-decoration-none">
-                <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:#007bff;">
-                    <div class="card-header pt-5">
-                        <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $today_pending_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Today's Pending Booking</span>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {{-- Todays upcoming Booking --}}
-        <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=declined&visit_date=' . \Carbon\Carbon::today()->format('Y-m-d')) }}" class="text-decoration-none">
-                <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:#ffc107;">
-                    <div class="card-header pt-5">
-                        <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $today_declined_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Today's Declined Booking</span>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        {{-- Todays Complete bookings --}}
-        <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=complete&visit_date=' . \Carbon\Carbon::today()->format('Y-m-d')) }}" class="text-decoration-none">
-                <div class="card card-flush h-md-50 mb-5"
-                    style="padding-bottom:100px;background-color:#28a745;">
-                    <div class="card-header pt-5">
-                        <div class="card-title d-flex flex-column">
-                            <span class="fs-2hx fw-bold text-white">{{ $today_complete_bookings }}</span>
-                            <span class="text-white opacity-75 fs-6">Today's Complete Booking</span>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
 
 
 

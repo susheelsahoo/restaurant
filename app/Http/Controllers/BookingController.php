@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\ReservationStatus;
 use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -16,19 +17,22 @@ class BookingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Reservation::with('customer');
+        $query = Reservation::with('customer', 'reservationStatus');
+
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $status = ReservationStatus::where('name', $request->status)->first();
+            if ($status) {
+                $query->where('status_id', $status->id);
+            }
         }
+
         if ($request->filled('visit_date')) {
             $query->whereDate('visit_date', $request->visit_date);
         }
+
         if ($request->filled('search')) {
-
             $search = $request->search;
-
             $query->where(function ($q) use ($search) {
-
                 $q->where('booking_code', 'LIKE', "%{$search}%")
                     ->orWhere('customer_name', 'LIKE', "%{$search}%")
                     ->orWhere('phone', 'LIKE', "%{$search}%")
@@ -87,19 +91,22 @@ class BookingController extends Controller
                     'is_active'  => 1,
                 ]);
             }
+
+            // Get pending status
+            $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
+
             $reservation = Reservation::create([
                 'booking_code' => $this->generateBookingCode(),
                 'customer_id'  => $customer->id,
+                'status_id'    => $pendingStatus->id,
                 'visit_date'   => $validated['visit_date'],
                 'visit_time'   => $validated['visit_time'],
                 'guests'       => $validated['guests'],
                 'notes'        => $validated['notes'] ?? null,
-                'status'       => 'pending',
             ]);
 
             DB::commit();
         } catch (\Exception $e) {
-
             DB::rollBack();
             throw $e;
         }
@@ -129,6 +136,8 @@ class BookingController extends Controller
     public function update(Request $request, Reservation $booking)
     {
         try {
+            $statusNames = ReservationStatus::pluck('name')->toArray();
+
             $validated = $request->validate([
                 'customer_name' => 'required|string|max:255',
                 'email'         => 'nullable|email|max:255',
@@ -138,16 +147,19 @@ class BookingController extends Controller
                 'guests'        => 'required|integer|min:1|max:50',
                 'status'        => [
                     'required',
-                    Rule::in(array_keys(config('app.statuses')))
+                    Rule::in($statusNames)
                 ],
                 'notes'         => 'nullable|string|max:2000',
             ]);
 
-            $oldStatus = $booking->status;
+            $oldStatusId = $booking->status_id;
+            $newStatus = ReservationStatus::where('name', $validated['status'])->firstOrFail();
 
-            $booking->update($validated);
+            $booking->status_id = $newStatus->id;
+            $booking->save();
+
             try {
-                if (!empty($validated['email']) && $oldStatus !== $validated['status']) {
+                if (!empty($validated['email']) && $oldStatusId !== $newStatus->id) {
                     Mail::to($validated['email'])
                         ->bcc(config('app.HOTEL_EMAIL'))
                         ->queue(new ReservationStatusMail($booking->fresh()));
@@ -156,15 +168,15 @@ class BookingController extends Controller
                 report($e);
             }
             $redirect_to = $request->redirect_to;
+            $select_date = $request->select_date;
             return redirect()
                 ->route('admin.bookings.index', [
-                    'status' => $redirect_to
+                    'status' => $redirect_to,
+                    'select_date' => $select_date,
                 ])
                 ->with('success', 'Booking updated successfully!');
         } catch (\Exception $e) {
-
             report($e);
-
             return back()
                 ->withInput()
                 ->with('error', 'Something went wrong. Please try again.' . $e->getMessage());
@@ -184,6 +196,7 @@ class BookingController extends Controller
         $booking = Reservation::findOrFail($id);
         return view('pages.bookings.show', compact('booking'));
     }
+
     private function generateBookingCode(): string
     {
         return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));

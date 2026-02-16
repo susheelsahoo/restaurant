@@ -16,6 +16,9 @@
                 <input type="hidden"
                     name="redirect_to"
                     value="{{ request('status') }}">
+                <input type="hidden"
+                    name="select_date"
+                    value="{{ request('select_date') }}">
 
                 {{-- Customer Name --}}
                 <div class="row mb-6">
@@ -109,10 +112,14 @@
                     <div class="col-lg-8">
                         <select name="status"
                             class="form-select form-select-lg form-select-solid">
-                            @foreach(config('app.statuses') as $status => $label)
-                            <option value="{{ $status }}"
-                                {{ old('status', $booking->status ?? 'new') === $status ? 'selected' : '' }}>
-                                {{ ucfirst($label) }}
+                            @php
+                            $statuses = \App\Models\ReservationStatus::active()->ordered()->get();
+                            $selectedStatus = old('status', $booking->reservationStatus?->name ?? 'pending');
+                            @endphp
+                            @foreach($statuses as $status)
+                            <option value="{{ $status->name }}"
+                                {{ $selectedStatus === $status->name ? 'selected' : '' }}>
+                                {{ $status->label }}
                             </option>
                             @endforeach
                         </select>

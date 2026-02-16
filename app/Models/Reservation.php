@@ -14,6 +14,7 @@ class Reservation extends Model
     protected $fillable = [
         'booking_code',
         'customer_id',
+        'status_id',
         'visit_date',
         'visit_time',
         'phone',
@@ -31,5 +32,26 @@ class Reservation extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function reservationStatus()
+    {
+        return $this->belongsTo(ReservationStatus::class, 'status_id');
+    }
+
+    /**
+     * Get the status label
+     */
+    public function getStatusLabelAttribute()
+    {
+        return $this->reservationStatus?->label ?? ucfirst($this->status);
+    }
+
+    /**
+     * Get the status color for badge
+     */
+    public function getStatusColorAttribute()
+    {
+        return $this->reservationStatus?->color ?? 'secondary';
     }
 }

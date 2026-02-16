@@ -88,16 +88,11 @@
                 <label class="col-lg-4 fw-semibold fs-6">Status</label>
                 <div class="col-lg-8">
                     @php
-                    $statusColors = [
-                    'pending' => 'warning',
-                    'confirmed' => 'success',
-                    'declined' => 'danger',
-                    'complete' => 'primary',
-                    ];
+                    $status = $booking->reservationStatus;
                     @endphp
 
-                    <span class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
-                        {{ ucfirst($booking->status) }}
+                    <span class="badge bg-{{ $status->color ?? 'secondary' }}">
+                        {{ $status->label ?? 'Unknown' }}
                     </span>
                 </div>
             </div>
