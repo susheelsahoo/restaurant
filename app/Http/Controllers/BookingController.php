@@ -160,8 +160,11 @@ class BookingController extends Controller
 
             // Update booking
             $booking->update([
-                'status_id' => $newStatus->id,
-                'notes'     => $validated['notes'] ?? null,
+                'status_id'  => $newStatus->id,
+                'visit_date' => $validated['visit_date'],
+                'visit_time' => $validated['visit_time'],
+                'guests'     => $validated['guests'],
+                'notes'      => $validated['notes'] ?? null,
             ]);
 
             // Send notification if status changed (but not for in-house status)
@@ -221,7 +224,7 @@ class BookingController extends Controller
 
         // Prepare filters
         $filters = [];
-        
+
         if ($request->filled('status')) {
             $status = ReservationStatus::where('name', $request->status)->first();
             if ($status) {
