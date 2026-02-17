@@ -15,8 +15,12 @@ We look forward to hosting you soon!"
 ],
 'canceled' => [
 'title' => '❌ Your Booking Canceled',
-'text' => 'For the given date and time, all of our tables are fully booked. We’re very sorry for the inconvenience—maybe another time would work for you?',
-'message' => "We’d be happy to help you find an alternative time or date. Please feel free to contact us, and we’ll do our best to assist.<br />
+'text' => 'We would like to confirm that your reservation at Tifliso Georgian Restaurant has been cancelled as requested.
+Cancelled reservation details:',
+'message' => "While we regret not having the pleasure of welcoming you on this occasion, we sincerely hope to host you for a future dining experience.
+<br />
+Should you wish to reserve another table or require any assistance, our team will be delighted to help.
+<br />
 📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>Budapest, Ráday utca 11, Budapest, Hungary</a><br />
 📞 Contact: <a href='tel:+36301234567'>+36 30 123 4567</a><br />
 Thank you for your understanding. We hope to welcome you soon!"
