@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\ReservationStatus;
 use App\Models\Customer;
+use App\Services\BookingExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
@@ -209,6 +210,56 @@ class BookingController extends Controller
         $filterParams = $this->getFilterParams($request);
 
         return view('pages.bookings.show', compact('booking', 'filterParams'));
+    }
+
+    /**
+     * Export bookings to file (XLSX or CSV)
+     */
+    public function export(Request $request, BookingExportService $exportService)
+    {
+        $format = $request->input('format', 'xlsx');
+
+        // Prepare filters
+        $filters = [];
+        
+        if ($request->filled('status')) {
+            $status = ReservationStatus::where('name', $request->status)->first();
+            if ($status) {
+                $filters['status'] = $status->id;
+            }
+        }
+
+        if ($request->filled('select_date')) {
+            $filters['visit_date'] = $request->select_date;
+        }
+
+        if ($request->filled('search')) {
+            $filters['search'] = $request->search;
+        }
+
+        try {
+            // Generate export file
+            if ($format === 'csv') {
+                $filePath = $exportService->exportToCsv($filters);
+                $mimeType = 'text/csv';
+                $extension = 'csv';
+            } else {
+                $filePath = $exportService->exportToXlsx($filters);
+                $mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                $extension = 'xlsx';
+            }
+
+            $fileName = 'bookings_' . now()->format('Y-m-d_H-i-s') . '.' . $extension;
+
+            // Download file
+            return response()->download($filePath, $fileName, [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            ])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            report($e);
+            return back()->with('error', 'Failed to export bookings. Please try again.');
+        }
     }
 
     /**

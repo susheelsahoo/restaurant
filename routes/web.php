@@ -112,6 +112,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::resource('/banners', BannerController::class)->names('banners');
     Route::resource('/contacts', ContactController::class)->names('contacts');
+    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
     Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/settings', SettingController::class)->names('settings');
 

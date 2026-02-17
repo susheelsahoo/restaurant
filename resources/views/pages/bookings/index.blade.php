@@ -59,7 +59,24 @@
         </form>
 
         {{-- RIGHT SIDE — Button --}}
-        <div>
+        <div class="d-flex gap-2">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.bookings.export', array_merge(['format' => 'xlsx'], request()->query())) }}">
+                            <i class="fas fa-file-excel"></i> Export to Excel (XLSX)
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.bookings.export', array_merge(['format' => 'csv'], request()->query())) }}">
+                            <i class="fas fa-file-csv"></i> Export to CSV
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <a href="{{ route('admin.bookings.create') }}"
                 class="btn btn-primary">
                 Add Booking
