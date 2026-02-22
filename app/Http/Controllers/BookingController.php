@@ -154,6 +154,8 @@ class BookingController extends Controller
         ]);
 
         try {
+            // Get old status before update
+            $oldStatus = $booking->reservationStatus;
             $oldStatusId = $booking->status_id;
             $newStatus = ReservationStatus::where('name', $validated['status'])->firstOrFail();
             $statusChanged = $oldStatusId !== $newStatus->id;
@@ -173,8 +175,12 @@ class BookingController extends Controller
                 $this->sendReservationEmail($validated['email'], $booking->fresh());
             }
 
-            $redirectParams = $this->getFilterParams($request);
-
+            // Redirect back to the old status list, not the new status
+            $redirectParams = array_filter([
+                'status' => $oldStatus->name,
+                'select_date' => $request->input('select_date'),
+                'search' => $request->input('search'),
+            ]);
             return redirect()
                 ->route('admin.bookings.index', $redirectParams)
                 ->with('success', 'Booking updated successfully!');

@@ -4,8 +4,12 @@
     @section('breadcrumbs')
     {{ Breadcrumbs::render('admin.bookings.index') }}
     @endsection
-
-    {{-- FILTER --}}
+    @php
+    // Only default to today if there's an explicit select_date parameter
+    $select_date = request('select_date')
+    ? \Carbon\Carbon::parse(request('select_date'))
+    : null;
+    @endphp
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         {{-- LEFT SIDE — Filters + Search --}}
@@ -32,7 +36,7 @@
             {{-- Date --}}
             <input type="date"
                 name="select_date"
-                value="{{ request('select_date') }}"
+                value="{{ $select_date?->format('Y-m-d') ?? '' }}"
                 class="form-control w-auto"
                 onchange="this.form.submit()">
 
