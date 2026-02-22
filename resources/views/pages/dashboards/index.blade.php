@@ -10,7 +10,7 @@
     <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
         {{-- New Booking --}}
         <div class="col-md-3">
-            <a href="{{ url('/admin/bookings?status=pending&select_date=' . now()->toDateString()) }}" class="text-decoration-none">
+            <a href="{{ url('/admin/bookings?status=pending') }}" class="text-decoration-none">
                 <div class="card card-flush h-md-50 mb-5"
                     style="padding-bottom:100px;background-color:{{ $colorMap[$pendingStatus->color] ?? '#5b0ea8' }};">
                     <div class="card-header pt-5">
