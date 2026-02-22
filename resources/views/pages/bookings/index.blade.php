@@ -163,17 +163,17 @@
                             </td>
 
                             <td class="text-end">
-                                <a href="{{ route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) }}"
+                                <!-- <a href="{{ route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-info">
                                     View
-                                </a>
+                                </a>-->
 
                                 <a href="{{ route('admin.bookings.edit', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-warning">
                                     Edit
                                 </a>
 
-                                <form
+                                <!-- <form
                                     method="POST"
                                     action="{{ route('admin.bookings.destroy', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="d-inline"
@@ -183,7 +183,7 @@
                                     <button class="btn btn-sm btn-danger">
                                         Delete
                                     </button>
-                                </form>
+                                </form>-->
                             </td>
                         </tr>
                         @empty
