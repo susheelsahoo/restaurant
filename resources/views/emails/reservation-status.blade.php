@@ -20,7 +20,7 @@
 
                     <tr>
                         <td style="color: #555; line-height: 1.6;">
-                            <p>Hello <strong>{{ ucfirst($reservation->customer->first_name ?? 'Guest') }}</strong>,</p>
+                            <p>Dear <strong>{{ ucfirst($reservation->customer->first_name ?? 'Guest') }}</strong>,</p>
 
                             <p>{{ $template->short_text }}</p>
 

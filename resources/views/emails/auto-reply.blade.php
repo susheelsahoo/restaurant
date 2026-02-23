@@ -8,7 +8,7 @@
 
 <body style="font-family: Arial, sans-serif; line-height:1.6;">
 
-    <h2>Hello {{ $contact->name }},</h2>
+    <h2>Dear {{ $contact->name }},</h2>
 
     <p>
         Thank you for contacting <strong>Tifliso Georgian Restaurant</strong>.
