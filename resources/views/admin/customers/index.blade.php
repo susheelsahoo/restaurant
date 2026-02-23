@@ -47,7 +47,6 @@
                             <th>DOB</th>
                             <th>Anniversary</th>
                             <th>Status</th>
-                            <th>view Note</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -58,6 +57,9 @@
                         <tr>
                             <td>
                                 {{ $customer->first_name }} {{ $customer->last_name }}
+                                <span class="badge badge-light-info ms-2">
+                                    {{ $customer->reservations_count }}
+                                </span>
                                 @if($customer->id)
                                 <span class="view-notes-btn ms-2 text-primary"
                                     style="cursor:pointer"
@@ -84,12 +86,11 @@
                                 ? '<span class="badge badge-success">Active</span>'
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
-
                             <td class="text-end">
 
                                 <a href="{{ route('admin.customers.edit', $customer->id) }}"
                                     class="btn btn-sm btn-warning">
-                                    Edit
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                 </a>
 
                                 <form method="POST"
@@ -102,7 +103,7 @@
 
                                     <button type="submit"
                                         class="btn btn-sm btn-danger">
-                                        Delete
+                                        {!! getIcon('trash', 'fs-3', '', 'i') !!}
                                     </button>
 
                                 </form>
@@ -112,7 +113,7 @@
 
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">
+                            <td colspan="8" class="text-center">
                                 No customers found.
                             </td>
                         </tr>

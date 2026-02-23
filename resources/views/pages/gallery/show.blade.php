@@ -1,11 +1,11 @@
 <x-default-layout>
 
     @section('title')
-        Users
+    Users
     @endsection
 
     @section('breadcrumbs')
-        {{ Breadcrumbs::render('user-management.users.show', $user) }}
+    {{ Breadcrumbs::render('user-management.users.show', $user) }}
     @endsection
 
     <!--begin::Layout-->
@@ -22,11 +22,11 @@
                         <!--begin::Avatar-->
                         <div class="symbol symbol-100px symbol-circle mb-7">
                             @if($user->profile_photo_url)
-                                <img src="{{ $user->profile_photo_url }}" alt="image"/>
+                            <img src="{{ $user->profile_photo_url }}" alt="image" />
                             @else
-                                <div class="symbol-label fs-3 {{ app(\App\Actions\GetThemeType::class)->handle('bg-light-? text-?', $user->name) }}">
-                                    {{ substr($user->name, 0, 1) }}
-                                </div>
+                            <div class="symbol-label fs-3 {{ app(\App\Actions\GetThemeType::class)->handle('bg-light-? text-?', $user->name) }}">
+                                {{ substr($user->name, 0, 1) }}
+                            </div>
                             @endif
                         </div>
                         <!--end::Avatar-->
@@ -36,9 +36,9 @@
                         <!--begin::Position-->
                         <div class="mb-9">
                             @foreach($user->roles as $role)
-                                <!--begin::Badge-->
-                                <div class="badge badge-lg badge-light-primary d-inline">{{ ucwords($role->name) }}</div>
-                                <!--begin::Badge-->
+                            <!--begin::Badge-->
+                            <div class="badge badge-lg badge-light-primary d-inline">{{ ucwords($role->name) }}</div>
+                            <!--begin::Badge-->
                             @endforeach
                         </div>
                         <!--end::Position-->
@@ -104,7 +104,9 @@
                             </span>
                         </div>
                         <span data-bs-toggle="tooltip" data-bs-trigger="hover" title="Edit customer details">
-                            <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_details">Edit</a>
+                            <a href="#" class="btn btn-sm btn-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_update_details">
+                                {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                            </a>
                         </span>
                     </div>
                     <!--end::Details toggle-->
@@ -179,7 +181,7 @@
                         <!--begin::Item-->
                         <div class="d-flex flex-stack">
                             <div class="d-flex">
-                                <img src="{{ image('svg/brand-logos/google-icon.svg') }}" class="w-30px me-6" alt=""/>
+                                <img src="{{ image('svg/brand-logos/google-icon.svg') }}" class="w-30px me-6" alt="" />
                                 <div class="d-flex flex-column">
                                     <a href="#" class="fs-5 text-gray-900 text-hover-primary fw-bold">Google</a>
                                     <div class="fs-6 fw-semibold text-muted">Plan properly your workflow</div>

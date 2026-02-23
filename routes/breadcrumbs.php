@@ -207,3 +207,18 @@ Breadcrumbs::for('admin.tags.edit', function ($trail, Tag $tag) {
     $trail->parent('tags.index');
     $trail->push('Edit: ' . $tag->name, route('admin.tags.edit', $tag));
 });
+// Email Templates
+Breadcrumbs::for('admin.email-templates.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Email Templates', route('admin.email-templates.index'));
+});
+
+Breadcrumbs::for('admin.email-templates.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.email-templates.index');
+    $trail->push('Create Template', route('admin.email-templates.create'));
+});
+
+Breadcrumbs::for('admin.email-templates.edit', function (BreadcrumbTrail $trail, $emailTemplate) {
+    $trail->parent('admin.email-templates.index');
+    $trail->push('Edit: ' . $emailTemplate->title, route('admin.email-templates.edit', $emailTemplate));
+});

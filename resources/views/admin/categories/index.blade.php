@@ -37,7 +37,9 @@
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
                             <td>
-                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this category?')">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-danger">Delete</button>

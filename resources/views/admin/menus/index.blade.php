@@ -39,7 +39,9 @@
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
                             <td>
-                                <a href="{{ route('admin.menus.edit', $menu->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.menus.edit', $menu->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <a href="{{ route('admin.menus.show', $menu->id) }}" class="btn btn-sm btn-info">View</a>
                                 <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this menu item?')">
                                     @csrf @method('DELETE')

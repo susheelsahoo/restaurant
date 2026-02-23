@@ -44,7 +44,9 @@
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
                             <td>
-                                <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <form method="POST" action="{{ route('admin.banners.destroy', $banner->id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this banner?');">
                                     @csrf
                                     @method('DELETE')

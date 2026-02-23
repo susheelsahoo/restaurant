@@ -39,7 +39,7 @@
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
                             <td>
-                                <a href="{{ route('admin.wines.edit', $wine->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.wines.edit', $wine->id) }}" class="btn btn-sm btn-warning"> {!! getIcon('pencil', 'fs-3', '', 'i') !!}</a>
                                 <a href="{{ route('admin.wines.show', $wine->id) }}" class="btn btn-sm btn-info">View</a>
                                 <form action="{{ route('admin.wines.destroy', $wine->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this wine item?')">
                                     @csrf @method('DELETE')

@@ -41,7 +41,9 @@
                             <td>{{ $tag->name ?? 'No Name' }}</td>
                             <td>{{ $tag->slug ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('admin.tags.edit', $tag->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.tags.edit', $tag->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <form method="POST" action="{{ route('admin.tags.destroy', $tag->id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this tag?');">
                                     @csrf
                                     @method('DELETE')

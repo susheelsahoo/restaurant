@@ -79,7 +79,9 @@
                             </td>
 
                             <td>
-                                <a href="{{ route('admin.gallery.edit', $image->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.gallery.edit', $image->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <form method="POST" action="{{ route('admin.gallery.destroy', $image->id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this image?');">
                                     @csrf
                                     @method('DELETE')

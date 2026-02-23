@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ReservationStatusSeeder::class,
             UsersSeeder::class,
             RolesPermissionsSeeder::class,
+            EmailTemplateSeeder::class,
         ]);
 
         \App\Models\User::factory(20)->create();

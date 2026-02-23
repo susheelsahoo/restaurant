@@ -10,7 +10,8 @@ class CustomersController extends Controller
     // List
     public function index()
     {
-        $customers = Customer::latest()->paginate(10);
+        $customers = Customer::withCount('reservations')->latest()->paginate(10);
+
         return view('admin.customers.index', compact('customers'));
     }
 

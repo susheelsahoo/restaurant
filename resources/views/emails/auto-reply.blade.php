@@ -26,7 +26,7 @@
     </p>
 
     <p>
-        📞 +36 30 123 4567 <br>
+        📞 +36 20 581 1111 <br>
         📧 tifliszorestaurant@gmail.com
     </p>
 

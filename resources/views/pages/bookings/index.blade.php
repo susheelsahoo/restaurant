@@ -93,9 +93,6 @@
 
     <div class="card">
         <div class="card-header border-0 pt-6">
-
-
-
         </div>
 
         <div class="card-body py-4">
@@ -123,6 +120,11 @@
                             <td>
                                 {{ $booking->customer->first_name ?? $booking->customer_name }}
                                 {{ $booking->customer->last_name ?? '' }}
+                                @if($booking->customer)
+                                <span class="badge badge-light-info ms-2">
+                                    {{ $booking->customer->reservations_count }}
+                                </span>
+                                @endif
                                 @if($booking->customer_id)
                                 <span class="view-notes-btn ms-2 text-primary"
                                     style="cursor:pointer"
@@ -170,7 +172,7 @@
 
                                 <a href="{{ route('admin.bookings.edit', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-warning">
-                                    Edit
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                 </a>
 
                                 <!-- <form

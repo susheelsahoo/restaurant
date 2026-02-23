@@ -41,7 +41,9 @@
                             <td>{{ $page->title }}</td>
                             <td>{!! $page->is_active ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>' !!}</td>
                             <td>
-                                <a href="{{ route('admin.pages.edit', $page->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ route('admin.pages.edit', $page->id) }}" class="btn btn-sm btn-warning">
+                                    {!! getIcon('pencil', 'fs-3', '', 'i') !!}
+                                </a>
                                 <form method="POST" action="{{ route('admin.pages.destroy', $page->id) }}" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>

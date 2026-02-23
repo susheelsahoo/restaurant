@@ -25,6 +25,7 @@ use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 
 
@@ -115,6 +116,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
     Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/settings', SettingController::class)->names('settings');
+    Route::resource('/email-templates', EmailTemplateController::class)->names('email-templates');
 
     Route::name('user-management.')->group(function () {
         Route::resource('/user-management/users', UserManagementController::class);

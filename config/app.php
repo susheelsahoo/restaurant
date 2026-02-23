@@ -18,7 +18,7 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
     'price_sign' => env('PRICE_SIGN', 'HUF'),
     'tinymce_api_url' => env('TINYMCE_API_URL', 'https://cdn.tiny.cloud/1/io6s806lfrgc5jsrasv6res855m17ihgxg00p2pz2gy0v9qh/tinymce/8/tinymce.min.js'),
-    'CONTACT_NUMBER' => env('CONTACT_NUMBER', '+36 30 123 4567'),
+    'CONTACT_NUMBER' => env('CONTACT_NUMBER', '+36 20 581 1111'),
     'LOCATION' => env('LOCATION', 'Budapest, Ráday utca 11, Budapest, Hungary'),
     'GOOGLE_MAPS' => env('GOOGLE_MAPS', 'google.com/maps?ll=47.487369,19.063008&z=15&t=m&hl=en&gl=HU&mapclient=embed&q=Ráday+u.+11+Budapest+1092'),
     'HOTEL_EMAIL' => env('HOTEL_EMAIL', 'tifliszorestaurant@gmail.com'),

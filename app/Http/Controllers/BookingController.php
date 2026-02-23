@@ -19,7 +19,12 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Reservation::with('customer', 'reservationStatus');
+        $query = Reservation::with([
+            'customer' => function ($query) {
+                $query->withCount('reservations');
+            },
+            'reservationStatus',
+        ]);
 
         // Filter by status
         if ($request->filled('status')) {
@@ -98,10 +103,7 @@ class BookingController extends Controller
                 ]
             );
 
-            // Get pending status
             $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
-
-            // Create reservation
             $reservation = Reservation::create([
                 'booking_code' => $this->generateBookingCode(),
                 'customer_id'  => $customer->id,
@@ -293,9 +295,14 @@ class BookingController extends Controller
         }
 
         try {
+            $template = ReservationStatusMail::resolveTemplateForReservation($reservation);
+            if (!$template) {
+                return;
+            }
+
             Mail::to($email)
                 ->bcc(config('app.HOTEL_EMAIL'))
-                ->queue(new ReservationStatusMail($reservation));
+                ->queue(new ReservationStatusMail($reservation, $template));
         } catch (\Exception $e) {
             report($e);
         }
