@@ -21,8 +21,17 @@ Cancelled reservation details:',
 <br />
 Should you wish to reserve another table or require any assistance, our team will be delighted to help.
 <br />
-📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>Budapest, Ráday utca 11, Budapest, Hungary</a><br />
-📞 Contact: <a href='tel:+36301234567'>+36 30 123 4567</a><br />
+📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>{{ config('app.LOCATION') }}</a><br />
+📞 Contact: <a href='{{ config('app.CONTECT_NUMBER') }}'> {{config('app.CONTECT_NUMBER')}} </a><br />
+Thank you for your understanding. We hope to welcome you soon!"
+],
+'declined' => [
+'title' => '❌ Your Booking Declined',
+'text' => 'For the given date and time, all of our tables are fully booked. We’re very sorry for the inconvenience—maybe another time would work for you?',
+'message' => "We’d be happy to help you find an alternative time or date. Please feel free to contact us, and we’ll do our best to assist.
+<br />
+📍 Location: <a href='{{ config('app.GOOGLE_MAPS') }}'>{{ config('app.LOCATION') }}</a><br />
+📞 Contact: <a href='{{ config('app.CONTECT_NUMBER') }}'> {{config('app.CONTECT_NUMBER')}} </a><br />
 Thank you for your understanding. We hope to welcome you soon!"
 ],
 'in-house' => [
