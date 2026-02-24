@@ -44,10 +44,14 @@
                                 <a href="{{ route('admin.pages.edit', $page->id) }}" class="btn btn-sm btn-warning">
                                     {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                 </a>
+                                @if(auth()->check() && auth()->user()->getAllPermissions()->contains('name', 'delete'))
                                 <form method="POST" action="{{ route('admin.pages.destroy', $page->id) }}" class="d-inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        {!! getIcon('trash', 'fs-3', '', 'i') !!}
+                                    </button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
