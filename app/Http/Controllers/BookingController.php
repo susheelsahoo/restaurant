@@ -199,7 +199,7 @@ class BookingController extends Controller
      */
     public function destroy(Reservation $booking, Request $request)
     {
-        abort_unless(auth()->user()?->getAllPermissions()->contains('name', 'delete booking'), 403);
+        abort_unless(auth()->user()?->getAllPermissions()->contains('name', 'delete'), 403);
 
         try {
             $booking->delete();
