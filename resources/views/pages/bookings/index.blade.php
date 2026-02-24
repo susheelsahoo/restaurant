@@ -175,7 +175,7 @@
                                     {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                 </a>
 
-                                @if(auth()->check() && auth()->user()->getAllPermissions()->contains('name', 'delete booking'))
+                                @if(auth()->check() && auth()->user()->getAllPermissions()->contains('name', 'delete'))
                                 <form
                                     method="POST"
                                     action="{{ route('admin.bookings.destroy', array_merge(['booking' => $booking->id], request()->query())) }}"
