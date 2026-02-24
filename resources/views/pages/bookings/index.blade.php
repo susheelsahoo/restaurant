@@ -175,7 +175,8 @@
                                     {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                 </a>
 
-                                <!-- <form
+                                @if(auth()->check() && auth()->user()->getAllPermissions()->contains('name', 'delete booking'))
+                                <form
                                     method="POST"
                                     action="{{ route('admin.bookings.destroy', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="d-inline"
@@ -183,9 +184,10 @@
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-danger">
-                                        Delete
+                                        {!! getIcon('trash', 'fs-3', '', 'i') !!}
                                     </button>
-                                </form>-->
+                                </form>
+                                @endif
                             </td>
                         </tr>
                         @empty

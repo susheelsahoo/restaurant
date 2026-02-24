@@ -150,6 +150,26 @@
     @endif
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const select = document.getElementById("visit_time");
+
+            for (let hour = 11; hour <= 23; hour++) {
+                [0, 15, 30, 45].forEach(function(minute) {
+
+                    if (hour === 23 && minute > 45) return;
+
+                    let time =
+                        String(hour).padStart(2, '0') + ':' +
+                        String(minute).padStart(2, '0');
+
+                    let option = document.createElement("option");
+                    option.value = time;
+                    option.textContent = time;
+
+                    select.appendChild(option);
+                });
+            }
+        });
         document.addEventListener('submit', function(e) {
             if (e.target.tagName === 'FORM') {
 
@@ -247,19 +267,19 @@
                     const sizeClass = index % 2 === 0 ? "small" : "tall";
 
                     lightboxes.push(`
-                <div id="img-${img.id}" class="image-lightbox">
-                    <a href="#gallery" class="lightbox-close">×</a>
-                    <img src="/storage/${img.image_path}">
-                </div>
-            `);
+    <div id="img-${img.id}" class="image-lightbox">
+        <a href="#gallery" class="lightbox-close">×</a>
+        <img src="/storage/${img.image_path}">
+    </div>
+    `);
 
                     return `
-                <div class="gallery-item ${sizeClass}">
-                    <a href="#img-${img.id}">
-                        <img src="/storage/${img.image_path}" loading="lazy">
-                    </a>
-                </div>
-            `;
+    <div class="gallery-item ${sizeClass}">
+        <a href="#img-${img.id}">
+            <img src="/storage/${img.image_path}" loading="lazy">
+        </a>
+    </div>
+    `;
                 }).join("");
 
                 return `<div class="gallery-col">${colHTML}</div>`;
@@ -303,33 +323,33 @@
                     });
 
                 return `
-                    <div class="col-lg-4 col-md-6">
-                        <article class="blog-card">
+    <div class="col-lg-4 col-md-6">
+        <article class="blog-card">
 
-                            <div class="blog-img">
-                                <img src="/storage/${blog.image}"
-                                    alt="${blog.title}"
-                                    loading="lazy">
-                            </div>
+            <div class="blog-img">
+                <img src="/storage/${blog.image}"
+                    alt="${blog.title}"
+                    loading="lazy">
+            </div>
 
-                            <div class="blog-content">
+            <div class="blog-content">
 
-                                <span class="blog-date">${date}</span>
+                <span class="blog-date">${date}</span>
 
-                                <h3>${blog.title}</h3>
+                <h3>${blog.title}</h3>
 
-                                <p>${blog.short_description ?? ''}</p>
+                <p>${blog.short_description ?? ''}</p>
 
-                                <a class="read-more"
-                                href="/blog/${blog.slug}">
-                                Read More →
-                                </a>
+                <a class="read-more"
+                    href="/blog/${blog.slug}">
+                    Read More →
+                </a>
 
-                            </div>
+            </div>
 
-                        </article>
-                    </div>
-                    `;
+        </article>
+    </div>
+    `;
 
             }).join('');
         }
