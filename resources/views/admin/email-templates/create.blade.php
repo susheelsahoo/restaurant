@@ -83,7 +83,7 @@
                                 <code>@{{ $reservation->reservationStatus?->label }}</code> - Reservation status<br>
                                 <code>@{{ config('app.GOOGLE_MAPS') }}</code> - Google Maps link<br>
                                 <code>@{{ config('app.LOCATION') }}</code> - Restaurant location<br>
-                                <code>@{{ config('app.CONTECT_NUMBER') }}</code> - Contact number
+                                <code>@{{ config('app.CONTACT_NUMBER') }}</code> - Contact number
                             </small>
                             @error('message')
                             <div class="invalid-feedback">{{ $message }}</div>
