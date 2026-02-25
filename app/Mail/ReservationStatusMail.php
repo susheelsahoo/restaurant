@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Blade;
 
 class ReservationStatusMail extends Mailable
 {
@@ -51,12 +52,36 @@ class ReservationStatusMail extends Mailable
     {
         $this->reservation->load('reservationStatus');
 
+        $data = [
+            'reservation' => $this->reservation,
+            'template' => $this->template,
+        ];
+
+        $renderedSubject = $this->renderBladeString($this->template->subject, $data);
+        $renderedShortText = $this->renderBladeString($this->template->short_text, $data);
+        $renderedMessage = $this->renderBladeString($this->template->message, $data);
+
         return $this
-            ->subject($this->template->subject)
+            ->subject($renderedSubject)
             ->view('emails.reservation-status')
             ->with([
                 'reservation' => $this->reservation,
                 'template' => $this->template,
+                'renderedShortText' => $renderedShortText,
+                'renderedMessage' => $renderedMessage,
             ]);
+    }
+
+    private function renderBladeString(?string $value, array $data): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        try {
+            return Blade::render($value, $data);
+        } catch (\Throwable $e) {
+            return $value;
+        }
     }
 }

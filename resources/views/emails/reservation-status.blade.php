@@ -22,7 +22,7 @@
                         <td style="color: #555; line-height: 1.6;">
                             <p>Dear <strong>{{ ucfirst($reservation->customer->first_name ?? 'Guest') }}</strong>,</p>
 
-                            <p>{{ $template->short_text }}</p>
+                            <p>{{ $renderedShortText }}</p>
 
                             <p style="font-weight: bold; color: #333;">Reservation Details:</p>
                             <table width="100%" cellpadding="8" style="border: 1px solid #ddd; border-radius: 4px;">
@@ -44,7 +44,7 @@
                                 </tr>
                             </table>
 
-                            <p style="margin-top: 20px; line-height: 1.6;">{!! $template->message !!}</p>
+                            <p style="margin-top: 20px; line-height: 1.6;">{!! $renderedMessage !!}</p>
 
                             <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
 
