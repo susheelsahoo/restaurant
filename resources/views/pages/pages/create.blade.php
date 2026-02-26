@@ -103,7 +103,7 @@
     <script src="{{ config('app.tinymce_api_url') }}" referrerpolicy="origin" crossorigin="anonymous"></script>
     <script>
         tinymce.init({
-            selector: 'textarea',
+            selector: '#page-content',
 
             extended_valid_elements: 'i[class],span[class]',
             valid_children: '+body[i|span]',

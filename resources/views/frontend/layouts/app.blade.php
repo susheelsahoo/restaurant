@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@yield('meta_title', 'Tifliso Restaurant | Authentic Georgian Restaurant in Budapest')</title>
-    <meta name="description" content="{!! trim(strip_tags($__env->yieldContent('meta_description') ?: 'Visit Tifliso Restaurant in Budapest for authentic Georgian cuisine, khachapuri, khinkali, BBQ, homemade Georgian bread, and premium Georgian wines. Experience true Georgian hospitality in the heart of Budapest.')) !!}">
+    <meta name="description" content="@yield('meta_description', 'Visit Tifliso Restaurant in Budapest for authentic Georgian cuisine, khachapuri, khinkali, BBQ, homemade Georgian bread, and premium Georgian wines. Experience true Georgian hospitality in the heart of Budapest.')">
     <meta name="keywords" content="@yield('meta_keywords', 'Georgian restaurant Budapest, Tifliso Restaurant, Georgian food Budapest, khachapuri Budapest, khinkali Budapest, Georgian wine Budapest, authentic Georgian cuisine Hungary, Georgian BBQ Budapest, best Georgian restaurant Budapest')">
     <meta name="author" content="Tifliso Restaurant">
     <meta name="google-site-verification" content="gcoF8ElmNIQAoeZDmq0Slm1XVLje3crvpBSdGI4sXt0" />
