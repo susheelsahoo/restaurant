@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /
+
 Disallow: /admin/
-Disallow: /wp-admin/
+Disallow: /dashboard/
 Disallow: /private/
-Disallow: /cgi-bin/
-Disallow: /tmp/https://mediator.com.ge/
+Disallow: /tmp/
+
 Sitemap: https://tifliszo.hu/sitemap.xml

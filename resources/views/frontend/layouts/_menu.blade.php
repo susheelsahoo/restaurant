@@ -52,7 +52,7 @@ $isHome = request()->is('/') || request()->is('home');
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('wines') ? 'active' : '' }}" href="{{ url('wines') }}">
-                        Drinks
+                        Wines
                     </a>
                 </li>
 

@@ -10,6 +10,7 @@
     <meta name="author" content="Tifliso Restaurant">
     <meta name="google-site-verification" content="gcoF8ElmNIQAoeZDmq0Slm1XVLje3crvpBSdGI4sXt0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="canonical" href="https://tifliszo.hu/" />
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
         rel="stylesheet" />
