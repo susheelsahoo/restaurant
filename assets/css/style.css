@@ -662,6 +662,16 @@ body {
   padding: 12px 14px;
 }
 
+.reservation-form .form-select {
+  color-scheme: dark;
+}
+
+.reservation-form .form-select option,
+.reservation-form .form-select optgroup {
+  background: #111;
+  color: #fff;
+}
+
 .reservation-form .form-control:focus,
 .reservation-form .form-select:focus {
   border-color: #d8b46a;
