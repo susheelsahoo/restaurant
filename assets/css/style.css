@@ -200,6 +200,48 @@ body {
   font-size: 12px;
 }
 
+@media (max-width: 1399px) and (min-width: 992px) {
+  .hero-section {
+    min-height: auto;
+    padding-top: 130px !important;
+    padding-bottom: 36px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2.8rem, 4.8vw, 3.35rem);
+    line-height: 1.1;
+  }
+
+  .hero-text p {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .ramen-img {
+    max-width: 100%;
+    margin-top: 24px;
+  }
+
+  .menu-cards {
+    position: static;
+    margin-top: 28px;
+  }
+
+  .menu-card {
+    gap: 18px;
+    padding: 10px 16px;
+  }
+
+  .menu-card img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .menu-card h6 {
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 991px) {
 
   .hero-section {
