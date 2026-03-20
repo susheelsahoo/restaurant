@@ -117,6 +117,97 @@
     </footer>
 
     <script>
+        function initCustomReservationSelects(root = document) {
+            const selects = root.querySelectorAll('.reservation-form select.form-select:not([data-customized="true"])');
+
+            selects.forEach((select, index) => {
+                select.dataset.customized = 'true';
+                select.classList.add('is-custom-select-native');
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'reservation-custom-select';
+
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'reservation-custom-select__trigger';
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+
+                const menu = document.createElement('div');
+                menu.className = 'reservation-custom-select__menu';
+                menu.setAttribute('role', 'listbox');
+                menu.id = `reservation-custom-select-${select.name || index}`;
+
+                trigger.setAttribute('aria-controls', menu.id);
+
+                const syncFromSelect = () => {
+                    const selectedOption = select.options[select.selectedIndex] || select.options[0];
+                    trigger.textContent = selectedOption ? selectedOption.textContent.trim() : 'Select';
+
+                    menu.querySelectorAll('.reservation-custom-select__option').forEach((optionButton) => {
+                        const isSelected = optionButton.dataset.value === select.value;
+                        optionButton.classList.toggle('is-selected', isSelected);
+                        optionButton.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    });
+                };
+
+                Array.from(select.options).forEach((option) => {
+                    const optionButton = document.createElement('button');
+                    optionButton.type = 'button';
+                    optionButton.className = 'reservation-custom-select__option';
+                    optionButton.textContent = option.textContent.trim();
+                    optionButton.dataset.value = option.value;
+                    optionButton.setAttribute('role', 'option');
+
+                    if (!option.value) {
+                        optionButton.classList.add('is-placeholder');
+                    }
+
+                    optionButton.addEventListener('click', () => {
+                        select.value = option.value;
+                        select.dispatchEvent(new Event('change', {
+                            bubbles: true
+                        }));
+                        syncFromSelect();
+                        wrapper.classList.remove('is-open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                        trigger.focus();
+                    });
+
+                    menu.appendChild(optionButton);
+                });
+
+                trigger.addEventListener('click', () => {
+                    const willOpen = !wrapper.classList.contains('is-open');
+                    document.querySelectorAll('.reservation-custom-select.is-open').forEach((openSelect) => {
+                        openSelect.classList.remove('is-open');
+                        openSelect.querySelector('.reservation-custom-select__trigger')?.setAttribute('aria-expanded', 'false');
+                    });
+
+                    wrapper.classList.toggle('is-open', willOpen);
+                    trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                });
+
+                select.addEventListener('change', syncFromSelect);
+
+                select.parentNode.insertBefore(wrapper, select);
+                wrapper.appendChild(select);
+                wrapper.appendChild(trigger);
+                wrapper.appendChild(menu);
+
+                syncFromSelect();
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            document.querySelectorAll('.reservation-custom-select.is-open').forEach((wrapper) => {
+                if (!wrapper.contains(e.target)) {
+                    wrapper.classList.remove('is-open');
+                    wrapper.querySelector('.reservation-custom-select__trigger')?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
         document.getElementById("year").textContent = new Date().getFullYear();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -154,22 +245,25 @@
         document.addEventListener("DOMContentLoaded", function() {
             const select = document.getElementById("visit_time");
 
-            for (let hour = 11; hour <= 23; hour++) {
-                [0, 15, 30, 45].forEach(function(minute) {
+            if (select && select.options.length <= 1) {
+                for (let hour = 11; hour <= 23; hour++) {
+                    [0, 15, 30, 45].forEach(function(minute) {
+                        if (hour === 23 && minute > 45) return;
 
-                    if (hour === 23 && minute > 45) return;
+                        let time =
+                            String(hour).padStart(2, '0') + ':' +
+                            String(minute).padStart(2, '0');
 
-                    let time =
-                        String(hour).padStart(2, '0') + ':' +
-                        String(minute).padStart(2, '0');
+                        let option = document.createElement("option");
+                        option.value = time;
+                        option.textContent = time;
 
-                    let option = document.createElement("option");
-                    option.value = time;
-                    option.textContent = time;
-
-                    select.appendChild(option);
-                });
+                        select.appendChild(option);
+                    });
+                }
             }
+
+            initCustomReservationSelects();
         });
         document.addEventListener('submit', function(e) {
             if (e.target.tagName === 'FORM') {
