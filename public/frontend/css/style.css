@@ -4,6 +4,11 @@ body {
   color: #fff;
   overflow-x: hidden;
 }
+
+:root {
+  --frontend-text-soft: #c9c9c9;
+  --frontend-text-muted-accessible: #b5b5b5;
+}
 .glass-navbar {
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(12px);
@@ -2956,6 +2961,25 @@ body {
   color: #ccc;
   max-width: 620px;
   margin: auto;
+}
+
+/* Accessibility: raise the weakest text tones on near-black surfaces */
+.site-footer,
+.footer-links a,
+.footer-address,
+.menu-card p,
+.static-page-box p,
+.static-page-box li,
+.static-page-hero p,
+.gdpr-page-hero p {
+  color: var(--frontend-text-soft);
+}
+
+.map-placeholder,
+.footer-bottom,
+.footer-bottom p,
+.static-page-updated {
+  color: var(--frontend-text-muted-accessible);
 }
 
 /* ================= SHARED CONTENT ================= */
