@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EmailTemplateController extends Controller
 {
@@ -31,14 +32,12 @@ class EmailTemplateController extends Controller
     {
         $validated = $request->validate([
             'slug' => 'required|unique:email_templates,slug|regex:/^[a-z0-9\-]+$/i',
-            'title' => 'required|max:255',
             'subject' => 'required|max:255',
-            'short_text' => 'required',
             'message' => 'required',
             'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated = $this->prepareTemplatePayload($validated, $request);
 
         EmailTemplate::create($validated);
 
@@ -60,14 +59,12 @@ class EmailTemplateController extends Controller
     {
         $validated = $request->validate([
             'slug' => 'required|unique:email_templates,slug,' . $emailTemplate->id . '|regex:/^[a-z0-9\-]+$/i',
-            'title' => 'required|max:255',
             'subject' => 'required|max:255',
-            'short_text' => 'required',
             'message' => 'required',
             'is_active' => 'nullable|boolean',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated = $this->prepareTemplatePayload($validated, $request, $emailTemplate);
 
         $emailTemplate->update($validated);
 
@@ -92,5 +89,14 @@ class EmailTemplateController extends Controller
         $emailTemplate->update(['is_active' => !$emailTemplate->is_active]);
 
         return back()->with('success', 'Email template status updated!');
+    }
+
+    private function prepareTemplatePayload(array $validated, Request $request, ?EmailTemplate $emailTemplate = null): array
+    {
+        $validated['is_active'] = $request->has('is_active');
+        $validated['title'] = $emailTemplate?->title ?: Str::headline(str_replace('-', ' ', $validated['slug']));
+        $validated['short_text'] = $emailTemplate?->short_text ?: '';
+
+        return $validated;
     }
 }

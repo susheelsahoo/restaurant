@@ -106,6 +106,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/gallery/toggle', [GalleryImageController::class, 'toggle'])->name('gallery.toggle');
 
     Route::resource('/customers', CustomersController::class)->names('customers');
+    Route::post('/customers/notifications/send', [CustomersController::class, 'sendNotification'])->name('customers.notifications.send');
     Route::get('customer-notes/{customer}', [CustomerNoteController::class, 'show'])->name('admin.customer-notes.show');
     Route::get('customer-notes/create/{customer_id}', [CustomerNoteController::class, 'create'])->name('customer-notes.create');
     Route::post('customer-notes', [CustomerNoteController::class, 'store'])->name('customer-notes.store');

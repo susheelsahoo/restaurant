@@ -220,5 +220,5 @@ Breadcrumbs::for('admin.email-templates.create', function (BreadcrumbTrail $trai
 
 Breadcrumbs::for('admin.email-templates.edit', function (BreadcrumbTrail $trail, $emailTemplate) {
     $trail->parent('admin.email-templates.index');
-    $trail->push('Edit: ' . $emailTemplate->title, route('admin.email-templates.edit', $emailTemplate));
+    $trail->push('Edit: ' . $emailTemplate->slug, route('admin.email-templates.edit', $emailTemplate));
 });

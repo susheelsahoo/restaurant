@@ -171,8 +171,8 @@ class BookingController extends Controller
                 'notes'      => $validated['notes'] ?? null,
             ]);
 
-            // Send notification if status changed (but not for in-house status)
-            $shouldSendEmail = $statusChanged && !empty($validated['email']) && $newStatus->name !== 'in-house';
+            // Send notification whenever the reservation status changes and an email is available.
+            $shouldSendEmail = $statusChanged && !empty($validated['email']);
             if ($shouldSendEmail) {
                 $this->sendReservationEmail($validated['email'], $booking->fresh());
             }

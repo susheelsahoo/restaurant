@@ -14,15 +14,15 @@
 				</a>
 			</div>
 			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.contacts.index') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
-					<span class="menu-icon">{!! getIcon('sms', 'fs-2') !!}</span>
-					<span class="menu-title">Contacts</span>
-				</a>
-			</div>
-			<div class="menu-item">
 				<a class="menu-link {{ request()->routeIs('admin.customers.index') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}">
 					<span class="menu-icon">{!! getIcon('user', 'fs-2') !!}</span>
 					<span class="menu-title">Customers</span>
+				</a>
+			</div>
+			<div class="menu-item">
+				<a class="menu-link {{ request()->routeIs('admin.contacts.index') ? 'active' : '' }}" href="{{ route('admin.contacts.index') }}">
+					<span class="menu-icon">{!! getIcon('sms', 'fs-2') !!}</span>
+					<span class="menu-title">Contacts</span>
 				</a>
 			</div>
 			<!-- <div class="menu-item">

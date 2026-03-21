@@ -29,19 +29,4 @@ class EmailTemplate extends Model
     {
         return self::where('slug', $slug)->where('is_active', true)->first();
     }
-
-    /**
-     * Get all reservation status email templates
-     */
-    public static function getReservationTemplates()
-    {
-        return self::whereIn('slug', [
-            'reservation-pending',
-            'reservation-confirmed',
-            'reservation-canceled',
-            'reservation-declined',
-            'reservation-in-house',
-            'reservation-complete',
-        ])->get()->keyBy('slug');
-    }
 }

@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CustomerNotificationMail;
 use App\Models\Customer;
+use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class CustomersController extends Controller
 {
     // List
     public function index()
     {
-        $customers = Customer::withCount('reservations')->latest()->paginate(10);
+        $customers = Customer::withCount('reservations')
+            ->orderByDesc('reservations_count')
+            ->latest()
+            ->paginate(10);
+        $emailTemplates = EmailTemplate::where('is_active', true)
+            ->orderByDesc('id')
+            ->get(['id', 'slug', 'subject', 'message']);
 
-        return view('admin.customers.index', compact('customers'));
+        return view('admin.customers.index', compact('customers', 'emailTemplates'));
     }
 
     // Show Create Form
@@ -71,5 +80,40 @@ class CustomersController extends Controller
         return redirect()
             ->route('admin.customers.index')
             ->with('success', 'Customer deleted successfully');
+    }
+
+    public function sendNotification(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'integer|exists:customers,id',
+            'email_template_id' => 'nullable|integer|exists:email_templates,id',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        $customers = Customer::whereIn('id', $validated['customer_ids'])
+            ->whereNotNull('email')
+            ->get();
+
+        if ($customers->isEmpty()) {
+            return back()->with('error', 'No selected customers have a valid email address.');
+        }
+
+        foreach ($customers as $customer) {
+            Mail::to($customer->email)->queue(
+                new CustomerNotificationMail(
+                    customer: $customer,
+                    subjectTemplate: $validated['subject'],
+                    messageTemplate: $validated['message']
+                )
+            );
+        }
+
+        $sentCount = $customers->count();
+
+        return redirect()
+            ->route('admin.customers.index')
+            ->with('success', "Queued {$sentCount} customer notification(s) successfully.");
     }
 }

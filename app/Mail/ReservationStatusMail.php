@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\EmailTemplate;
 use App\Models\Reservation;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -50,26 +51,16 @@ class ReservationStatusMail extends Mailable
 
     public function build()
     {
-        $this->reservation->load('reservationStatus');
+        $this->reservation->loadMissing(['customer', 'reservationStatus']);
 
-        $data = [
-            'reservation' => $this->reservation,
-            'template' => $this->template,
-        ];
+        $data = $this->templateData();
 
         $renderedSubject = $this->renderBladeString($this->template->subject, $data);
-        $renderedShortText = $this->renderBladeString($this->template->short_text, $data);
         $renderedMessage = $this->renderBladeString($this->template->message, $data);
 
         return $this
             ->subject($renderedSubject)
-            ->view('emails.reservation-status')
-            ->with([
-                'reservation' => $this->reservation,
-                'template' => $this->template,
-                'renderedShortText' => $renderedShortText,
-                'renderedMessage' => $renderedMessage,
-            ]);
+            ->html($renderedMessage);
     }
 
     private function renderBladeString(?string $value, array $data): string
@@ -81,7 +72,32 @@ class ReservationStatusMail extends Mailable
         try {
             return Blade::render($value, $data);
         } catch (\Throwable $e) {
+            report($e);
             return $value;
         }
+    }
+
+    private function templateData(): array
+    {
+        $customer = $this->reservation->customer;
+        $visitDate = $this->reservation->visit_date ? Carbon::parse($this->reservation->visit_date) : null;
+        $visitTime = $this->reservation->visit_time ? Carbon::parse($this->reservation->visit_time) : null;
+
+        return [
+            'reservation' => $this->reservation,
+            'template' => $this->template,
+            'customer' => $customer,
+            'guest_name' => ucfirst($customer->first_name ?? 'Guest'),
+            'guest_first_name' => $customer->first_name ?? 'Guest',
+            'guest_last_name' => $customer->last_name ?? '',
+            'booking_code' => $this->reservation->booking_code,
+            'visit_date_formatted' => $visitDate?->format('d M Y') ?? '',
+            'visit_time_formatted' => $visitTime?->format('H:i') ?? '',
+            'guests_count' => $this->reservation->guests,
+            'status_label' => $this->reservation->reservationStatus?->label ?? '',
+            'location' => config('app.LOCATION'),
+            'google_maps' => config('app.GOOGLE_MAPS'),
+            'contact_number' => config('app.CONTACT_NUMBER'),
+        ];
     }
 }

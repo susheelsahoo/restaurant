@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Customer;
+use App\Models\ReservationStatus;
 use App\Services\BookingService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -47,16 +48,16 @@ class ReservationController extends Controller
                     'is_active'  => 1,
                 ]);
             }
+
+            $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
+
             $reservation = Reservation::create([
                 'booking_code'  => $this->generateBookingCode(),
                 'customer_id'   => $customer->id,
                 'visit_date'    => $request->visit_date,
                 'visit_time'    => $request->visit_time,
                 'guests'        => $request->guests,
-                #'customer_name' => $request->customer_name,
-                #'phone'         => $request->phone,
-                #'email'         => $request->email,
-                'status_id'     => 1, // Assuming 1 is the ID for 'pending' status
+                'status_id'     => $pendingStatus->id,
             ]);
             DB::commit();
         } catch (\Exception $e) {
@@ -72,7 +73,7 @@ class ReservationController extends Controller
                     ->send(new ReservationStatusMail($reservation, $template));
             }
         } catch (\Exception $e) {
-            //\Log::error('Admin mail failed: ' . $e->getMessage());
+            report($e);
         }
         return redirect()->back()->with([
             'alert_title' => 'Reservation Request Sent',
