@@ -70,6 +70,8 @@
                                     class="form-check-input customer-checkbox"
                                     value="{{ $customer->id }}"
                                     data-customer-name="{{ trim($customer->first_name . ' ' . $customer->last_name) }}"
+                                    data-customer-first-name="{{ $customer->first_name }}"
+                                    data-customer-last-name="{{ $customer->last_name }}"
                                     data-customer-email="{{ $customer->email }}">
                             </td>
                             <td>
@@ -114,6 +116,8 @@
                                     class="btn btn-sm btn-info send-notification-btn"
                                     data-customer-id="{{ $customer->id }}"
                                     data-customer-name="{{ trim($customer->first_name . ' ' . $customer->last_name) }}"
+                                    data-customer-first-name="{{ $customer->first_name }}"
+                                    data-customer-last-name="{{ $customer->last_name }}"
                                     data-customer-email="{{ $customer->email }}">
                                     {!! getIcon('notification-bing', 'fs-3', '', 'i') !!}
                                 </button>
@@ -319,9 +323,9 @@
 
             function placeholderMap() {
                 const firstSelected = selectedCustomers()[0];
-                const fullName = firstSelected?.dataset.customerName || 'Returning Guest';
-                const firstName = fullName.split(' ')[0] || 'Returning';
-                const lastName = fullName.split(' ').slice(1).join(' ');
+                const firstName = firstSelected?.dataset.customerFirstName || 'Susheel';
+                const lastName = firstSelected?.dataset.customerLastName || 'Sahoo';
+                const fullName = `${firstName} ${lastName}`.trim() || 'Susheel Sahoo';
 
                 return {
                     '@{{ $customer_name }}': fullName,
