@@ -63,9 +63,9 @@
                                 <strong>Use full HTML email markup in this field.</strong><br>
                                 This editor now saves the exact HTML you paste, including <code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code>.<br><br>
                                 <strong>Available Variables:</strong><br>
-                                <code>@{{ $guest_name }}</code> - Guest name<br>
-                                <code>@{{ $guest_first_name }}</code> - Guest first name<br>
-                                <code>@{{ $guest_last_name }}</code> - Guest last name<br>
+                                <code>@{{ $customer_name }}</code> - Customer full name<br>
+                                <code>@{{ $customer_first_name }}</code> - Customer first name<br>
+                                <code>@{{ $customer_last_name }}</code> - Customer last name<br>
                                 <code>@{{ $booking_code }}</code> - Booking code<br>
                                 <code>@{{ $visit_date_formatted }}</code> - Formatted reservation date<br>
                                 <code>@{{ $visit_time_formatted }}</code> - Formatted reservation time<br>
@@ -130,9 +130,9 @@
             }
 
             const sampleValues = {
-                '@{{ $guest_name }}': 'Susheel',
-                '@{{ $guest_first_name }}': 'Susheel',
-                '@{{ $guest_last_name }}': 'Sahoo',
+                '@{{ $customer_name }}': 'Susheel Sahoo',
+                '@{{ $customer_first_name }}': 'Susheel',
+                '@{{ $customer_last_name }}': 'Sahoo',
                 '@{{ $booking_code }}': 'TFL-20260321-ABCD',
                 '@{{ $visit_date_formatted }}': '21 Mar 2026',
                 '@{{ $visit_time_formatted }}': '20:30',
@@ -142,6 +142,9 @@
                 '@{{ $google_maps }}': 'https://maps.google.com',
                 '@{{ $contact_number }}': '+36 00 000 0000',
                 '@{{ $template->subject }}': 'Reservation Request Sent',
+                '@{{ $guest_name }}': 'Susheel',
+                '@{{ $guest_first_name }}': 'Susheel',
+                '@{{ $guest_last_name }}': 'Sahoo',
             };
 
             function buildPreviewHtml(source) {
