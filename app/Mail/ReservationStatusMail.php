@@ -82,17 +82,20 @@ class ReservationStatusMail extends Mailable
         $customer = $this->reservation->customer;
         $visitDate = $this->reservation->visit_date ? Carbon::parse($this->reservation->visit_date) : null;
         $visitTime = $this->reservation->visit_time ? Carbon::parse($this->reservation->visit_time) : null;
+        $customerFirstName = $customer?->first_name ?: 'Guest';
+        $customerLastName = $customer?->last_name ?? '';
+        $customerName = trim($customerFirstName . ' ' . $customerLastName);
 
         return [
             'reservation' => $this->reservation,
             'template' => $this->template,
             'customer' => $customer,
-            'customer_name' => trim(ucfirst($customer->first_name ?? 'Guest') . ' ' . ($customer->last_name ?? '')),
-            'customer_first_name' => $customer->first_name ?? 'Guest',
-            'customer_last_name' => $customer->last_name ?? '',
-            'guest_name' => ucfirst($customer->first_name ?? 'Guest'),
-            'guest_first_name' => $customer->first_name ?? 'Guest',
-            'guest_last_name' => $customer->last_name ?? '',
+            'customer_name' => $customerName,
+            'customer_first_name' => $customerFirstName,
+            'customer_last_name' => $customerLastName,
+            'guest_name' => $customerName,
+            'guest_first_name' => $customerFirstName,
+            'guest_last_name' => $customerLastName,
             'booking_code' => $this->reservation->booking_code,
             'visit_date_formatted' => $visitDate?->format('d M Y') ?? '',
             'visit_time_formatted' => $visitTime?->format('H:i') ?? '',

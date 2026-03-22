@@ -30,17 +30,21 @@ class CustomerNotificationMail extends Mailable
 
     private function templateData(): array
     {
+        $customerFirstName = $this->customer->first_name ?: 'Guest';
+        $customerLastName = $this->customer->last_name ?? '';
+        $customerName = trim($customerFirstName . ' ' . $customerLastName);
+
         return [
             'customer' => $this->customer,
-            'customer_name' => trim(($this->customer->first_name ?? '') . ' ' . ($this->customer->last_name ?? '')) ?: 'Guest',
-            'customer_first_name' => $this->customer->first_name ?? 'Guest',
-            'customer_last_name' => $this->customer->last_name ?? '',
+            'customer_name' => $customerName,
+            'customer_first_name' => $customerFirstName,
+            'customer_last_name' => $customerLastName,
             'customer_email' => $this->customer->email ?? '',
             'customer_phone' => $this->customer->phone ?? '',
             // Reservation-style aliases so existing templates can be reused for customer notifications.
-            'guest_name' => trim(($this->customer->first_name ?? '') . ' ' . ($this->customer->last_name ?? '')) ?: 'Guest',
-            'guest_first_name' => $this->customer->first_name ?? 'Guest',
-            'guest_last_name' => $this->customer->last_name ?? '',
+            'guest_name' => $customerName,
+            'guest_first_name' => $customerFirstName,
+            'guest_last_name' => $customerLastName,
             'location' => config('app.LOCATION'),
             'google_maps' => config('app.GOOGLE_MAPS'),
             'contact_number' => config('app.CONTACT_NUMBER'),
