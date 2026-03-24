@@ -10,38 +10,88 @@
 
     <div class="card">
         <div class="card-header border-0 pt-6">
-
-            {{-- Search --}}
-            <div class="card-title">
-                <div class="d-flex align-items-center position-relative my-1">
-                    {!! getIcon('magnifier', 'fs-3 position-absolute ms-5') !!}
-                    <input type="text"
-                        class="form-control form-control-solid w-250px ps-13"
-                        placeholder="Search Customer" />
+            <form method="GET" action="{{ route('admin.customers.index') }}" class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4 w-100">
+                <div class="card-title me-lg-4 mb-0">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+                        <div class="position-relative my-1">
+                            {!! getIcon('magnifier', 'fs-3 position-absolute ms-5') !!}
+                            <input type="text"
+                                name="search"
+                                value="{{ request('search') }}"
+                                class="form-control form-control-solid w-250px ps-13"
+                                placeholder="Search customer" />
+                        </div>
+                        <select name="booking_count" class="form-select form-select-solid w-200px">
+                            <option value="">All Booking Counts</option>
+                            <option value="1" {{ request('booking_count') === '1' ? 'selected' : '' }}>1 booking</option>
+                            <option value="2" {{ request('booking_count') === '2' ? 'selected' : '' }}>2 bookings</option>
+                            <option value="3_plus" {{ request('booking_count') === '3_plus' ? 'selected' : '' }}>3+ bookings</option>
+                            <option value="5_plus" {{ request('booking_count') === '5_plus' ? 'selected' : '' }}>5+ bookings</option>
+                            <option value="10_plus" {{ request('booking_count') === '10_plus' ? 'selected' : '' }}>10+ bookings</option>
+                        </select>
+                        <select name="last_booking_days" class="form-select form-select-solid w-200px">
+                            <option value="">Any Last Booking</option>
+                            @foreach([10, 20, 30, 60, 99] as $days)
+                            <option value="{{ $days }}" {{ request('last_booking_days') == (string) $days ? 'selected' : '' }}>{{ $days }}+ days ago</option>
+                            @endforeach
+                        </select>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-light-primary">Apply</button>
+                            @if(request()->filled('search') || request()->filled('booking_count') || request()->filled('last_booking_days'))
+                            <a href="{{ route('admin.customers.index') }}" class="btn btn-light">Reset</a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {{-- Add Button --}}
-            <div class="card-toolbar">
-                <div class="d-flex justify-content-end gap-3">
-                    <button type="button"
-                        class="btn btn-light-primary"
-                        id="open-bulk-notification-modal"
-                        disabled>
-                        {!! getIcon('notification-bing', 'fs-2', '', 'i') !!}
-                        Send Notification
-                    </button>
-                    <a href="{{ route('admin.customers.create') }}"
-                        class="btn btn-primary">
-                        {!! getIcon('plus', 'fs-2', '', 'i') !!}
-                        Add Customer
-                    </a>
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end gap-3">
+                        <button type="button"
+                            class="btn btn-light-primary"
+                            id="open-bulk-notification-modal"
+                            disabled>
+                            {!! getIcon('notification-bing', 'fs-2', '', 'i') !!}
+                            Send Notification
+                        </button>
+                        <a href="{{ route('admin.customers.create') }}"
+                            class="btn btn-primary">
+                            {!! getIcon('plus', 'fs-2', '', 'i') !!}
+                            Add Customer
+                        </a>
+                    </div>
                 </div>
-            </div>
-
+            </form>
         </div>
 
         <div class="card-body py-4">
+            @if(request()->filled('search') || request()->filled('booking_count') || request()->filled('last_booking_days'))
+            <div class="mb-5 d-flex flex-wrap gap-2">
+                @if(request()->filled('search'))
+                <span class="badge badge-light-primary">Search: {{ request('search') }}</span>
+                @endif
+                @if(request()->filled('booking_count'))
+                <span class="badge badge-light-success">
+                    Booking count:
+                    @if(request('booking_count') === '1')
+                    1 booking
+                    @elseif(request('booking_count') === '2')
+                    2 bookings
+                    @elseif(request('booking_count') === '3_plus')
+                    3+ bookings
+                    @elseif(request('booking_count') === '5_plus')
+                    5+ bookings
+                    @elseif(request('booking_count') === '10_plus')
+                    10+ bookings
+                    @else
+                    {{ request('booking_count') }}
+                    @endif
+                </span>
+                @endif
+                @if(request()->filled('last_booking_days'))
+                <span class="badge badge-light-warning">Last booking: {{ request('last_booking_days') }}+ days ago</span>
+                @endif
+            </div>
+            @endif
 
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5">
@@ -54,6 +104,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th>Last Booking</th>
                             <th>DOB</th>
                             <th>Anniversary</th>
                             <th>Status</th>
@@ -91,6 +142,10 @@
                             <td>{{ $customer->email }}</td>
 
                             <td>{{ $customer->phone ?? '-' }}</td>
+
+                            <td>
+                                {{ $customer->reservations_max_visit_date ? \Illuminate\Support\Carbon::parse($customer->reservations_max_visit_date)->format('d M Y') : '-' }}
+                            </td>
 
                             <td>
                                 {{ optional($customer->date_of_birth)->format('d M Y') ?? '-' }}
@@ -142,7 +197,7 @@
 
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center">
+                            <td colspan="9" class="text-center">
                                 No customers found.
                             </td>
                         </tr>
@@ -209,8 +264,7 @@
                                 id="notification-message"
                                 rows="18"
                                 spellcheck="false"
-                                required
-                            >{{ old('message') }}</textarea>
+                                required>{{ old('message') }}</textarea>
                             <small class="form-text text-muted d-block mt-2">
                                 Available variables:<br>
                                 <code>@{{ $customer_name }}</code>,
@@ -237,8 +291,7 @@
                                 <iframe
                                     id="notification-preview-frame"
                                     title="Customer notification preview"
-                                    style="width: 100%; height: 420px; border: 0; background: #ffffff;"
-                                ></iframe>
+                                    style="width: 100%; height: 420px; border: 0; background: #ffffff;"></iframe>
                             </div>
                         </div>
                     </div>
@@ -276,7 +329,7 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const modalElement = document.getElementById('customerNotificationModal');
             const modal = modalElement ? new bootstrap.Modal(modalElement) : null;
             const selectAll = document.getElementById('select-all-customers');
@@ -361,7 +414,7 @@
                 modal.show();
             }
 
-            selectAll?.addEventListener('change', function () {
+            selectAll?.addEventListener('change', function() {
                 customerCheckboxes.forEach((checkbox) => {
                     checkbox.checked = this.checked;
                 });
@@ -369,7 +422,7 @@
             });
 
             customerCheckboxes.forEach((checkbox) => {
-                checkbox.addEventListener('change', function () {
+                checkbox.addEventListener('change', function() {
                     const allSelected = customerCheckboxes.length > 0 && customerCheckboxes.every((item) => item.checked);
                     if (selectAll) {
                         selectAll.checked = allSelected;
@@ -378,12 +431,12 @@
                 });
             });
 
-            bulkButton?.addEventListener('click', function () {
+            bulkButton?.addEventListener('click', function() {
                 openNotificationModal(selectedCustomers());
             });
 
             document.querySelectorAll('.send-notification-btn').forEach((button) => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const customerId = this.dataset.customerId;
                     const matchingCheckbox = customerCheckboxes.find((checkbox) => checkbox.value === customerId);
                     if (matchingCheckbox) {
@@ -394,7 +447,7 @@
                 });
             });
 
-            templateSelect?.addEventListener('change', function () {
+            templateSelect?.addEventListener('change', function() {
                 const selected = this.options[this.selectedIndex];
                 if (!selected || !selected.dataset.subject) {
                     return;
@@ -411,14 +464,14 @@
             });
 
             let previewTimer;
-            messageInput?.addEventListener('input', function () {
+            messageInput?.addEventListener('input', function() {
                 window.clearTimeout(previewTimer);
                 previewTimer = window.setTimeout(renderPreview, 300);
             });
 
             refreshPreviewButton?.addEventListener('click', renderPreview);
 
-            notificationForm?.addEventListener('submit', function (event) {
+            notificationForm?.addEventListener('submit', function(event) {
                 if (isSubmittingNotification) {
                     event.preventDefault();
                     return;

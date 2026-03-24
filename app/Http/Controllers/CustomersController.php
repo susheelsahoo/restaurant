@@ -7,16 +7,60 @@ use App\Models\Customer;
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Carbon;
 
 class CustomersController extends Controller
 {
     // List
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::withCount('reservations')
+        $customers = Customer::query()
+            ->withCount('reservations')
+            ->withMax('reservations', 'visit_date');
+
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+
+            $customers->where(function ($query) use ($search) {
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereRaw("TRIM(CONCAT(first_name, ' ', COALESCE(last_name, ''))) like ?", ["%{$search}%"]);
+            });
+        }
+
+        if ($request->filled('booking_count')) {
+            $bookingCount = $request->input('booking_count');
+
+            if ($bookingCount === '3_plus') {
+                $customers->having('reservations_count', '>=', 3);
+            } elseif ($bookingCount === '5_plus') {
+                $customers->having('reservations_count', '>=', 5);
+            } elseif ($bookingCount === '10_plus') {
+                $customers->having('reservations_count', '>=', 10);
+            } elseif (is_numeric($bookingCount)) {
+                $customers->having('reservations_count', '=', (int) $bookingCount);
+            }
+        }
+
+        if ($request->filled('last_booking_days') && is_numeric($request->input('last_booking_days'))) {
+            $days = (int) $request->input('last_booking_days');
+            $thresholdDate = Carbon::today()->subDays($days)->toDateString();
+
+            $customers->has('reservations')
+                ->whereDoesntHave('reservations', function ($query) use ($thresholdDate) {
+                    $query->whereDate('visit_date', '>', $thresholdDate);
+                });
+        }
+
+        $customers = $customers
             ->orderByDesc('reservations_count')
+            ->orderByDesc('reservations_max_visit_date')
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
+
         $emailTemplates = EmailTemplate::where('is_active', true)
             ->orderByDesc('id')
             ->get(['id', 'slug', 'subject', 'message']);
