@@ -8,6 +8,7 @@ use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Response;
 
 class CustomersController extends Controller
 {
@@ -85,7 +86,12 @@ class CustomersController extends Controller
             'date_of_anniversary' => 'nullable|date'
         ]);
 
-        Customer::create($request->all());
+        $data = $request->all();
+        $data['is_active'] = $request->boolean('is_active');
+        $data['is_subscribed'] = $request->boolean('is_subscribed', true);
+        $data['unsubscribed_at'] = $data['is_subscribed'] ? null : now();
+
+        Customer::create($data);
 
         return redirect()
             ->route('admin.customers.index')
@@ -109,7 +115,14 @@ class CustomersController extends Controller
             'date_of_anniversary' => 'nullable|date'
         ]);
 
-        $customer->update($request->all());
+        $data = $request->all();
+        $data['is_active'] = $request->boolean('is_active');
+        $data['is_subscribed'] = $request->boolean('is_subscribed');
+        $data['unsubscribed_at'] = $data['is_subscribed']
+            ? null
+            : ($customer->unsubscribed_at ?? now());
+
+        $customer->update($data);
 
         return redirect()
             ->route('admin.customers.index')
@@ -138,10 +151,11 @@ class CustomersController extends Controller
 
         $customers = Customer::whereIn('id', $validated['customer_ids'])
             ->whereNotNull('email')
+            ->where('is_subscribed', true)
             ->get();
 
         if ($customers->isEmpty()) {
-            return back()->with('error', 'No selected customers have a valid email address.');
+            return back()->with('error', 'No selected customers are subscribed and have a valid email address.');
         }
 
         foreach ($customers as $customer) {
@@ -159,5 +173,35 @@ class CustomersController extends Controller
         return redirect()
             ->route('admin.customers.index')
             ->with('success', "Queued {$sentCount} customer notification(s) successfully.");
+    }
+
+    public function unsubscribe(Request $request, Customer $customer): Response
+    {
+        abort_unless($request->hasValidSignature(), 403);
+
+        if ($customer->is_subscribed) {
+            $customer->forceFill([
+                'is_subscribed' => false,
+                'unsubscribed_at' => now(),
+            ])->save();
+        }
+
+        return response(<<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsubscribed</title>
+</head>
+<body style="margin:0;padding:40px;font-family:Arial,sans-serif;background:#f8f9fa;color:#212529;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #dee2e6;border-radius:12px;padding:32px;">
+        <h1 style="margin:0 0 16px;font-size:28px;">You have been unsubscribed</h1>
+        <p style="margin:0 0 12px;line-height:1.6;">You will no longer receive promotional emails from us.</p>
+        <p style="margin:0;line-height:1.6;">Reservation and booking-related emails may still be sent when needed.</p>
+    </div>
+</body>
+</html>
+HTML, 200)->header('Content-Type', 'text/html');
     }
 }

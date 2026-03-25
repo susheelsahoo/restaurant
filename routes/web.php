@@ -58,6 +58,9 @@ Route::get('/wines', [FrontendPageController::class, 'wines'])->name('wines.inde
 Route::get('/wines/category/{slug}', [FrontendPageController::class, 'winesByCategory'])->name('wines.category');
 Route::get('/wines/{slug}', [FrontendPageController::class, 'showWine'])->name('wines.show');
 
+Route::get('/customers/unsubscribe/{customer}', [CustomersController::class, 'unsubscribe'])
+    ->name('customers.unsubscribe');
+
 // Page Slug (must be last, and exclude reserved keywords like admin, blog, auth, storage, etc.)
 Route::get('/{slug}', [FrontendPageController::class, 'index'])
     ->where('slug', '^(?!blog|menu|wines|email|admin|auth|storage|error).*$')

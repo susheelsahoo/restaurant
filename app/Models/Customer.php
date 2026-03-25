@@ -18,13 +18,17 @@ class Customer extends Model
         'phone',
         'date_of_birth',
         'date_of_anniversary',
-        'is_active'
+        'is_active',
+        'is_subscribed',
+        'unsubscribed_at',
     ];
 
     protected $casts = [
         'date_of_birth' => 'date',
         'date_of_anniversary' => 'date',
-        'is_active' => 'boolean'
+        'unsubscribed_at' => 'datetime',
+        'is_active' => 'boolean',
+        'is_subscribed' => 'boolean',
     ];
     public function reservations()
     {

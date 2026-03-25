@@ -139,7 +139,7 @@
 
 
                     {{-- Active --}}
-                    <div class="row mb-0">
+                    <div class="row mb-6">
                         <label class="col-lg-4 col-form-label fw-semibold fs-6">
                             Active
                         </label>
@@ -157,6 +157,32 @@
                                     Yes
                                 </label>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-0">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                            Promotional Emails
+                        </label>
+
+                        <div class="col-lg-8">
+                            <div class="form-check form-check-solid form-switch">
+                                <input class="form-check-input w-45px h-30px"
+                                    type="checkbox"
+                                    name="is_subscribed"
+                                    value="1"
+                                    {{ old('is_subscribed', $customer->is_subscribed ?? true) ? 'checked' : '' }} />
+
+                                <label class="form-check-label ms-2">
+                                    Subscribed
+                                </label>
+                            </div>
+
+                            @if(isset($customer) && $customer->unsubscribed_at)
+                            <div class="text-muted fs-7 mt-2">
+                                Unsubscribed on {{ $customer->unsubscribed_at->format('d M Y H:i') }}
+                            </div>
+                            @endif
                         </div>
                     </div>
 

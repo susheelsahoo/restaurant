@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 
 class CustomerNotificationMail extends Mailable
 {
@@ -22,10 +23,11 @@ class CustomerNotificationMail extends Mailable
     public function build()
     {
         $data = $this->templateData();
+        $renderedMessage = $this->renderBladeString($this->messageTemplate, $data);
 
         return $this
             ->subject($this->renderBladeString($this->subjectTemplate, $data))
-            ->html($this->renderBladeString($this->messageTemplate, $data));
+            ->html($this->appendUnsubscribeFooter($renderedMessage, $data['unsubscribe_url']));
     }
 
     private function templateData(): array
@@ -50,7 +52,26 @@ class CustomerNotificationMail extends Mailable
             'contact_number' => config('app.CONTACT_NUMBER'),
             // Keep a default offer code available for promotional templates.
             'offer_code' => 'WELCOME10',
+            'unsubscribe_url' => URL::temporarySignedRoute(
+                'customers.unsubscribe',
+                now()->addDays(30),
+                ['customer' => $this->customer->id]
+            ),
         ];
+    }
+
+    private function appendUnsubscribeFooter(string $html, string $unsubscribeUrl): string
+    {
+        $footer = '<div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;font-family:Arial,sans-serif;font-size:12px;color:#6b7280;text-align:center;">'
+            . 'If you no longer want promotional emails, '
+            . '<a href="' . e($unsubscribeUrl) . '" style="color:#0d6efd;">unsubscribe here</a>.'
+            . '</div>';
+
+        if (stripos($html, '</body>') !== false) {
+            return preg_replace('/<\/body>/i', $footer . '</body>', $html, 1) ?? ($html . $footer);
+        }
+
+        return $html . $footer;
     }
 
     private function renderBladeString(?string $value, array $data): string

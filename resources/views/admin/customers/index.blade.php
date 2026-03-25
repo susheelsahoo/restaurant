@@ -108,6 +108,7 @@
                             <th>DOB</th>
                             <th>Anniversary</th>
                             <th>Status</th>
+                            <th>Subscription</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -160,6 +161,13 @@
                                 ? '<span class="badge badge-success">Active</span>'
                                 : '<span class="badge badge-danger">Inactive</span>' !!}
                             </td>
+                            <td>
+                                @if($customer->is_subscribed)
+                                <span class="badge badge-light-success">Subscribed</span>
+                                @else
+                                <span class="badge badge-light-danger">Unsubscribed</span>
+                                @endif
+                            </td>
                             <td class="text-end">
 
                                 <a href="{{ route('admin.customers.edit', $customer->id) }}"
@@ -197,7 +205,7 @@
 
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center">
+                            <td colspan="10" class="text-center">
                                 No customers found.
                             </td>
                         </tr>
@@ -268,8 +276,6 @@
                             <small class="form-text text-muted d-block mt-2">
                                 Available variables:<br>
                                 <code>@{{ $customer_name }}</code>,
-                                <code>@{{ $customer_first_name }}</code>,
-                                <code>@{{ $customer_last_name }}</code>,
                                 <code>@{{ $customer_email }}</code>,
                                 <code>@{{ $customer_phone }}</code>,
                                 <code>@{{ $offer_code }}</code>,
@@ -377,13 +383,11 @@
             function placeholderMap() {
                 const firstSelected = selectedCustomers()[0];
                 const firstName = firstSelected?.dataset.customerFirstName || 'Susheel';
-                const lastName = firstSelected?.dataset.customerLastName || 'Sahoo';
-                const fullName = `${firstName} ${lastName}`.trim() || 'Susheel Sahoo';
+                const lastName = firstSelected?.dataset.customerLastName || '';
+                const fullName = `${firstName} ${lastName}`.trim() || 'Susheel';
 
                 return {
                     '@{{ $customer_name }}': fullName,
-                    '@{{ $customer_first_name }}': firstName,
-                    '@{{ $customer_last_name }}': lastName,
                     '@{{ $customer_email }}': firstSelected?.dataset.customerEmail || 'guest@example.com',
                     '@{{ $customer_phone }}': '+36 00 000 0000',
                     '@{{ $offer_code }}': 'WELCOME10',
