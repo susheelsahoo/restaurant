@@ -6,6 +6,7 @@ use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use App\Mail\ContactMessageMail;
 use App\Mail\ContactAutoReplyMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
@@ -40,20 +41,26 @@ class ContactController extends Controller
             'subject'       => 'required|string|max:200',
             'message'       => 'required|string|max:2000',
         ]);
-
-        $contactMessage = ContactMessage::create([
-            'name'    => $request->full_name,
-            'email'   => $request->email,
-            'phone'   => $request->phone,
-            'subject' => $request->subject,
-            'message' => $request->message,
-        ]);
         try {
+            $contactMessage = ContactMessage::create([
+                'name'    => $request->full_name,
+                'email'   => $request->email,
+                'phone'   => $request->phone,
+                'subject' => $request->subject,
+                'message' => $request->message,
+            ]);
+
 
             Mail::to($contactMessage->email)
                 ->bcc(config('app.HOTEL_EMAIL'))
                 ->send(new ContactAutoReplyMail($contactMessage));
         } catch (\Exception $e) {
+            Log::error('Contact form email failed to send.', [
+                'contact_message_id' => $contactMessage->id,
+                'email' => $contactMessage->email,
+                'subject' => $contactMessage->subject,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
         }
 

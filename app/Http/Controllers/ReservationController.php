@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Mail\ReservationStatusMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -61,7 +62,15 @@ class ReservationController extends Controller
             ]);
             DB::commit();
         } catch (\Exception $e) {
-
+            Log::error('Reservation creation failed.', [
+                'customer_name' => $request->customer_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'visit_date' => $request->visit_date,
+                'visit_time' => $request->visit_time,
+                'guests' => $request->guests,
+                'error' => $e->getMessage(),
+            ]);
             DB::rollBack();
             throw $e;
         }
@@ -73,6 +82,13 @@ class ReservationController extends Controller
                     ->send(new ReservationStatusMail($reservation, $template));
             }
         } catch (\Exception $e) {
+            Log::error('Reservation confirmation email failed to send.', [
+                'reservation_id' => $reservation->id ?? null,
+                'booking_code' => $reservation->booking_code ?? null,
+                'customer_id' => $customer->id ?? null,
+                'email' => $customer->email ?? null,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
         }
         return redirect()->back()->with([

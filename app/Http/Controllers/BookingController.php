@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationStatusMail;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -121,6 +122,15 @@ class BookingController extends Controller
                 ->route('admin.bookings.index')
                 ->with('success', 'Booking created successfully!');
         } catch (\Exception $e) {
+            Log::error('Admin booking creation failed.', [
+                'customer_name' => $validated['customer_name'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'visit_date' => $validated['visit_date'] ?? null,
+                'visit_time' => $validated['visit_time'] ?? null,
+                'guests' => $validated['guests'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
             return back()
                 ->withInput()
@@ -187,6 +197,15 @@ class BookingController extends Controller
                 ->route('admin.bookings.index', $redirectParams)
                 ->with('success', 'Booking updated successfully!');
         } catch (\Exception $e) {
+            Log::error('Admin booking update failed.', [
+                'booking_id' => $booking->id,
+                'booking_code' => $booking->booking_code,
+                'status' => $validated['status'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'visit_date' => $validated['visit_date'] ?? null,
+                'visit_time' => $validated['visit_time'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
             return back()
                 ->withInput()
@@ -209,6 +228,11 @@ class BookingController extends Controller
                 ->route('admin.bookings.index', $redirectParams)
                 ->with('success', 'Booking deleted successfully!');
         } catch (\Exception $e) {
+            Log::error('Admin booking delete failed.', [
+                'booking_id' => $booking->id,
+                'booking_code' => $booking->booking_code,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
             return back()->with('error', 'Failed to delete booking.');
         }
@@ -270,6 +294,11 @@ class BookingController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
             ])->deleteFileAfterSend(true);
         } catch (\Exception $e) {
+            Log::error('Booking export failed.', [
+                'format' => $format,
+                'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
             return back()->with('error', 'Failed to export bookings. Please try again.');
         }
@@ -306,6 +335,12 @@ class BookingController extends Controller
                 ->bcc(config('app.HOTEL_EMAIL'))
                 ->queue(new ReservationStatusMail($reservation, $template));
         } catch (\Exception $e) {
+            Log::error('Reservation status email failed to queue.', [
+                'reservation_id' => $reservation->id,
+                'booking_code' => $reservation->booking_code,
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
             report($e);
         }
     }
