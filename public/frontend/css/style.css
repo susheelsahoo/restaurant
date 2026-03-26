@@ -660,8 +660,7 @@ body {
 
 .gallery-subtitle {
   color: #fff;
-  max-width: 600px;
-  margin: 10px auto 0;
+  margin-bottom: 60px;
 }
 
 /* GRID */
