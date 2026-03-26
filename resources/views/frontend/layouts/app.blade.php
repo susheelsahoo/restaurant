@@ -314,7 +314,7 @@
 
             if (routes[path]) routes[path]();
         }
-        async function loadGalleryData(containerId, apiUrl, columnCount = 4) {
+        async function loadGalleryData(containerId, apiUrl) {
 
             try {
                 const container = document.getElementById(containerId);
@@ -327,11 +327,10 @@
 
                 const images = data.data;
 
-                const columns = splitIntoColumns(images, columnCount);
                 const {
                     gridHTML,
                     lightboxHTML
-                } = buildGalleryHTML(columns);
+                } = buildGalleryHTML(images);
 
                 container.innerHTML = gridHTML + lightboxHTML;
 
@@ -340,45 +339,28 @@
             }
         }
 
-        function splitIntoColumns(images, columnCount) {
-
-            const perColumn = Math.ceil(images.length / columnCount);
-
-            return Array.from({
-                    length: columnCount
-                }, (_, i) =>
-                images.slice(i * perColumn, (i + 1) * perColumn)
-            );
-        }
-
-        function buildGalleryHTML(columns) {
+        function buildGalleryHTML(images) {
 
             let lightboxes = [];
+            const sizePattern = ["wide", "tall", "standard", "standard", "wide", "standard", "tall", "standard"];
 
-            const gridHTML = columns.map(col => {
+            const gridHTML = images.map((img, index) => {
+                const sizeClass = sizePattern[index % sizePattern.length];
 
-                const colHTML = col.map((img, index) => {
-
-                    const sizeClass = index % 2 === 0 ? "small" : "tall";
-
-                    lightboxes.push(`
+                lightboxes.push(`
     <div id="img-${img.id}" class="image-lightbox">
         <a href="#gallery" class="lightbox-close">×</a>
         <img src="/storage/${img.image_path}">
     </div>
     `);
 
-                    return `
-    <div class="gallery-item ${sizeClass}">
+                return `
+    <div class="gallery-item gallery-item--${sizeClass}">
         <a href="#img-${img.id}">
             <img src="/storage/${img.image_path}" loading="lazy">
         </a>
     </div>
     `;
-                }).join("");
-
-                return `<div class="gallery-col">${colHTML}</div>`;
-
             }).join("");
 
             return {
