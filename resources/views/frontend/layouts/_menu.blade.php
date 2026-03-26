@@ -10,16 +10,14 @@ $isHome = request()->is('/') || request()->is('home');
         </a>
 
 
-        <button class="navbar-toggler d-lg-none"
+        <button class="navbar-toggler custom-toggler d-lg-none"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#mainNav"
             aria-controls="mainNav"
             aria-expanded="false"
             aria-label="Toggle navigation">
-
-            <i class="fa fa-navicon" style="color:#fff; font-size:28px;"></i>
-
+            <span class="navbar-toggler-icon"></span>
         </button>
 
 
