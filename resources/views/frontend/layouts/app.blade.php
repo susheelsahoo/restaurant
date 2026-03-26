@@ -210,33 +210,38 @@
 
         document.getElementById("year").textContent = new Date().getFullYear();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    @if(session('alert_text') || $errors->any())
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    @endif
     @if(session('alert_text'))
     <script>
-        Swal.fire({
-            icon: @json(session('alert_icon', 'success')),
-            title: @json(session('alert_title', 'Success')),
-            text: @json(session('alert_text')),
-            background: '#0b0b0b',
-            color: '#ffffff',
-            iconColor: '#d8b46a',
-            confirmButtonColor: '#d8b46a',
-            customClass: {
-                popup: 'rounded-4'
-            }
+        window.addEventListener('load', function() {
+            Swal.fire({
+                icon: @json(session('alert_icon', 'success')),
+                title: @json(session('alert_title', 'Success')),
+                text: @json(session('alert_text')),
+                background: '#0b0b0b',
+                color: '#ffffff',
+                iconColor: '#d8b46a',
+                confirmButtonColor: '#d8b46a',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            });
         });
     </script>
     @endif
 
     @if($errors->any())
     <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Something Went Wrong',
-            html: `{!! implode('<br>', $errors->all()) !!}`,
-            confirmButtonColor: '#b10000'
+        window.addEventListener('load', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Something Went Wrong',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#b10000'
+            });
         });
     </script>
     @endif
@@ -320,9 +325,12 @@
                 const container = document.getElementById(containerId);
                 if (!container) return;
 
-                const {
-                    data
-                } = await axios.get(apiUrl);
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
                 if (!data?.status) return;
 
                 const images = data.data;
@@ -350,14 +358,23 @@
                 lightboxes.push(`
     <div id="img-${img.id}" class="image-lightbox">
         <a href="#gallery" class="lightbox-close">×</a>
-        <img src="/storage/${img.image_path}">
+        <img
+            src="${img.display_url || `/storage/${img.image_path}`}"
+            ${img.width ? `width="${img.width}"` : ""}
+            ${img.height ? `height="${img.height}"` : ""}>
     </div>
     `);
 
-                return `
+                    return `
     <div class="gallery-item gallery-item--${sizeClass}">
         <a href="#img-${img.id}">
-            <img src="/storage/${img.image_path}" loading="lazy">
+            <img
+                src="${img.display_url || `/storage/${img.image_path}`}"
+                loading="${index < 4 ? 'eager' : 'lazy'}"
+                fetchpriority="${index === 0 ? 'high' : 'auto'}"
+                decoding="async"
+                ${img.width ? `width="${img.width}"` : ""}
+                ${img.height ? `height="${img.height}"` : ""}>
         </a>
     </div>
     `;
@@ -373,9 +390,12 @@
                 const container = document.getElementById(containerId);
                 if (!container) return;
 
-                const {
-                    data
-                } = await axios.get(apiUrl);
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
 
                 if (!data?.status) return;
 

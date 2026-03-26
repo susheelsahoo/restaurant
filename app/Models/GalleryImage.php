@@ -12,6 +12,8 @@ class GalleryImage extends Model
     protected $fillable = [
         'title',
         'image_path',
+        'image_width',
+        'image_height',
         'home_display',
         'gallery_display',
         'is_active',

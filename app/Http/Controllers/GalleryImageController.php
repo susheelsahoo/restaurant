@@ -4,12 +4,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\GalleryImage;
+use App\Services\GalleryImageVariantService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryImageController extends Controller
 {
+    public function __construct(private GalleryImageVariantService $galleryImageVariantService)
+    {
+    }
+
     public function index()
     {
         $galleryImages = GalleryImage::latest()->get();
@@ -31,12 +36,17 @@ class GalleryImageController extends Controller
         ]);
 
         $path = $request->file('image')->store('gallery_images', 'public');
+        $dimensions = @getimagesize($request->file('image')->getRealPath()) ?: [null, null];
 
         GalleryImage::create([
             'title' => $request->title,
             'image_path' => $path,
+            'image_width' => $dimensions[0],
+            'image_height' => $dimensions[1],
             'is_active' => $request->has('is_active'),
         ]);
+
+        $this->galleryImageVariantService->getDisplayVariant($path);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Image added successfully!');
     }
@@ -57,11 +67,15 @@ class GalleryImageController extends Controller
 
         foreach ($request->file('images', []) as $image) {
             $path = $image->store('gallery', 'public');
+            $dimensions = @getimagesize($image->getRealPath()) ?: [null, null];
+            $this->galleryImageVariantService->getDisplayVariant($path);
 
             $files[] = [
                 'name' => $image->getClientOriginalName(),
                 'size' => $image->getSize(),
                 'url'  => asset('storage/' . $path),
+                'width' => $dimensions[0],
+                'height' => $dimensions[1],
             ];
         }
 
@@ -80,9 +94,14 @@ class GalleryImageController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            $this->galleryImageVariantService->deleteDisplayVariants($image->image_path);
             Storage::disk('public')->delete($image->image_path);
             $path = $request->file('image')->store('gallery_images', 'public');
             $image->image_path = $path;
+            $dimensions = @getimagesize($request->file('image')->getRealPath()) ?: [null, null];
+            $image->image_width = $dimensions[0];
+            $image->image_height = $dimensions[1];
+            $this->galleryImageVariantService->getDisplayVariant($path);
         }
 
         $image->title = $request->title;
@@ -115,6 +134,7 @@ class GalleryImageController extends Controller
     public function destroy($id)
     {
         $image = GalleryImage::findOrFail($id);
+        $this->galleryImageVariantService->deleteDisplayVariants($image->image_path);
         Storage::disk('public')->delete($image->image_path);
         $image->delete();
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Services\GalleryImageVariantService;
 use App\Models\Banner;
 use App\Models\Page;
 use App\Models\Blog;
@@ -17,6 +18,9 @@ use Illuminate\Http\JsonResponse;
 
 class PageController extends Controller
 {
+    public function __construct(private GalleryImageVariantService $galleryImageVariantService)
+    {
+    }
 
     public function index($slug = 'home')
     {
@@ -34,8 +38,20 @@ class PageController extends Controller
         $images = GalleryImage::where('home_display', 1)
             ->where('is_active', 1)
             ->latest()
-            ->select('id', 'image_path')
+            ->select('id', 'image_path', 'image_width', 'image_height')
             ->get();
+
+        $images = $images->map(function (GalleryImage $image) {
+            $variant = $this->galleryImageVariantService->getDisplayVariant($image->image_path);
+
+            return [
+                'id' => $image->id,
+                'image_path' => $image->image_path,
+                'display_url' => $variant['url'] ?? asset('storage/' . $image->image_path),
+                'width' => $variant['width'] ?? $image->image_width,
+                'height' => $variant['height'] ?? $image->image_height,
+            ];
+        })->values();
 
         return response()->json([
             'status' => true,
