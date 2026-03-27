@@ -24,7 +24,7 @@ class PageController extends Controller
 
     public function index($slug = 'home')
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->first();
+        $page = Page::notDeleted()->where('slug', $slug)->where('is_active', true)->first();
 
         if (!$page) {
             abort(404, 'Page or Banner not found');
@@ -60,7 +60,7 @@ class PageController extends Controller
     }
     public function homePageBlog(): JsonResponse
     {
-        $blogs = Blog::where('status', 'published')
+        $blogs = Blog::published()
             ->latest()
             ->take(3)
             ->get(['id', 'title', 'slug', 'content', 'image', 'created_at']);
@@ -74,7 +74,7 @@ class PageController extends Controller
     public function blogs()
     {
         // Recent posts (all except featured and side posts)
-        $blogs = Blog::where('status', 'published')
+        $blogs = Blog::published()
             ->latest()
             ->paginate(9);
         return view('frontend.blog.index', compact('blogs'));
@@ -82,12 +82,12 @@ class PageController extends Controller
 
     public function showBlog($slug)
     {
-        $blog = Blog::where('slug', $slug)
-            ->where('status', 'published')
+        $blog = Blog::published()
+            ->where('slug', $slug)
             ->firstOrFail();
 
         // Get related posts (same category, excluding current)
-        $relatedBlogs = Blog::where('status', 'published')
+        $relatedBlogs = Blog::published()
             ->where('id', '!=', $blog->id)
             ->when($blog->category_id, function ($query) use ($blog) {
                 $query->where('category_id', $blog->category_id);
@@ -104,19 +104,19 @@ class PageController extends Controller
     {
         $category = Category::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        $featured = Blog::where('is_published', true)
+        $featured = Blog::published()
             ->where('category_id', $category->id)
             ->latest()
             ->first();
 
-        $sidePosts = Blog::where('is_published', true)
+        $sidePosts = Blog::published()
             ->where('category_id', $category->id)
             ->latest()
             ->skip(1)
             ->take(3)
             ->get();
 
-        $blogs = Blog::where('is_published', true)
+        $blogs = Blog::published()
             ->where('category_id', $category->id)
             ->latest()
             ->skip(4)
@@ -194,7 +194,7 @@ class PageController extends Controller
 
     public function show($slug)
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $page = Page::notDeleted()->where('slug', $slug)->where('is_active', true)->firstOrFail();
         return view('frontend.page', compact('page'));
     }
 }

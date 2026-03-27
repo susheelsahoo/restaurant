@@ -10,7 +10,7 @@ class PageController extends Controller
 {
     public function index()
     {
-        $pages = Page::latest()->get();
+        $pages = Page::notDeleted()->latest()->get();
         return view('pages.pages.index', compact('pages'));
     }
 
@@ -33,6 +33,7 @@ class PageController extends Controller
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['is_active'] = $request->has('is_active');
+        $validated['is_deleted'] = false;
 
         Page::create($validated);
 
@@ -58,6 +59,7 @@ class PageController extends Controller
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['is_active'] = $request->has('is_active');
+        $validated['is_deleted'] = false;
 
         $page->update($validated);
 
@@ -66,13 +68,13 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
-        $page->delete();
+        $page->update(['is_deleted' => true]);
         return redirect()->route('admin.pages.index')->with('success', 'Page deleted!');
     }
 
     public function showPage($slug)
     {
-        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $page = Page::notDeleted()->where('slug', $slug)->where('is_active', true)->firstOrFail();
         return view('frontend.page', compact('page'));
     }
 }

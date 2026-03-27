@@ -20,6 +20,7 @@ class GenerateSitemap extends Command
             ->add(Url::create(url('/'))->setPriority(1.0));
 
         Page::query()
+            ->where('is_deleted', false)
             ->where('is_active', true)
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
@@ -39,6 +40,7 @@ class GenerateSitemap extends Command
         $sitemap->add(Url::create(url('/blogs')));
 
         $blogQuery = Blog::query()
+            ->where('is_deleted', false)
             ->whereNotNull('slug')
             ->where('slug', '!=', '');
 

@@ -39,9 +39,9 @@
                         <tr>
                             <td>{{ $blog->title ?? 'No Title' }}</td>
                             <td>
-                                {!! $blog->is_active
-                                ? '<span class="badge badge-success">Active</span>'
-                                : '<span class="badge badge-danger">Inactive</span>' !!}
+                                {!! $blog->is_published
+                                ? '<span class="badge badge-success">Published</span>'
+                                : '<span class="badge badge-warning">Draft</span>' !!}
                             </td>
                             <td>
                                 <a href="{{ route('admin.blogs.edit', $blog->id) }}" class="btn btn-sm btn-warning">

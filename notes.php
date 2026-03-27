@@ -1,6 +1,5 @@
-ALTER TABLE `customers` ADD `is_subscribed` TINYINT(1) NULL DEFAULT '1' AFTER `country`, ADD `unsubscribed_at` TIMESTAMP NULL DEFAULT NULL AFTER `is_subscribed`;
+ALTER TABLE `blogs` ADD `is_deleted` TINYINT(1) NOT NULL DEFAULT '0' AFTER `is_published`;
+ALTER TABLE `pages` ADD `is_deleted` TINYINT(1) NOT NULL DEFAULT '0' AFTER `is_active`;
 
-
-ALTER TABLE `gallery_images`
-ADD COLUMN `image_width` INT UNSIGNED NULL AFTER `image_path`,
-ADD COLUMN `image_height` INT UNSIGNED NULL AFTER `image_width`;
+UPDATE `pages` SET `is_deleted` = '0'
+UPDATE `blogs` SET `is_deleted` = '0'

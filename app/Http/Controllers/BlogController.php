@@ -13,8 +13,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-
-        $blogs = Blog::whereIN('status', ['published', 'draft'])
+        $blogs = Blog::notDeleted()
             ->latest()
             ->paginate(9);
 
@@ -45,6 +44,7 @@ class BlogController extends Controller
 
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_published'] = $request->has('is_published');
+        $data['is_deleted'] = false;
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('blogs', 'public');
@@ -86,6 +86,7 @@ class BlogController extends Controller
 
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['is_published'] = $request->has('is_published');
+        $data['is_deleted'] = false;
 
         if ($request->hasFile('image')) {
             if ($blog->image) {
@@ -102,19 +103,15 @@ class BlogController extends Controller
 
     public function destroy(Blog $blog)
     {
-        if ($blog->image) {
-            Storage::disk('public')->delete($blog->image);
-        }
-        $blog->tags()->detach();
-        $blog->delete();
+        $blog->update(['is_deleted' => true]);
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Blog deleted.');
+        return redirect()->route('admin.blogs.index')->with('success', 'Blog deleted successfully.');
     }
 
     // Public blog view by slug
     public function showPublic($slug)
     {
-        $blog = Blog::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        $blog = Blog::published()->where('slug', $slug)->firstOrFail();
         return view('frontend.blog.show', compact('blog'));
     }
 }
