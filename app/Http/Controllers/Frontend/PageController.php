@@ -47,6 +47,7 @@ class PageController extends Controller
             return [
                 'id' => $image->id,
                 'image_path' => $image->image_path,
+                'full_url' => asset('storage/' . $image->image_path),
                 'display_url' => $variant['url'] ?? asset('storage/' . $image->image_path),
                 'width' => $variant['width'] ?? $image->image_width,
                 'height' => $variant['height'] ?? $image->image_height,

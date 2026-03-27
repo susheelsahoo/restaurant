@@ -365,9 +365,8 @@
     <div id="img-${img.id}" class="image-lightbox">
         <a href="#gallery" class="lightbox-close">×</a>
         <img
-            src="${img.display_url || `/storage/${img.image_path}`}"
-            ${img.width ? `width="${img.width}"` : ""}
-            ${img.height ? `height="${img.height}"` : ""}>
+            src="${img.full_url || `/storage/${img.image_path}`}"
+            alt="${img.title || 'Gallery image'}">
     </div>
     `);
 
