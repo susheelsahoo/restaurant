@@ -1,6 +1,6 @@
 body {
   background: black;
-  font-family: "Poppins", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
   color: #fff;
   overflow-x: hidden;
 }
@@ -3098,6 +3098,92 @@ body {
 .footer-bottom p,
 .static-page-updated {
   color: var(--frontend-text-muted-accessible);
+}
+
+/* ================= HOME PAGE TYPOGRAPHY ================= */
+
+.hero-section,
+.about-section,
+.menu-section,
+.gallery-section,
+.reservation-section,
+.blog-section {
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: #2f2419;
+}
+
+.hero-section h1,
+.h2-title,
+.menu-block h2,
+.menu-block h3,
+.menu-card h6,
+.reservation-card h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.02em;
+  color: #f1e2c2;
+}
+
+.hero-text h1 {
+  font-size: clamp(2.6rem, 4vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero-text p,
+.about-section p,
+.menu-section p,
+.gallery-subtitle,
+.blog-subtitle,
+.reservation-card p,
+.reservation-form label {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #d8c8b0;
+}
+
+.h2-title {
+  font-size: clamp(2.2rem, 3vw, 3.4rem);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.menu-block h2 {
+  font-size: clamp(2rem, 2.6vw, 3rem);
+  font-weight: 700;
+}
+
+.menu-block h3,
+.menu-card h6 {
+  font-weight: 600;
+}
+
+.menu-card p,
+.stars {
+  margin-bottom: 0;
+}
+
+.menu-card p {
+  color: #d8c8b0;
+}
+
+.stars {
+  color: #c79a3b;
+  letter-spacing: 0.12em;
+}
+
+.btn-primary-gold,
+.btn-outline-gold,
+.btn-outline-warning {
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.reservation-form label {
+  font-weight: 600;
+  margin-bottom: 0.45rem;
 }
 
 /* ================= SHARED CONTENT ================= */
