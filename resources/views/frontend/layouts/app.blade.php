@@ -356,11 +356,8 @@
         function buildGalleryHTML(images) {
 
             let lightboxes = [];
-            const sizePattern = ["wide", "tall", "standard", "standard", "wide", "standard", "tall", "standard"];
 
             const gridHTML = images.map((img, index) => {
-                const sizeClass = sizePattern[index % sizePattern.length];
-
                 lightboxes.push(`
     <div id="img-${img.id}" class="image-lightbox">
         <a href="#gallery" class="lightbox-close">×</a>
@@ -370,8 +367,8 @@
     </div>
     `);
 
-                    return `
-    <div class="gallery-item gallery-item--${sizeClass}">
+                return `
+    <div class="gallery-item">
         <a href="#img-${img.id}">
             <img
                 src="${img.display_url || `/storage/${img.image_path}`}"
