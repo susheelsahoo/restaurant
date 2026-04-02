@@ -91,7 +91,7 @@ class BookingController extends Controller
 
         try {
             // Create or find customer
-            [$firstName, $lastName] = $this->parseCustomerName($validated['customer_name']);
+            ['firstName' => $firstName, 'lastName' => $lastName] = $this->parseCustomerName($validated['customer_name']);
 
             $customer = Customer::firstOrCreate(
                 ['email' => $validated['email'] ?: null, 'phone' => $validated['phone']],
