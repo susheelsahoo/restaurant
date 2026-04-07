@@ -41,6 +41,118 @@
 
         gtag('config', 'G-MQ62376790');
     </script>
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@graph": [
+
+            {
+            "@type": "Restaurant",
+            "@id": "https://tifliszo.hu/#restaurant",
+            "name": "Tifliso Restaurant",
+            "url": "https://tifliszo.hu/",
+            "logo": "https://drive.google.com/uc?export=view&id=1MqZSw00uIatguzt5n5ADT645WzT-AICd",
+            "image": "https://tifliszo.hu/frontend/images/logo_wt.svg",
+            "telephone": "+36205811111",
+            "priceRange": "€€",
+            "servesCuisine": "Georgian",
+            "menu": "https://tifliszo.hu/menu",
+            "acceptsReservations": "True",
+
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.5",
+                "reviewCount": "1991"
+            },
+
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Ráday utca 11",
+                "addressLocality": "Budapest",
+                "postalCode": "1092",
+                "addressCountry": "HU"
+            },
+
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "47.487457",
+                "longitude": "19.060309"
+            },
+
+            "openingHoursSpecification": [
+                {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                ],
+                "opens": "12:00",
+                "closes": "23:00"
+                }
+            ],
+
+            "sameAs": [
+                "https://www.facebook.com/tiflisorestaurant/",
+                "https://www.instagram.com/tifliszorestaurant",
+                "https://www.tripadvisor.it/Restaurant_Review-g274887-d19815316-Reviews-Tifliszo_Etterem-Budapest_Central_Hungary.html"
+            ]
+            },
+
+            {
+            "@type": "Organization",
+            "@id": "https://tifliszo.hu/#organization",
+            "name": "Tifliso Restaurant",
+            "url": "https://tifliszo.hu/",
+            "logo": "https://drive.google.com/uc?export=view&id=1MqZSw00uIatguzt5n5ADT645WzT-AICd",
+            "sameAs": [
+                "https://www.facebook.com/tiflisorestaurant/",
+                "https://www.instagram.com/tifliszorestaurant"
+            ]
+            },
+
+            {
+            "@type": "WebSite",
+            "@id": "https://tifliszo.hu/#website",
+            "url": "https://tifliszo.hu/",
+            "name": "Tifliso Restaurant",
+            "publisher": {
+                "@id": "https://tifliszo.hu/#organization"
+            }
+            },
+
+            {
+            "@type": "BreadcrumbList",
+            "@id": "https://tifliszo.hu/#breadcrumb",
+            "itemListElement": [
+                {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://tifliszo.hu/"
+                },
+                {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Menu",
+                "item": "https://tifliszo.hu/menu"
+                },
+                {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Contact",
+                "item": "https://tifliszo.hu/contact-us"
+                }
+            ]
+            }
+
+        ]
+        }
+    </script>
 </head>
 
 <body>
