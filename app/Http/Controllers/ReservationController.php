@@ -19,7 +19,7 @@ class ReservationController extends Controller
 {
     public function create()
     {
-        return redirect()->to(url('/') . '#reservation');
+        return redirect()->to(url('/') . '?scroll=reservation#reservation');
     }
 
     public function store(Request $request)

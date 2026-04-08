@@ -235,8 +235,16 @@
     </footer>
 
     <script>
+        let reservationHashScrollAttempts = 0;
+
+        function shouldScrollToReservation() {
+            const params = new URLSearchParams(window.location.search);
+            return window.location.hash === '#reservation' || params.get('scroll') === 'reservation';
+        }
+
         function scrollToHomepageHashTarget() {
-            if (window.location.hash !== '#reservation') {
+            if (!shouldScrollToReservation()) {
+                reservationHashScrollAttempts = 0;
                 return;
             }
 
@@ -253,6 +261,17 @@
                 top: Math.max(targetTop, 0),
                 behavior: 'smooth'
             });
+
+            if (window.location.hash !== '#reservation') {
+                history.replaceState(null, '', `${window.location.pathname}${window.location.search}#reservation`);
+            }
+
+            // Re-apply the scroll a few times because gallery/blog content above this
+            // section is injected after load and can shift the page down on production.
+            if (reservationHashScrollAttempts < 5) {
+                reservationHashScrollAttempts += 1;
+                setTimeout(scrollToHomepageHashTarget, 250);
+            }
         }
 
         function initCustomReservationSelects(root = document) {
@@ -410,6 +429,10 @@
             setTimeout(scrollToHomepageHashTarget, 150);
         });
 
+        window.addEventListener('load', () => {
+            setTimeout(scrollToHomepageHashTarget, 100);
+        });
+
         window.addEventListener('hashchange', scrollToHomepageHashTarget);
         document.addEventListener('submit', function(e) {
             if (e.target.tagName === 'FORM') {
@@ -482,6 +505,7 @@
                 } = buildGalleryHTML(images);
 
                 container.innerHTML = gridHTML + lightboxHTML;
+                scrollToHomepageHashTarget();
 
             } catch (error) {
                 console.error("Gallery Load Failed", error);
@@ -539,6 +563,7 @@
                 const blogs = data.data;
 
                 container.innerHTML = buildBlogHTML(blogs);
+                scrollToHomepageHashTarget();
 
             } catch (error) {
                 console.error("Blog Load Failed", error);
