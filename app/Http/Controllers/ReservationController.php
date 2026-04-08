@@ -40,27 +40,12 @@ class ReservationController extends Controller
             $nameParts = explode(' ', trim($validated['customer_name']), 2);
             $firstName = $nameParts[0];
             $lastName  = $nameParts[1] ?? null;
-
-            $customer = Customer::where('email', $validated['email'])
-                ->orWhere('phone', $validated['phone'])
-                ->first();
-
-            if (!$customer) {
-                $customer = Customer::create([
-                    'first_name' => $firstName,
-                    'last_name'  => $lastName,
-                    'email'      => $validated['email'],
-                    'phone'      => $validated['phone'],
-                    'is_active'  => 1,
-                ]);
-            } else {
-                $customer->update([
-                    'first_name' => $firstName,
-                    'last_name'  => $lastName,
-                    'email'      => $validated['email'],
-                    'phone'      => $validated['phone'],
-                ]);
-            }
+            $customer = $this->resolveCustomer(
+                email: $validated['email'],
+                phone: $validated['phone'],
+                firstName: $firstName,
+                lastName: $lastName
+            );
 
             $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
 
@@ -118,6 +103,56 @@ class ReservationController extends Controller
     private function generateBookingCode(): string
     {
         return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
+    }
+
+    private function resolveCustomer(string $email, string $phone, string $firstName, ?string $lastName): Customer
+    {
+        $customerByEmailAndPhone = Customer::where('email', $email)
+            ->where('phone', $phone)
+            ->first();
+        $customerByEmail = Customer::where('email', $email)->first();
+        $customerByPhone = Customer::where('phone', $phone)->first();
+
+        if ($customerByEmailAndPhone) {
+            $customerByEmailAndPhone->update([
+                'first_name' => $firstName,
+                'last_name'  => $lastName,
+                'is_active'  => 1,
+            ]);
+
+            return $customerByEmailAndPhone;
+        }
+
+        if ($customerByEmail) {
+            $customerByEmail->update([
+                'first_name' => $firstName,
+                'last_name'  => $lastName,
+                'phone'      => $phone,
+                'is_active'  => 1,
+            ]);
+
+            return $customerByEmail;
+        }
+
+        if ($customerByPhone) {
+            $customerByPhone->update([
+                'first_name' => $firstName,
+                'last_name'  => $lastName,
+                'email'      => $email,
+                'phone'      => $phone,
+                'is_active'  => 1,
+            ]);
+
+            return $customerByPhone;
+        }
+
+        return Customer::create([
+            'first_name' => $firstName,
+            'last_name'  => $lastName,
+            'email'      => $email,
+            'phone'      => $phone,
+            'is_active'  => 1,
+        ]);
     }
 
     public function slots(string $date, BookingService $service): JsonResponse

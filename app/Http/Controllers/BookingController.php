@@ -92,16 +92,12 @@ class BookingController extends Controller
         try {
             // Create or find customer
             ['firstName' => $firstName, 'lastName' => $lastName] = $this->parseCustomerName($validated['customer_name']);
-
-            $customer = Customer::firstOrCreate(
-                ['email' => $validated['email'] ?: null, 'phone' => $validated['phone']],
-                [
-                    'first_name' => $firstName,
-                    'last_name'  => $lastName,
-                    'email'      => $validated['email'] ?: null,
-                    'phone'      => $validated['phone'],
-                    'is_active'  => true,
-                ]
+            $customer = $this->resolveCustomer(
+                currentCustomer: null,
+                email: $validated['email'] ?: null,
+                phone: $validated['phone'],
+                firstName: $firstName,
+                lastName: $lastName
             );
 
             $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
@@ -177,18 +173,17 @@ class BookingController extends Controller
             $oldStatusId = $booking->status_id;
             $newStatus = ReservationStatus::where('name', $validated['status'])->firstOrFail();
             $statusChanged = $oldStatusId !== $newStatus->id;
-
-            if ($booking->customer) {
-                $booking->customer->update([
-                    'first_name' => $firstName,
-                    'last_name'  => $lastName,
-                    'email'      => $validated['email'] ?: null,
-                    'phone'      => $validated['phone'] ?: null,
-                ]);
-            }
+            $customer = $this->resolveCustomer(
+                currentCustomer: $booking->customer,
+                email: $validated['email'] ?: null,
+                phone: $validated['phone'] ?: null,
+                firstName: $firstName,
+                lastName: $lastName
+            );
 
             // Update booking
             $booking->update([
+                'customer_id' => $customer?->id,
                 'customer_name' => $validated['customer_name'],
                 'phone'      => $validated['phone'] ?: null,
                 'email'      => $validated['email'] ?: null,
@@ -333,6 +328,47 @@ class BookingController extends Controller
             'firstName' => $parts[0],
             'lastName'  => $parts[1] ?? null,
         ];
+    }
+
+    private function resolveCustomer(?Customer $currentCustomer, ?string $email, ?string $phone, string $firstName, ?string $lastName): ?Customer
+    {
+        $email = $email ?: null;
+        $phone = $phone ?: null;
+
+        $customerByEmailAndPhone = ($email && $phone)
+            ? Customer::where('email', $email)->where('phone', $phone)->first()
+            : null;
+        $customerByEmail = $email ? Customer::where('email', $email)->first() : null;
+        $customerByPhone = $phone ? Customer::where('phone', $phone)->first() : null;
+
+        $targetCustomer = $customerByEmailAndPhone
+            ?? (($customerByEmail && (!$currentCustomer || $customerByEmail->id !== $currentCustomer->id)) ? $customerByEmail : null)
+            ?? (($customerByPhone && (!$currentCustomer || $customerByPhone->id !== $currentCustomer->id)) ? $customerByPhone : null)
+            ?? $currentCustomer;
+
+        if ($targetCustomer) {
+            $targetCustomer->update([
+                'first_name' => $firstName,
+                'last_name'  => $lastName,
+                'email'      => $email,
+                'phone'      => $phone,
+                'is_active'  => true,
+            ]);
+
+            return $targetCustomer;
+        }
+
+        if (!$email && !$phone) {
+            return null;
+        }
+
+        return Customer::create([
+            'first_name' => $firstName,
+            'last_name'  => $lastName,
+            'email'      => $email,
+            'phone'      => $phone,
+            'is_active'  => true,
+        ]);
     }
 
     /**
