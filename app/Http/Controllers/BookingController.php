@@ -108,7 +108,11 @@ class BookingController extends Controller
             $reservation = Reservation::create([
                 'booking_code' => $this->generateBookingCode(),
                 'customer_id'  => $customer->id,
+                'customer_name' => $validated['customer_name'],
+                'phone'        => $validated['phone'],
+                'email'        => $validated['email'] ?: null,
                 'status_id'    => $pendingStatus->id,
+                'status'       => $pendingStatus->name,
                 'visit_date'   => $validated['visit_date'],
                 'visit_time'   => $validated['visit_time'],
                 'guests'       => $validated['guests'],
@@ -166,15 +170,30 @@ class BookingController extends Controller
         ]);
 
         try {
+            ['firstName' => $firstName, 'lastName' => $lastName] = $this->parseCustomerName($validated['customer_name']);
+
             // Get old status before update
             $oldStatus = $booking->reservationStatus;
             $oldStatusId = $booking->status_id;
             $newStatus = ReservationStatus::where('name', $validated['status'])->firstOrFail();
             $statusChanged = $oldStatusId !== $newStatus->id;
 
+            if ($booking->customer) {
+                $booking->customer->update([
+                    'first_name' => $firstName,
+                    'last_name'  => $lastName,
+                    'email'      => $validated['email'] ?: null,
+                    'phone'      => $validated['phone'] ?: null,
+                ]);
+            }
+
             // Update booking
             $booking->update([
+                'customer_name' => $validated['customer_name'],
+                'phone'      => $validated['phone'] ?: null,
+                'email'      => $validated['email'] ?: null,
                 'status_id'  => $newStatus->id,
+                'status'     => $newStatus->name,
                 'visit_date' => $validated['visit_date'],
                 'visit_time' => $validated['visit_time'],
                 'guests'     => $validated['guests'],
@@ -189,7 +208,7 @@ class BookingController extends Controller
 
             // Redirect back to the old status list, not the new status
             $redirectParams = array_filter([
-                'status' => $oldStatus->name,
+                'status' => $oldStatus?->name,
                 'select_date' => $request->input('select_date'),
                 'search' => $request->input('search'),
             ]);

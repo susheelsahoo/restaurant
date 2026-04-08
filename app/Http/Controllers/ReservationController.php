@@ -17,36 +17,48 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
+    public function create()
+    {
+        return redirect()->to(url('/') . '#reservation');
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'visit_date'        => 'required|date',
             'visit_time'        => 'required',
             'guests'            => 'required|integer|min:1',
             'customer_name'     => 'required|string|max:255',
             'phone'             => 'required|string|max:20',
             'email'             => 'required|email',
+            'notes'             => 'nullable|string|max:2000',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $nameParts = explode(' ', trim($request->customer_name), 2);
-
+            $nameParts = explode(' ', trim($validated['customer_name']), 2);
             $firstName = $nameParts[0];
             $lastName  = $nameParts[1] ?? null;
-            $customer = Customer::where('email', $request->email)
-                ->orWhere('phone', $request->phone)
+
+            $customer = Customer::where('email', $validated['email'])
+                ->orWhere('phone', $validated['phone'])
                 ->first();
 
             if (!$customer) {
-
                 $customer = Customer::create([
                     'first_name' => $firstName,
                     'last_name'  => $lastName,
-                    'email'      => $request->email,
-                    'phone'      => $request->phone,
+                    'email'      => $validated['email'],
+                    'phone'      => $validated['phone'],
                     'is_active'  => 1,
+                ]);
+            } else {
+                $customer->update([
+                    'first_name' => $firstName,
+                    'last_name'  => $lastName,
+                    'email'      => $validated['email'],
+                    'phone'      => $validated['phone'],
                 ]);
             }
 
@@ -55,20 +67,26 @@ class ReservationController extends Controller
             $reservation = Reservation::create([
                 'booking_code'  => $this->generateBookingCode(),
                 'customer_id'   => $customer->id,
-                'visit_date'    => $request->visit_date,
-                'visit_time'    => $request->visit_time,
-                'guests'        => $request->guests,
+                'customer_name' => $validated['customer_name'],
+                'phone'         => $validated['phone'],
+                'email'         => $validated['email'],
+                'visit_date'    => $validated['visit_date'],
+                'visit_time'    => $validated['visit_time'],
+                'guests'        => $validated['guests'],
                 'status_id'     => $pendingStatus->id,
+                'status'        => $pendingStatus->name,
+                'notes'         => $validated['notes'] ?? null,
             ]);
             DB::commit();
         } catch (\Exception $e) {
             Log::error('Reservation creation failed.', [
-                'customer_name' => $request->customer_name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'visit_date' => $request->visit_date,
-                'visit_time' => $request->visit_time,
-                'guests' => $request->guests,
+                'customer_name' => $validated['customer_name'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'visit_date' => $validated['visit_date'] ?? null,
+                'visit_time' => $validated['visit_time'] ?? null,
+                'guests' => $validated['guests'] ?? null,
+                'notes' => $validated['notes'] ?? null,
                 'error' => $e->getMessage(),
             ]);
             DB::rollBack();

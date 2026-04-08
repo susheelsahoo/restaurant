@@ -235,6 +235,26 @@
     </footer>
 
     <script>
+        function scrollToHomepageHashTarget() {
+            if (window.location.hash !== '#reservation') {
+                return;
+            }
+
+            const target = document.getElementById('reservation');
+            if (!target) {
+                return;
+            }
+
+            const navbar = document.querySelector('.navbar');
+            const navbarOffset = navbar ? navbar.offsetHeight : 0;
+            const targetTop = target.getBoundingClientRect().top + window.pageYOffset - navbarOffset - 16;
+
+            window.scrollTo({
+                top: Math.max(targetTop, 0),
+                behavior: 'smooth'
+            });
+        }
+
         function initCustomReservationSelects(root = document) {
             const selects = root.querySelectorAll('.reservation-form select.form-select:not([data-customized="true"])');
 
@@ -387,7 +407,10 @@
             }
 
             initCustomReservationSelects();
+            setTimeout(scrollToHomepageHashTarget, 150);
         });
+
+        window.addEventListener('hashchange', scrollToHomepageHashTarget);
         document.addEventListener('submit', function(e) {
             if (e.target.tagName === 'FORM') {
 

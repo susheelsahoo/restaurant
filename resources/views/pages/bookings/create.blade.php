@@ -26,7 +26,7 @@
                             name="customer_name"
                             id="customer_name"
                             class="form-control form-control-lg form-control-solid @error('customer_name') is-invalid @enderror"
-                            value="{{ old('customer_name', $booking?->customer?->first_name ?? '') }}"
+                            value="{{ old('customer_name', trim(($booking?->customer?->first_name ?? $booking?->customer_name ?? '') . ' ' . ($booking?->customer?->last_name ?? ''))) }}"
                             required>
                         @error('customer_name') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
