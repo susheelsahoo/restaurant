@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend Admin Prototype - Purchasing System</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #f59e0b;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --sidebar: #0f172a;
+      --sidebar-soft: #1e293b;
+      --shadow: 0 16px 30px rgba(23, 32, 51, 0.08);
+      --radius: 18px;
+      --radius-sm: 14px;
+      --container: 1500px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #eaf1ff 0%, var(--bg) 18%, #f8fafc 100%);
+    }
+
+    .prototype {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 22px 18px 48px;
+    }
+
+    .prototype-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .prototype-header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .prototype-header p {
+      margin: 8px 0 0;
+      max-width: 850px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--primary);
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(29,78,216,.12);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .pages {
+      display: grid;
+      gap: 32px;
+    }
+
+    .page-block h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .page-block > p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 900px;
+      font-size: 14px;
+    }
+
+    .page {
+      min-height: 860px;
+      background: var(--bg);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 28px 60px rgba(0,0,0,.12);
+      border: 1px solid rgba(255,255,255,.7);
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, var(--sidebar) 0%, #111827 100%);
+      color: #e5e7eb;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand {
+      padding: 8px 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .brand h3 {
+      margin: 0;
+      font-size: 21px;
+      color: white;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+
+    .nav-group h4 {
+      margin: 0 0 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #64748b;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #cbd5e1;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav a.active {
+      background: rgba(37,99,235,.18);
+      color: white;
+      border: 1px solid rgba(96,165,250,.2);
+    }
+
+    .nav small {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h3 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      min-width: 260px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--muted);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .btn.primary { background: var(--primary); color: white; }
+    .btn.secondary { background: white; color: var(--text); border: 1px solid var(--line); }
+    .btn.soft { background: var(--primary-soft); color: var(--primary); }
+    .btn.success { background: var(--success); color: white; }
+    .btn.warning { background: var(--warning); color: white; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.6);
+    }
+
+    .card h4 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .kpi span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .trend {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .trend.up { background: var(--success-soft); color: var(--success); }
+    .trend.warn { background: var(--warning-soft); color: #b45309; }
+    .trend.down { background: var(--danger-soft); color: var(--danger); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h4 { margin: 0; font-size: 18px; }
+    .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .filter {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .grid-2, .grid-3, .grid-main, .footer-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-main { grid-template-columns: 1.5fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .pill.green { background: var(--success-soft); color: var(--success); }
+    .pill.orange { background: var(--warning-soft); color: #b45309; }
+    .pill.red { background: var(--danger-soft); color: var(--danger); }
+    .pill.gray { background: #f3f4f6; color: #4b5563; }
+
+    .mini-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-soft);
+    }
+
+    .mini-item h5 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .mini-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chart-box {
+      height: 290px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      border: 1px solid var(--line);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bars {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      align-items: end;
+      height: 200px;
+    }
+
+    .bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar {
+      width: 100%;
+      max-width: 38px;
+      background: linear-gradient(180deg, #60a5fa 0%, #1d4ed8 100%);
+      border-radius: 12px 12px 6px 6px;
+    }
+
+    .bar-col span { font-size: 12px; color: var(--muted); font-weight: 700; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+
+    .stat-row:last-child { border-bottom: none; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-box {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .detail-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      font-weight: 800;
+    }
+
+    .detail-box strong {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .activity {
+      display: grid;
+      gap: 12px;
+    }
+
+    .activity-item {
+      padding-left: 18px;
+      border-left: 3px solid #dbeafe;
+    }
+
+    .activity-item h5 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .activity-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: white;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .table-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1200px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .grid-main, .footer-grid, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 920px) {
+      .page { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 18px; }
+      .cards, .grid-2, .detail-grid { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .search { min-width: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype">
+    <div class="prototype-header">
+      <div>
+        <h1>Full Multi-Page Backend Admin Prototype</h1>
+        <p>This desktop/back-office HTML prototype covers the main administration workflows for your purchasing system: dashboard, requests, approvals, purchase orders, products, suppliers, deliveries, and reports. It is structured to help both developers and designers align on layout and operations.</p>
+      </div>
+      <div class="nav-links">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#requests">Requests</a>
+        <a href="#approvals">Approvals</a>
+        <a href="#purchase-orders">Purchase Orders</a>
+        <a href="#products">Products</a>
+        <a href="#suppliers">Suppliers</a>
+        <a href="#deliveries">Deliveries</a>
+        <a href="#reports">Reports</a>
+      </div>
+    </div>
+
+    <div class="pages">
+      <section class="page-block" id="dashboard">
+        <h2>1. Admin Dashboard</h2>
+        <p>Main overview page for managers and purchasing employees with KPI cards, queues, supplier alerts, delivery monitoring, and analytics widgets.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand">
+              <h3>PurchaseFlow</h3>
+              <p>Restaurant purchasing operations and approval management.</p>
+            </div>
+            <div class="nav-group">
+              <h4>Overview</h4>
+              <div class="nav">
+                <a class="active" href="#dashboard">Dashboard <small>Home</small></a>
+                <a href="#approvals">Approval Queue <small>12</small></a>
+                <a href="#requests">Requests <small>28</small></a>
+              </div>
+            </div>
+            <div class="nav-group">
+              <h4>Operations</h4>
+              <div class="nav">
+                <a href="#purchase-orders">Purchase Orders <small>24</small></a>
+                <a href="#deliveries">Deliveries <small>Today</small></a>
+                <a href="#products">Products <small>Catalog</small></a>
+                <a href="#suppliers">Suppliers <small>18</small></a>
+              </div>
+            </div>
+            <div class="nav-group">
+              <h4>Administration</h4>
+              <div class="nav">
+                <a href="#reports">Reports <small>Analytics</small></a>
+                <a href="#">Users <small>14</small></a>
+                <a href="#">Settings <small>Config</small></a>
+              </div>
+            </div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div>
+                <h3>Admin Dashboard</h3>
+                <p>Track requests, approvals, supplier ordering, and delivery performance.</p>
+              </div>
+              <div class="top-actions">
+                <div class="search">Search requests, PO numbers, suppliers...</div>
+                <button class="btn secondary">Export</button>
+                <button class="btn primary">+ Create Purchase Order</button>
+              </div>
+            </div>
+
+            <div class="cards">
+              <div class="card kpi"><strong>28</strong><span>Open Requests</span><div class="trend warn">+4 since yesterday</div></div>
+              <div class="card kpi"><strong>12</strong><span>Pending Approvals</span><div class="trend warn">Needs attention</div></div>
+              <div class="card kpi"><strong>24</strong><span>Active Purchase Orders</span><div class="trend up">+8 this week</div></div>
+              <div class="card kpi"><strong>3</strong><span>Delayed Deliveries</span><div class="trend down">Supplier follow-up</div></div>
+            </div>
+
+            <div class="grid-main">
+              <div class="card">
+                <div class="section-head">
+                  <div>
+                    <h4>Purchasing Queue</h4>
+                    <p>Approved requests waiting to be converted into supplier orders.</p>
+                  </div>
+                  <div class="pill blue">7 ready</div>
+                </div>
+                <div class="filters">
+                  <div class="filter">Department: All</div>
+                  <div class="filter">Priority: All</div>
+                  <div class="filter">Supplier: All</div>
+                  <div class="filter">Date: This week</div>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Request</th>
+                      <th>Department</th>
+                      <th>Supplier</th>
+                      <th>Priority</th>
+                      <th>Needed By</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>REQ-2026-0215</strong><br><span class="table-note">Tomato, onion, yogurt</span></td>
+                      <td>Kitchen</td>
+                      <td>FreshFarm</td>
+                      <td><span class="pill orange">Urgent</span></td>
+                      <td>Today 18:00</td>
+                      <td><span class="pill gray">Create PO</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>REQ-2026-0214</strong><br><span class="table-note">Gloves, paper towels, cleaner</span></td>
+                      <td>Housekeeping</td>
+                      <td>CleanPro</td>
+                      <td><span class="pill gray">Normal</span></td>
+                      <td>Tomorrow</td>
+                      <td><span class="pill gray">Assign Buyer</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>REQ-2026-0211</strong><br><span class="table-note">Chicken breast, butter</span></td>
+                      <td>Kitchen</td>
+                      <td>DairyPlus</td>
+                      <td><span class="pill gray">Normal</span></td>
+                      <td>Tomorrow</td>
+                      <td><span class="pill gray">Create PO</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="card">
+                <div class="section-head">
+                  <div>
+                    <h4>Alerts</h4>
+                    <p>Quick actions requiring attention.</p>
+                  </div>
+                </div>
+                <div class="mini-list">
+                  <div class="mini-item">
+                    <h5>Supplier delay</h5>
+                    <p>PO-2026-0084 from CleanPro has not arrived on schedule.</p>
+                    <div class="mini-row"><span class="pill red">Delayed</span><span class="table-note">Call supplier</span></div>
+                  </div>
+                  <div class="mini-item">
+                    <h5>Approval backlog</h5>
+                    <p>4 requests have been waiting for more than 6 hours.</p>
+                    <div class="mini-row"><span class="pill orange">Pending</span><span class="table-note">Review queue</span></div>
+                  </div>
+                  <div class="mini-item">
+                    <h5>Catalog duplicates</h5>
+                    <p>Merge duplicate yogurt SKUs before barcode rollout.</p>
+                    <div class="mini-row"><span class="pill blue">Catalog</span><span class="table-note">Open products</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer-grid" style="margin-top:18px;">
+              <div class="card">
+                <div class="section-head"><div><h4>Request Volume</h4><p>Last 7 days</p></div><div class="pill green">+12%</div></div>
+                <div class="chart-box">
+                  <div class="bars">
+                    <div class="bar-col"><div class="bar" style="height:48%;"></div><span>Mon</span></div>
+                    <div class="bar-col"><div class="bar" style="height:72%;"></div><span>Tue</span></div>
+                    <div class="bar-col"><div class="bar" style="height:58%;"></div><span>Wed</span></div>
+                    <div class="bar-col"><div class="bar" style="height:88%;"></div><span>Thu</span></div>
+                    <div class="bar-col"><div class="bar" style="height:94%;"></div><span>Fri</span></div>
+                    <div class="bar-col"><div class="bar" style="height:64%;"></div><span>Sat</span></div>
+                    <div class="bar-col"><div class="bar" style="height:40%;"></div><span>Sun</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Today's Deliveries</h4><p>Expected arrivals</p></div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>PO-2026-0087 · FreshFarm</h5><p>ETA 11:30 · Vegetables and herbs</p><div class="mini-row"><span class="pill green">On time</span><span class="table-note">Open receipt</span></div></div>
+                  <div class="mini-item"><h5>PO-2026-0089 · DairyPlus</h5><p>ETA 14:00 · Yogurt, butter, milk</p><div class="mini-row"><span class="pill blue">Confirmed</span><span class="table-note">Track</span></div></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Top Products</h4><p>Most requested this week</p></div></div>
+                <div class="stat-row"><span>Tomato</span><span class="pill blue">18 requests</span></div>
+                <div class="stat-row"><span>Onion</span><span class="pill blue">15 requests</span></div>
+                <div class="stat-row"><span>Paper Towels</span><span class="pill blue">12 requests</span></div>
+                <div class="stat-row"><span>Dish Soap</span><span class="pill blue">9 requests</span></div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="requests">
+        <h2>2. Requests Management Page</h2>
+        <p>Central page for searching, filtering, and reviewing requests from kitchen and housekeeping teams.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Requests administration view.</p></div>
+            <div class="nav-group"><h4>Overview</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a class="active" href="#requests">Requests <small>28</small></a><a href="#approvals">Approval Queue <small>12</small></a></div></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a href="#purchase-orders">Purchase Orders <small>24</small></a><a href="#deliveries">Deliveries <small>Today</small></a><a href="#products">Products <small>Catalog</small></a><a href="#suppliers">Suppliers <small>18</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Requests</h3><p>Review all incoming purchasing requests and their current workflow status.</p></div>
+              <div class="top-actions"><div class="search">Search request number, requester, item...</div><button class="btn secondary">Export CSV</button><button class="btn primary">+ New Manual Request</button></div>
+            </div>
+            <div class="card">
+              <div class="filters">
+                <div class="filter">Department: Kitchen + Housekeeping</div>
+                <div class="filter">Status: All</div>
+                <div class="filter">Priority: All</div>
+                <div class="filter">Date: Last 7 days</div>
+                <div class="filter">Requester: All</div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Request No</th>
+                    <th>Requester</th>
+                    <th>Department</th>
+                    <th>Items</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Approval</th>
+                    <th>Needed By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>REQ-2026-0215</strong><br><span class="table-note">Submitted today</span></td>
+                    <td>Nino Gelashvili</td>
+                    <td>Kitchen</td>
+                    <td>3 items</td>
+                    <td><span class="pill orange">Urgent</span></td>
+                    <td><span class="pill blue">Submitted</span></td>
+                    <td><span class="pill gray">Pending</span></td>
+                    <td>Today 18:00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>REQ-2026-0214</strong><br><span class="table-note">Housekeeping restock</span></td>
+                    <td>Lasha Tsereteli</td>
+                    <td>Housekeeping</td>
+                    <td>6 items</td>
+                    <td><span class="pill gray">Normal</span></td>
+                    <td><span class="pill green">Approved</span></td>
+                    <td><span class="pill green">Approved</span></td>
+                    <td>Tomorrow 10:00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>REQ-2026-0211</strong><br><span class="table-note">Friday prep order</span></td>
+                    <td>Giorgi M.</td>
+                    <td>Kitchen</td>
+                    <td>8 items</td>
+                    <td><span class="pill gray">Normal</span></td>
+                    <td><span class="pill blue">Ordered</span></td>
+                    <td><span class="pill green">Approved</span></td>
+                    <td>Tomorrow 12:00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>REQ-2026-0209</strong><br><span class="table-note">Returned for correction</span></td>
+                    <td>Ana B.</td>
+                    <td>Housekeeping</td>
+                    <td>4 items</td>
+                    <td><span class="pill orange">Urgent</span></td>
+                    <td><span class="pill red">Returned</span></td>
+                    <td><span class="pill red">Needs edit</span></td>
+                    <td>Today 16:00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="grid-main" style="margin-top:18px;">
+              <div class="card">
+                <div class="section-head"><div><h4>Selected Request Preview</h4><p>REQ-2026-0215</p></div><div class="pill blue">Pending</div></div>
+                <div class="detail-grid">
+                  <div class="detail-box"><small>Requester</small><strong>Nino Gelashvili</strong></div>
+                  <div class="detail-box"><small>Department</small><strong>Kitchen</strong></div>
+                  <div class="detail-box"><small>Priority</small><strong>Urgent</strong></div>
+                  <div class="detail-box"><small>Needed By</small><strong>Today 18:00</strong></div>
+                </div>
+                <div style="margin-top:14px;">
+                  <table>
+                    <thead><tr><th>Item</th><th>Qty</th><th>Supplier</th><th>Notes</th></tr></thead>
+                    <tbody>
+                      <tr><td>Tomato</td><td>2.5 kg</td><td>FreshFarm</td><td>Ripe if possible</td></tr>
+                      <tr><td>Onion</td><td>3 kg</td><td>FreshFarm</td><td>-</td></tr>
+                      <tr><td>Yogurt</td><td>8 pcs</td><td>DairyPlus</td><td>-</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Actions</h4><p>Available based on request status</p></div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>Open Full Detail</h5><p>View approval history, notes, and linked purchase order flow.</p></div>
+                  <div class="mini-item"><h5>Assign for Review</h5><p>Send to the appropriate approver or purchasing employee.</p></div>
+                  <div class="mini-item"><h5>Export Request</h5><p>Generate PDF or spreadsheet for internal review.</p></div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="approvals">
+        <h2>3. Approval Queue Page</h2>
+        <p>Focused page for reviewing pending approvals, making decisions, and leaving comments or corrections.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Approval and decision workflow.</p></div>
+            <div class="nav-group"><h4>Overview</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#requests">Requests <small>28</small></a><a class="active" href="#approvals">Approval Queue <small>12</small></a></div></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a href="#purchase-orders">Purchase Orders <small>24</small></a><a href="#deliveries">Deliveries <small>Today</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Approval Queue</h3><p>Approve, reject, or return requests with comments.</p></div>
+              <div class="top-actions"><button class="btn secondary">Bulk Actions</button><button class="btn primary">Review Next Request</button></div>
+            </div>
+            <div class="tabs">
+              <div class="tab active">Pending</div>
+              <div class="tab">Urgent</div>
+              <div class="tab">Approved</div>
+              <div class="tab">Rejected</div>
+            </div>
+            <div class="grid-main">
+              <div class="card">
+                <div class="section-head"><div><h4>Pending Requests</h4><p>Queue ordered by urgency and time waiting</p></div><div class="pill orange">12 pending</div></div>
+                <table>
+                  <thead>
+                    <tr><th>Request</th><th>Requester</th><th>Department</th><th>Waiting</th><th>Priority</th><th>Status</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>REQ-2026-0215</strong></td><td>Nino G.</td><td>Kitchen</td><td>25 min</td><td><span class="pill orange">Urgent</span></td><td><span class="pill blue">Review</span></td></tr>
+                    <tr><td><strong>REQ-2026-0213</strong></td><td>Maya D.</td><td>Kitchen</td><td>1 h 10 min</td><td><span class="pill gray">Normal</span></td><td><span class="pill blue">Review</span></td></tr>
+                    <tr><td><strong>REQ-2026-0212</strong></td><td>Lasha T.</td><td>Housekeeping</td><td>2 h 30 min</td><td><span class="pill gray">Normal</span></td><td><span class="pill blue">Review</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Decision Panel</h4><p>Currently selected: REQ-2026-0215</p></div></div>
+                <div class="detail-grid">
+                  <div class="detail-box"><small>Department</small><strong>Kitchen</strong></div>
+                  <div class="detail-box"><small>Needed By</small><strong>Today 18:00</strong></div>
+                  <div class="detail-box"><small>Items</small><strong>3 total</strong></div>
+                  <div class="detail-box"><small>Requester</small><strong>Nino Gelashvili</strong></div>
+                </div>
+                <div style="margin-top:14px;" class="mini-list">
+                  <div class="mini-item"><h5>Item Summary</h5><p>Tomato 2.5 kg, Onion 3 kg, Yogurt 8 pcs</p></div>
+                  <div class="mini-item"><h5>Requester Notes</h5><p>Ingredients needed for evening prep and lunch service.</p></div>
+                  <div class="mini-item"><h5>Approval Comment</h5><p class="table-note">Add note or reason when returning or rejecting.</p></div>
+                </div>
+                <div class="grid-3" style="margin-top:14px;">
+                  <button class="btn soft">Return</button>
+                  <button class="btn secondary">Reject</button>
+                  <button class="btn success">Approve</button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="purchase-orders">
+        <h2>4. Purchase Orders Page</h2>
+        <p>Page for listing purchase orders, monitoring supplier statuses, and opening detailed order records.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Supplier order operations.</p></div>
+            <div class="nav-group"><h4>Overview</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#requests">Requests <small>28</small></a><a href="#approvals">Approval Queue <small>12</small></a></div></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a class="active" href="#purchase-orders">Purchase Orders <small>24</small></a><a href="#deliveries">Deliveries <small>Today</small></a><a href="#suppliers">Suppliers <small>18</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Purchase Orders</h3><p>Create, send, track, and receive supplier orders.</p></div>
+              <div class="top-actions"><div class="search">Search PO number, supplier, buyer...</div><button class="btn secondary">Export</button><button class="btn primary">+ New PO</button></div>
+            </div>
+            <div class="cards">
+              <div class="card kpi"><strong>24</strong><span>Open POs</span><div class="trend up">+6 this week</div></div>
+              <div class="card kpi"><strong>8</strong><span>Sent to Supplier</span><div class="trend warn">Awaiting confirmation</div></div>
+              <div class="card kpi"><strong>10</strong><span>Confirmed</span><div class="trend up">On track</div></div>
+              <div class="card kpi"><strong>3</strong><span>Partially Received</span><div class="trend warn">Needs follow-up</div></div>
+            </div>
+            <div class="card">
+              <div class="filters">
+                <div class="filter">Supplier: All</div>
+                <div class="filter">Status: All</div>
+                <div class="filter">Buyer: All</div>
+                <div class="filter">Date: This month</div>
+              </div>
+              <table>
+                <thead><tr><th>PO Number</th><th>Supplier</th><th>Linked Request</th><th>Order Date</th><th>Expected Delivery</th><th>Status</th><th>Total</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>PO-2026-0087</strong></td><td>FreshFarm</td><td>REQ-2026-0215</td><td>Mar 31</td><td>Apr 1</td><td><span class="pill green">Confirmed</span></td><td>€ 22.80</td></tr>
+                  <tr><td><strong>PO-2026-0089</strong></td><td>DairyPlus</td><td>REQ-2026-0211</td><td>Mar 31</td><td>Apr 1</td><td><span class="pill blue">Sent</span></td><td>€ 48.60</td></tr>
+                  <tr><td><strong>PO-2026-0084</strong></td><td>CleanPro</td><td>REQ-2026-0214</td><td>Mar 30</td><td>Mar 31</td><td><span class="pill red">Delayed</span></td><td>€ 64.20</td></tr>
+                  <tr><td><strong>PO-2026-0082</strong></td><td>FreshFarm</td><td>REQ-2026-0208</td><td>Mar 29</td><td>Mar 30</td><td><span class="pill orange">Partial</span></td><td>€ 31.10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="grid-main" style="margin-top:18px;">
+              <div class="card">
+                <div class="section-head"><div><h4>Purchase Order Detail Preview</h4><p>PO-2026-0087</p></div><div class="pill green">Confirmed</div></div>
+                <div class="detail-grid">
+                  <div class="detail-box"><small>Supplier</small><strong>FreshFarm</strong></div>
+                  <div class="detail-box"><small>Buyer</small><strong>Mariam K.</strong></div>
+                  <div class="detail-box"><small>Expected Delivery</small><strong>Apr 1</strong></div>
+                  <div class="detail-box"><small>Total</small><strong>€ 22.80</strong></div>
+                </div>
+                <div style="margin-top:14px;">
+                  <table>
+                    <thead><tr><th>Item</th><th>Ordered</th><th>Received</th><th>Unit Price</th></tr></thead>
+                    <tbody>
+                      <tr><td>Tomato</td><td>2.5 kg</td><td>0</td><td>€ 4.25</td></tr>
+                      <tr><td>Onion</td><td>3 kg</td><td>0</td><td>€ 2.40</td></tr>
+                      <tr><td>Cucumber</td><td>2 kg</td><td>0</td><td>€ 2.50</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Quick Actions</h4><p>Available workflow steps</p></div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>Send to supplier</h5><p>Email or export PO directly from the system.</p></div>
+                  <div class="mini-item"><h5>Mark confirmed</h5><p>Update status after supplier confirmation.</p></div>
+                  <div class="mini-item"><h5>Record delivery</h5><p>Open receiving workflow when goods arrive.</p></div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="products">
+        <h2>5. Products Management Page</h2>
+        <p>Admin page for maintaining the product catalog, codes, categories, default suppliers, and scan-enabled identifiers.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Catalog and product administration.</p></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#requests">Requests <small>28</small></a><a class="active" href="#products">Products <small>Catalog</small></a><a href="#suppliers">Suppliers <small>18</small></a></div></div>
+            <div class="nav-group"><h4>Analytics</h4><div class="nav"><a href="#reports">Reports <small>Analytics</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Products</h3><p>Manage requestable items, scan codes, and preferred suppliers.</p></div>
+              <div class="top-actions"><div class="search">Search name, SKU, barcode...</div><button class="btn secondary">Import</button><button class="btn primary">+ Add Product</button></div>
+            </div>
+            <div class="card">
+              <div class="filters">
+                <div class="filter">Category: All</div>
+                <div class="filter">Department: All</div>
+                <div class="filter">Supplier: All</div>
+                <div class="filter">Status: Active</div>
+              </div>
+              <table>
+                <thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>Unit</th><th>Preferred Supplier</th><th>Barcode</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Tomato</strong><br><span class="table-note">Fresh vegetables</span></td><td>VEG-001</td><td>Vegetables</td><td>kg</td><td>FreshFarm</td><td>1234567890123</td><td><span class="pill green">Active</span></td></tr>
+                  <tr><td><strong>Onion</strong></td><td>VEG-002</td><td>Vegetables</td><td>kg</td><td>FreshFarm</td><td>1234567890456</td><td><span class="pill green">Active</span></td></tr>
+                  <tr><td><strong>Paper Towels</strong></td><td>HK-014</td><td>Paper Products</td><td>pack</td><td>CleanPro</td><td>9988123412000</td><td><span class="pill green">Active</span></td></tr>
+                  <tr><td><strong>Yogurt</strong></td><td>DAI-023</td><td>Dairy</td><td>pcs</td><td>DairyPlus</td><td>7722009911001</td><td><span class="pill orange">Duplicate check</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="grid-main" style="margin-top:18px;">
+              <div class="card">
+                <div class="section-head"><div><h4>Selected Product</h4><p>Tomato</p></div><div class="pill blue">Barcode enabled</div></div>
+                <div class="detail-grid">
+                  <div class="detail-box"><small>Name</small><strong>Tomato</strong></div>
+                  <div class="detail-box"><small>Default Unit</small><strong>kg</strong></div>
+                  <div class="detail-box"><small>Category</small><strong>Vegetables</strong></div>
+                  <div class="detail-box"><small>Supplier</small><strong>FreshFarm</strong></div>
+                  <div class="detail-box"><small>Barcode</small><strong>1234567890123</strong></div>
+                  <div class="detail-box"><small>Internal Code</small><strong>TOM-INT-01</strong></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Catalog Actions</h4><p>Manage product quality and scan setup</p></div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>Edit product</h5><p>Update item details, units, category, and status.</p></div>
+                  <div class="mini-item"><h5>Add alternate code</h5><p>Support multiple barcodes or supplier-specific identifiers.</p></div>
+                  <div class="mini-item"><h5>Deactivate item</h5><p>Hide old or replaced products from request forms.</p></div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="suppliers">
+        <h2>6. Suppliers Management Page</h2>
+        <p>Page for supplier contacts, linked products, performance data, and current purchase order activity.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Supplier records and relationships.</p></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#purchase-orders">Purchase Orders <small>24</small></a><a href="#products">Products <small>Catalog</small></a><a class="active" href="#suppliers">Suppliers <small>18</small></a></div></div>
+            <div class="nav-group"><h4>Analytics</h4><div class="nav"><a href="#reports">Reports <small>Analytics</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Suppliers</h3><p>Review contact details, supplier-linked products, and service quality.</p></div>
+              <div class="top-actions"><div class="search">Search supplier name, email, phone...</div><button class="btn secondary">Export</button><button class="btn primary">+ Add Supplier</button></div>
+            </div>
+            <div class="grid-main">
+              <div class="card">
+                <div class="section-head"><div><h4>Supplier Directory</h4><p>All active suppliers</p></div></div>
+                <table>
+                  <thead><tr><th>Supplier</th><th>Contact</th><th>Products</th><th>Open POs</th><th>Performance</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>FreshFarm</strong></td><td>Giorgi · orders@freshfarm.hu</td><td>34</td><td>4</td><td><span class="pill green">96% on time</span></td><td><span class="pill green">Active</span></td></tr>
+                    <tr><td><strong>DairyPlus</strong></td><td>Anna · sales@dairyplus.hu</td><td>18</td><td>3</td><td><span class="pill blue">91% on time</span></td><td><span class="pill green">Active</span></td></tr>
+                    <tr><td><strong>CleanPro</strong></td><td>Balazs · office@cleanpro.hu</td><td>22</td><td>5</td><td><span class="pill red">82% on time</span></td><td><span class="pill orange">Review</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Supplier Profile</h4><p>FreshFarm</p></div><div class="pill green">Preferred</div></div>
+                <div class="detail-grid">
+                  <div class="detail-box"><small>Contact Person</small><strong>Giorgi K.</strong></div>
+                  <div class="detail-box"><small>Email</small><strong>orders@freshfarm.hu</strong></div>
+                  <div class="detail-box"><small>Phone</small><strong>+36 20 555 1111</strong></div>
+                  <div class="detail-box"><small>Open POs</small><strong>4 active</strong></div>
+                </div>
+                <div class="mini-list" style="margin-top:14px;">
+                  <div class="mini-item"><h5>Linked Product Groups</h5><p>Vegetables, herbs, fruit basics, seasonal produce.</p></div>
+                  <div class="mini-item"><h5>Recent performance</h5><p>Strong delivery reliability, fast order confirmation, good freshness scores.</p></div>
+                  <div class="mini-item"><h5>Notes</h5><p>Preferred supplier for kitchen produce orders.</p></div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="deliveries">
+        <h2>7. Deliveries / Receiving Page</h2>
+        <p>Back-office page for monitoring deliveries, opening receiving workflows, and managing partial receipts.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Receiving and stock handoff.</p></div>
+            <div class="nav-group"><h4>Operations</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#purchase-orders">Purchase Orders <small>24</small></a><a class="active" href="#deliveries">Deliveries <small>Today</small></a></div></div>
+            <div class="nav-group"><h4>Support</h4><div class="nav"><a href="#suppliers">Suppliers <small>18</small></a><a href="#reports">Reports <small>Analytics</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Deliveries</h3><p>Track incoming shipments, receiving status, and partial delivery issues.</p></div>
+              <div class="top-actions"><button class="btn secondary">Export Log</button><button class="btn primary">+ Record Delivery</button></div>
+            </div>
+            <div class="cards">
+              <div class="card kpi"><strong>5</strong><span>Expected Today</span><div class="trend warn">2 arriving soon</div></div>
+              <div class="card kpi"><strong>2</strong><span>Partially Received</span><div class="trend warn">Needs completion</div></div>
+              <div class="card kpi"><strong>1</strong><span>Delayed Shipment</span><div class="trend down">Follow-up required</div></div>
+              <div class="card kpi"><strong>11</strong><span>Completed This Week</span><div class="trend up">On schedule</div></div>
+            </div>
+            <div class="grid-main">
+              <div class="card">
+                <div class="section-head"><div><h4>Delivery Log</h4><p>Recent and upcoming receipts</p></div></div>
+                <table>
+                  <thead><tr><th>Delivery</th><th>PO</th><th>Supplier</th><th>Arrival</th><th>Status</th><th>Receiver</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>DEL-2026-0311</strong></td><td>PO-2026-0087</td><td>FreshFarm</td><td>Apr 1 11:30</td><td><span class="pill gray">Expected</span></td><td>-</td></tr>
+                    <tr><td><strong>DEL-2026-0309</strong></td><td>PO-2026-0082</td><td>FreshFarm</td><td>Mar 31 09:20</td><td><span class="pill orange">Partial</span></td><td>Mariam</td></tr>
+                    <tr><td><strong>DEL-2026-0308</strong></td><td>PO-2026-0079</td><td>DairyPlus</td><td>Mar 30 15:40</td><td><span class="pill green">Complete</span></td><td>Luka</td></tr>
+                    <tr><td><strong>DEL-2026-0307</strong></td><td>PO-2026-0084</td><td>CleanPro</td><td>Mar 31 09:00</td><td><span class="pill red">Delayed</span></td><td>-</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Receiving Panel</h4><p>Selected delivery: DEL-2026-0309</p></div><div class="pill orange">Partial</div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>Supplier</h5><p>FreshFarm · PO-2026-0082</p></div>
+                  <div class="mini-item"><h5>Issue Summary</h5><p>Onions partly missing, some cucumber damaged during transport.</p></div>
+                  <div class="mini-item"><h5>Next Actions</h5><p>Request missing quantity, update PO status, notify requester.</p></div>
+                </div>
+                <div class="grid-2" style="margin-top:14px;">
+                  <button class="btn secondary">Open PO</button>
+                  <button class="btn primary">Complete Receipt</button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+
+      <section class="page-block" id="reports">
+        <h2>8. Reports & Analytics Page</h2>
+        <p>Analytical back-office page for monthly purchasing totals, top products, supplier performance, and departmental trends.</p>
+        <div class="page">
+          <aside class="sidebar">
+            <div class="brand"><h3>PurchaseFlow</h3><p>Operational analytics and reporting.</p></div>
+            <div class="nav-group"><h4>Overview</h4><div class="nav"><a href="#dashboard">Dashboard <small>Home</small></a><a href="#requests">Requests <small>28</small></a><a href="#purchase-orders">Purchase Orders <small>24</small></a></div></div>
+            <div class="nav-group"><h4>Analytics</h4><div class="nav"><a class="active" href="#reports">Reports <small>Analytics</small></a><a href="#suppliers">Suppliers <small>18</small></a><a href="#products">Products <small>Catalog</small></a></div></div>
+          </aside>
+          <main class="content">
+            <div class="topbar">
+              <div><h3>Reports</h3><p>Understand spend, request patterns, and supplier performance across departments.</p></div>
+              <div class="top-actions"><button class="btn secondary">Date Range</button><button class="btn secondary">Export PDF</button><button class="btn primary">Download Report</button></div>
+            </div>
+            <div class="cards">
+              <div class="card kpi"><strong>€ 8,420</strong><span>Monthly Spend</span><div class="trend up">+6.4%</div></div>
+              <div class="card kpi"><strong>132</strong><span>Requests This Month</span><div class="trend up">+11%</div></div>
+              <div class="card kpi"><strong>94%</strong><span>Avg On-Time Delivery</span><div class="trend up">Stable</div></div>
+              <div class="card kpi"><strong>17</strong><span>Active Suppliers</span><div class="trend warn">1 under review</div></div>
+            </div>
+            <div class="grid-main">
+              <div class="card">
+                <div class="section-head"><div><h4>Department Spend</h4><p>Last 30 days</p></div><div class="pill blue">Kitchen + Housekeeping</div></div>
+                <div class="chart-box">
+                  <div class="bars">
+                    <div class="bar-col"><div class="bar" style="height:38%;"></div><span>Week1</span></div>
+                    <div class="bar-col"><div class="bar" style="height:56%;"></div><span>Week2</span></div>
+                    <div class="bar-col"><div class="bar" style="height:61%;"></div><span>Week3</span></div>
+                    <div class="bar-col"><div class="bar" style="height:84%;"></div><span>Week4</span></div>
+                    <div class="bar-col"><div class="bar" style="height:68%;"></div><span>Week5</span></div>
+                    <div class="bar-col"><div class="bar" style="height:45%;"></div><span>Week6</span></div>
+                    <div class="bar-col"><div class="bar" style="height:73%;"></div><span>Week7</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Supplier Performance</h4><p>Current month summary</p></div></div>
+                <div class="stat-row"><span>FreshFarm</span><span class="pill green">96% on time</span></div>
+                <div class="stat-row"><span>DairyPlus</span><span class="pill blue">91% on time</span></div>
+                <div class="stat-row"><span>CleanPro</span><span class="pill red">82% on time</span></div>
+                <div class="stat-row"><span>PaperLine</span><span class="pill green">95% on time</span></div>
+              </div>
+            </div>
+            <div class="footer-grid" style="margin-top:18px;">
+              <div class="card">
+                <div class="section-head"><div><h4>Top Requested Products</h4><p>Last 30 days</p></div></div>
+                <div class="stat-row"><span>Tomato</span><span class="pill blue">44 requests</span></div>
+                <div class="stat-row"><span>Onion</span><span class="pill blue">38 requests</span></div>
+                <div class="stat-row"><span>Paper Towels</span><span class="pill blue">29 requests</span></div>
+                <div class="stat-row"><span>Dish Soap</span><span class="pill blue">25 requests</span></div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Department Breakdown</h4><p>Request volume share</p></div></div>
+                <div class="mini-list">
+                  <div class="mini-item"><h5>Kitchen</h5><p>78 requests · 59% of total monthly volume</p></div>
+                  <div class="mini-item"><h5>Housekeeping</h5><p>54 requests · 41% of total monthly volume</p></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="section-head"><div><h4>Insights</h4><p>Suggested review points</p></div></div>
+                <div class="activity">
+                  <div class="activity-item"><h5>Fresh produce demand rising</h5><p>Tomato and onion requests increased ahead of weekend service peaks.</p></div>
+                  <div class="activity-item"><h5>Housekeeping consumables stable</h5><p>Paper items and cleaning chemicals remain within predictable range.</p></div>
+                  <div class="activity-item"><h5>CleanPro needs attention</h5><p>Late deliveries are affecting housekeeping replenishment reliability.</p></div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

@@ -23,6 +23,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
@@ -133,6 +134,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/tags', TagController::class);
     Route::resource('/menu-categories', MenuCategoryController::class);
     Route::resource('/menus', MenuController::class);
+    Route::resource('/purchase-orders', PurchaseOrderController::class)->names('purchase-orders');
     Route::resource('/wine-categories', WineCategoryController::class);
     Route::resource('/wines', WinesController::class);
 });

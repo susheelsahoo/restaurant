@@ -16,6 +16,24 @@
 
 		</div>
 
+		<div class="menu-item me-0 me-lg-2">
+			<a class="menu-link {{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.index') }}">
+				<span class="menu-title">Manage Purchase Order</span>
+			</a>
+		</div>
+
+		<div class="menu-item me-0 me-lg-2">
+			<a class="menu-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
+				<span class="menu-title">Bookings</span>
+			</a>
+		</div>
+
+		<div class="menu-item me-0 me-lg-2">
+			<a class="menu-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}">
+				<span class="menu-title">Customers</span>
+			</a>
+		</div>
+
 
 		<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-0 me-lg-2">
 
