@@ -108,7 +108,7 @@ class BookingController extends Controller
                 'phone'        => $validated['phone'] ?: null,
                 'email'        => $validated['email'] ?: null,
                 'status_id'    => $pendingStatus->id,
-                'status'       => $pendingStatus->name,
+                'status'       => $this->mapLegacyStatus($pendingStatus->name),
                 'visit_date'   => $validated['visit_date'],
                 'visit_time'   => $validated['visit_time'],
                 'guests'       => $validated['guests'],
@@ -188,7 +188,7 @@ class BookingController extends Controller
                 'phone'      => $validated['phone'] ?: null,
                 'email'      => $validated['email'] ?: null,
                 'status_id'  => $newStatus->id,
-                'status'     => $newStatus->name,
+                'status'     => $this->mapLegacyStatus($newStatus->name),
                 'visit_date' => $validated['visit_date'],
                 'visit_time' => $validated['visit_time'],
                 'guests'     => $validated['guests'],
@@ -418,5 +418,17 @@ class BookingController extends Controller
     private function generateBookingCode(): string
     {
         return 'TFL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
+    }
+
+    /**
+     * Keep the legacy reservations.status column compatible with its old enum values.
+     * The real source of truth is reservations.status_id / reservation_statuses.name.
+     */
+    private function mapLegacyStatus(string $status): string
+    {
+        return match ($status) {
+            'canceled' => 'declined',
+            default => $status,
+        };
     }
 }

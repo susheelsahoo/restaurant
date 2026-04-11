@@ -9,6 +9,7 @@ class Reservation extends Model
     protected $fillable = [
         'booking_code',
         'customer_id',
+        'customer_name',
         'status_id',
         'visit_date',
         'visit_time',
