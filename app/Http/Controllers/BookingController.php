@@ -82,7 +82,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'email'         => 'nullable|email|max:150',
-            'phone'         => 'required|string|max:25',
+            'phone'         => 'nullable|string|max:25',
             'visit_date'    => 'required|date|after_or_equal:today',
             'visit_time'    => 'required',
             'guests'        => 'required|integer|min:1|max:50',
@@ -95,7 +95,7 @@ class BookingController extends Controller
             $customer = $this->resolveCustomer(
                 currentCustomer: null,
                 email: $validated['email'] ?: null,
-                phone: $validated['phone'],
+                phone: $validated['phone'] ?: null,
                 firstName: $firstName,
                 lastName: $lastName
             );
@@ -103,9 +103,9 @@ class BookingController extends Controller
             $pendingStatus = ReservationStatus::where('name', 'pending')->firstOrFail();
             $reservation = Reservation::create([
                 'booking_code' => $this->generateBookingCode(),
-                'customer_id'  => $customer->id,
+                'customer_id'  => $customer?->id,
                 'customer_name' => $validated['customer_name'],
-                'phone'        => $validated['phone'],
+                'phone'        => $validated['phone'] ?: null,
                 'email'        => $validated['email'] ?: null,
                 'status_id'    => $pendingStatus->id,
                 'status'       => $pendingStatus->name,
@@ -116,7 +116,7 @@ class BookingController extends Controller
             ]);
 
             // Send email notification
-            $this->sendReservationEmail($customer->email, $reservation);
+            $this->sendReservationEmail($customer?->email ?? $validated['email'] ?? null, $reservation);
 
             return redirect()
                 ->route('admin.bookings.index')

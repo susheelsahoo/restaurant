@@ -39,20 +39,19 @@
                         <input type="email"
                             name="email"
                             class="form-control form-control-lg form-control-solid @error('email') is-invalid @enderror"
-                            value="{{ old('email', $booking?->customer?->email ?? '') }}">
+                            value="{{ old('email', $booking?->customer?->email ?? $booking?->email ?? '') }}">
                         @error('email') <div class="text-danger text-small">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 {{-- Phone --}}
                 <div class="row mb-6">
-                    <label class="col-lg-4 col-form-label required fw-semibold">Phone</label>
+                    <label class="col-lg-4 col-form-label fw-semibold">Phone</label>
                     <div class="col-lg-8">
                         <input type="text"
                             name="phone"
                             class="form-control form-control-lg form-control-solid @error('phone') is-invalid @enderror"
-                            value="{{ old('phone', $booking?->customer?->phone ?? '') }}"
-                            required>
+                            value="{{ old('phone', $booking?->customer?->phone ?? $booking?->phone ?? '') }}">
                         @error('phone') <div class="text-danger text-small">{{ $message }}</div> @enderror
                     </div>
                 </div>
