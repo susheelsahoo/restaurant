@@ -123,6 +123,58 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/settings', SettingController::class)->names('settings');
     Route::resource('/email-templates', EmailTemplateController::class)->names('email-templates');
 
+    Route::prefix('purchase-orders')->name('purchase-orders.')->group(function () {
+        Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
+        Route::get('/dashboard', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Dashboard',
+                'description' => 'This is the purchase order dashboard area.',
+            ]);
+        })->name('dashboard');
+        Route::get('/requests', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Requests',
+                'description' => 'Use this page for purchase request management.',
+            ]);
+        })->name('requests');
+        Route::get('/approvals', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Approvals',
+                'description' => 'Use this page for purchase approval workflows.',
+            ]);
+        })->name('approvals');
+        Route::get('/products', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Products',
+                'description' => 'Use this page to manage products linked to purchase orders.',
+            ]);
+        })->name('products');
+        Route::get('/suppliers', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Suppliers',
+                'description' => 'Use this page to manage supplier records.',
+            ]);
+        })->name('suppliers');
+        Route::get('/deliveries', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Deliveries',
+                'description' => 'Use this page to track purchase order deliveries.',
+            ]);
+        })->name('deliveries');
+        Route::get('/reports', function () {
+            return view('admin.placeholders.index', [
+                'title' => 'PO Reports',
+                'description' => 'Use this page for purchase order reporting.',
+            ]);
+        })->name('reports');
+        Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
+        Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
+        Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('show');
+        Route::get('/{purchaseOrder}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
+        Route::match(['put', 'patch'], '/{purchaseOrder}', [PurchaseOrderController::class, 'update'])->name('update');
+        Route::delete('/{purchaseOrder}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
+    });
+
     Route::name('user-management.')->group(function () {
         Route::resource('/user-management/users', UserManagementController::class);
         Route::resource('/user-management/roles', RoleManagementController::class);
@@ -134,7 +186,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/tags', TagController::class);
     Route::resource('/menu-categories', MenuCategoryController::class);
     Route::resource('/menus', MenuController::class);
-    Route::resource('/purchase-orders', PurchaseOrderController::class)->names('purchase-orders');
     Route::resource('/wine-categories', WineCategoryController::class);
     Route::resource('/wines', WinesController::class);
 });

@@ -18,7 +18,7 @@
 
 		<div class="menu-item me-0 me-lg-2">
 			<a class="menu-link {{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.index') }}">
-				<span class="menu-title">Manage Purchase Order</span>
+				<span class="menu-title"> Purchase Order</span>
 			</a>
 		</div>
 
