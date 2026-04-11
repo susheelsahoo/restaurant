@@ -17,4 +17,14 @@ class Supplier extends Model
         'phone',
         'status',
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_suppliers', 'supplier_id', 'product_id');
+    }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'supplier_id');
+    }
 }

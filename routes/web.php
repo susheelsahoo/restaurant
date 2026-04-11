@@ -23,7 +23,10 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\ProductManagementController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\SupplierManagementController;
 use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
@@ -143,18 +146,22 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
                 'description' => 'Use this page for purchase approval workflows.',
             ]);
         })->name('approvals');
-        Route::get('/products', function () {
-            return view('admin.placeholders.index', [
-                'title' => 'PO Products',
-                'description' => 'Use this page to manage products linked to purchase orders.',
-            ]);
-        })->name('products');
-        Route::get('/suppliers', function () {
-            return view('admin.placeholders.index', [
-                'title' => 'PO Suppliers',
-                'description' => 'Use this page to manage supplier records.',
-            ]);
-        })->name('suppliers');
+        Route::get('/products', [ProductManagementController::class, 'index'])->name('products');
+        Route::get('/products/create', [ProductManagementController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductManagementController::class, 'store'])->name('products.store');
+        Route::get('/products/{product}/edit', [ProductManagementController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [ProductManagementController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [ProductManagementController::class, 'destroy'])->name('products.destroy');
+        Route::get('/suppliers', [SupplierManagementController::class, 'index'])->name('suppliers');
+        Route::get('/suppliers/create', [SupplierManagementController::class, 'create'])->name('suppliers.create');
+        Route::post('/suppliers', [SupplierManagementController::class, 'store'])->name('suppliers.store');
+        Route::get('/suppliers/{supplier}/edit', [SupplierManagementController::class, 'edit'])->name('suppliers.edit');
+        Route::put('/suppliers/{supplier}', [SupplierManagementController::class, 'update'])->name('suppliers.update');
+        Route::delete('/suppliers/{supplier}', [SupplierManagementController::class, 'destroy'])->name('suppliers.destroy');
+        Route::resource('/product-categories', ProductCategoryController::class)
+            ->except(['show'])
+            ->parameters(['product-categories' => 'productCategory'])
+            ->names('product-categories');
         Route::get('/deliveries', function () {
             return view('admin.placeholders.index', [
                 'title' => 'PO Deliveries',

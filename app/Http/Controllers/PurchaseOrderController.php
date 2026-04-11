@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\PoItem;
-use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Supplier;
@@ -180,7 +179,7 @@ class PurchaseOrderController extends Controller
             'requests' => PurchaseRequest::orderByDesc('id')->get(['id', 'request_no']),
             'suppliers' => Supplier::orderBy('name')->get(['id', 'name']),
             'buyers' => User::orderBy('name')->get(['id', 'name']),
-            'products' => Product::orderBy('name')->get(['id', 'name', 'unit']),
+            'products' => \App\Models\Product::orderBy('name')->get(['id', 'name', 'unit']),
             'statuses' => $this->statuses(),
         ];
     }

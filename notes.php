@@ -1,3 +1,41 @@
+CREATE TABLE product_categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(120) NOT NULL UNIQUE,
+    description TEXT NULL,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+ALTER TABLE products
+    ADD COLUMN category_id INT NULL AFTER sku,
+    ADD CONSTRAINT fk_products_category
+        FOREIGN KEY (category_id) REFERENCES product_categories(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE;
+
+ALTER TABLE products
+    DROP COLUMN category;
+
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150),
+    sku VARCHAR(50) UNIQUE,
+    category_id INT NULL,
+    unit VARCHAR(20),
+    barcode VARCHAR(50),
+    status ENUM('active','inactive'),
+    CONSTRAINT fk_products_category
+        FOREIGN KEY (category_id) REFERENCES product_categories(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+
+
+
 CREATE TABLE departments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100)

@@ -4,7 +4,10 @@
 	request()->routeIs('admin.purchase-orders.requests') ||
 	request()->routeIs('admin.purchase-orders.approvals') ||
 	request()->routeIs('admin.purchase-orders.products') ||
+	request()->routeIs('admin.purchase-orders.products.*') ||
+	request()->routeIs('admin.purchase-orders.product-categories.*') ||
 	request()->routeIs('admin.purchase-orders.suppliers') ||
+	request()->routeIs('admin.purchase-orders.suppliers.*') ||
 	request()->routeIs('admin.purchase-orders.deliveries') ||
 	request()->routeIs('admin.purchase-orders.reports')
 )
@@ -30,7 +33,7 @@
 					<span class="menu-title">Purchase Orders</span>
 				</a>
 			</div>
-			<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1 {{ request()->routeIs('admin.purchase-orders.products') || request()->routeIs('admin.purchase-orders.suppliers') ? 'here show' : '' }}">
+			<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1 {{ request()->routeIs('admin.purchase-orders.products') || request()->routeIs('admin.purchase-orders.products.*') || request()->routeIs('admin.purchase-orders.product-categories.*') || request()->routeIs('admin.purchase-orders.suppliers') || request()->routeIs('admin.purchase-orders.suppliers.*') ? 'here show' : '' }}">
 				<span class="menu-link py-3">
 					<span class="menu-title">Settings</span>
 					<span class="menu-arrow d-lg-none"></span>
@@ -38,7 +41,15 @@
 
 				<div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-225px">
 					<div class="menu-item">
-						<a class="menu-link {{ request()->routeIs('admin.purchase-orders.products') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.products') }}">
+						<a class="menu-link {{ request()->routeIs('admin.purchase-orders.product-categories.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.product-categories.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+							<span class="menu-title">Category</span>
+						</a>
+					</div>
+					<div class="menu-item">
+						<a class="menu-link {{ request()->routeIs('admin.purchase-orders.products') || request()->routeIs('admin.purchase-orders.products.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.products') }}">
 							<span class="menu-bullet">
 								<span class="bullet bullet-dot"></span>
 							</span>
@@ -46,7 +57,7 @@
 						</a>
 					</div>
 					<div class="menu-item">
-						<a class="menu-link {{ request()->routeIs('admin.purchase-orders.suppliers') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.suppliers') }}">
+						<a class="menu-link {{ request()->routeIs('admin.purchase-orders.suppliers') || request()->routeIs('admin.purchase-orders.suppliers.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.suppliers') }}">
 							<span class="menu-bullet">
 								<span class="bullet bullet-dot"></span>
 							</span>
