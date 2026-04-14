@@ -82,6 +82,13 @@
                     <p class="mb-0">{{ $booking->guests }}</p>
                 </div>
             </div>
+            {{-- Guests --}}
+            <div class="row mb-6">
+                <label class="col-lg-4 fw-semibold fs-6">Notes</label>
+                <div class="col-lg-8">
+                    <p class="mb-0">{{ $booking->notes }}</p>
+                </div>
+            </div>
 
             {{-- Status --}}
             <div class="row mb-6">

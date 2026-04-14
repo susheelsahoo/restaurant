@@ -59,7 +59,7 @@ class ReservationController extends Controller
                 'visit_time'    => $validated['visit_time'],
                 'guests'        => $validated['guests'],
                 'status_id'     => $pendingStatus->id,
-                'status'        => $pendingStatus->name,
+                'status'        => $this->mapLegacyStatus($pendingStatus->name),
                 'notes'         => $validated['notes'] ?? null,
             ]);
             DB::commit();
@@ -153,6 +153,14 @@ class ReservationController extends Controller
             'phone'      => $phone,
             'is_active'  => 1,
         ]);
+    }
+
+    private function mapLegacyStatus(string $status): string
+    {
+        return match ($status) {
+            'canceled' => 'declined',
+            default => $status,
+        };
     }
 
     public function slots(string $date, BookingService $service): JsonResponse

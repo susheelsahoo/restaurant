@@ -165,10 +165,21 @@
                             </td>
 
                             <td class="text-end">
-                                <!-- <a href="{{ route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) }}"
-                                    class="btn btn-sm btn-info">
-                                    View
-                                </a>-->
+                                @php
+                                $customerName = trim(($booking->customer->first_name ?? $booking->customer_name ?? '') . ' ' . ($booking->customer->last_name ?? ''));
+                                $hasBookingNote = filled($booking->notes);
+                                @endphp
+                                <a href="{{ $hasBookingNote ? route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) : 'javascript:void(0)' }}"
+                                    class="btn btn-sm {{ $hasBookingNote ? 'btn-info booking-view-btn' : 'btn-secondary pe-none' }}"
+                                    @if($hasBookingNote)
+                                    data-customer-name="{{ $customerName }}"
+                                    data-notes="{{ $booking->notes }}"
+                                    @else
+                                    aria-disabled="true"
+                                    tabindex="-1"
+                                    @endif>
+                                    {!! getIcon('eye', 'fs-3', '', 'i') !!}
+                                </a>
 
                                 <a href="{{ route('admin.bookings.edit', array_merge(['booking' => $booking->id], request()->query())) }}"
                                     class="btn btn-sm btn-warning">
@@ -208,5 +219,58 @@
         </div>
     </div>
     <x-customer-notes />
+
+    <div class="modal fade" id="bookingNoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label class="fw-semibold text-muted d-block mb-1">Customer Name</label>
+                        <div id="modal-customer-name">-</div>
+                    </div>
+                    <div>
+                        <label class="fw-semibold text-muted d-block mb-1">Notes</label>
+                        <div class="text-gray-800" id="modal-booking-notes">-</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingModalElement = document.getElementById('bookingNoteModal');
+
+            if (!bookingModalElement) {
+                return;
+            }
+
+            const bookingModal = new bootstrap.Modal(bookingModalElement);
+            const customerNameField = document.getElementById('modal-customer-name');
+            const notesField = document.getElementById('modal-booking-notes');
+
+            document.querySelectorAll('.booking-view-btn').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    customerNameField.textContent = this.dataset.customerName || 'N/A';
+                    notesField.textContent = this.dataset.notes && this.dataset.notes.trim() !== ''
+                        ? this.dataset.notes
+                        : 'No booking note available.';
+
+                    bookingModal.show();
+                });
+            });
+        });
+    </script>
+    @endpush
 
 </x-default-layout>
