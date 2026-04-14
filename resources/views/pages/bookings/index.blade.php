@@ -167,11 +167,17 @@
                             <td class="text-end">
                                 @php
                                 $customerName = trim(($booking->customer->first_name ?? $booking->customer_name ?? '') . ' ' . ($booking->customer->last_name ?? ''));
+                                $hasBookingNote = filled($booking->notes);
                                 @endphp
-                                <a href="{{ route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) }}"
-                                    class="btn btn-sm btn-info booking-view-btn"
+                                <a href="{{ $hasBookingNote ? route('admin.bookings.show', array_merge(['booking' => $booking->id], request()->query())) : 'javascript:void(0)' }}"
+                                    class="btn btn-sm {{ $hasBookingNote ? 'btn-info booking-view-btn' : 'btn-secondary pe-none' }}"
+                                    @if($hasBookingNote)
                                     data-customer-name="{{ $customerName }}"
-                                    data-notes="{{ $booking->notes ?? '' }}">
+                                    data-notes="{{ $booking->notes }}"
+                                    @else
+                                    aria-disabled="true"
+                                    tabindex="-1"
+                                    @endif>
                                     {!! getIcon('eye', 'fs-3', '', 'i') !!}
                                 </a>
 
