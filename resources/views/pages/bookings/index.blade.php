@@ -114,7 +114,7 @@
                         @forelse($bookings as $booking)
                         <tr>
                             <td>
-                                <strong>{{ $booking->booking_code }}</strong>
+                                <strong>{{ $booking->notes }}</strong>
                             </td>
 
                             <td>
