@@ -1,0 +1,129 @@
+<x-default-layout>
+    @php
+        $statusTone = match ($purchaseRequest->status) {
+            'approved', 'ordered' => 'success',
+            'submitted' => 'primary',
+            'rejected', 'returned' => 'danger',
+            default => 'secondary',
+        };
+    @endphp
+
+    <div class="row g-5 g-xl-8">
+        <div class="col-xl-8">
+            <div class="card mb-5 mb-xl-8">
+                <div class="card-header border-0">
+                    <div class="card-title">
+                        <div>
+                            <h3 class="fw-bold m-0">Purchase Request Detail</h3>
+                            <div class="text-muted fs-6 mt-1">{{ $purchaseRequest->request_no }}</div>
+                        </div>
+                    </div>
+                    <div class="card-toolbar">
+                        <span class="badge badge-light-{{ $statusTone }}">
+                            {{ ucfirst($purchaseRequest->status) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-5 mb-8">
+                        <div class="col-md-3">
+                            <div class="border rounded p-4 h-100">
+                                <div class="text-muted fs-7">Requester</div>
+                                <div class="fw-bold fs-5">{{ $purchaseRequest->requester->name ?? '-' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-4 h-100">
+                                <div class="text-muted fs-7">Department</div>
+                                <div class="fw-bold fs-5">{{ $purchaseRequest->department->name ?? '-' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-4 h-100">
+                                <div class="text-muted fs-7">Priority</div>
+                                <div class="fw-bold fs-5">{{ ucfirst($purchaseRequest->priority) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-4 h-100">
+                                <div class="text-muted fs-7">Needed By</div>
+                                <div class="fw-bold fs-5">{{ optional($purchaseRequest->needed_by)->format('d M Y H:i') ?: '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-row-bordered align-middle">
+                            <thead>
+                                <tr class="fw-bold text-muted">
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Suggested Supplier</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($purchaseRequest->items as $item)
+                                    <tr>
+                                        <td>{{ $item->product->name ?? '-' }}</td>
+                                        <td>{{ number_format((float) $item->quantity, 2) }}</td>
+                                        <td>{{ $item->supplier->name ?? '-' }}</td>
+                                        <td>{{ $item->notes ?: '-' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center py-8">No request items added yet.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card mb-5 mb-xl-8">
+                <div class="card-header border-0">
+                    <div class="card-title">
+                        <h3 class="fw-bold m-0">Quick Actions</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-5">
+                        <div class="fw-bold mb-1">Linked Purchase Orders</div>
+                        <div class="text-gray-600">{{ $purchaseRequest->purchaseOrders->count() }}</div>
+                    </div>
+                    <div class="mb-5">
+                        <div class="fw-bold mb-1">Item Count</div>
+                        <div class="text-gray-600">{{ $purchaseRequest->items->count() }}</div>
+                    </div>
+                    <div class="mb-5">
+                        <div class="fw-bold mb-1">Total Quantity</div>
+                        <div class="text-gray-600">{{ number_format($purchaseRequest->total_quantity, 2) }}</div>
+                    </div>
+
+                    <div class="separator separator-dashed my-7"></div>
+
+                    <div class="d-grid gap-3 mb-6">
+                        @foreach(['submitted', 'approved', 'rejected', 'returned', 'ordered'] as $status)
+                            @continue($status === $purchaseRequest->status)
+
+                            <form method="POST" action="{{ route('admin.purchase-orders.requests.status.update', $purchaseRequest->id) }}">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="{{ $status }}">
+                                <button class="btn btn-light-primary w-100">Mark as {{ ucfirst($status) }}</button>
+                            </form>
+                        @endforeach
+                    </div>
+
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{{ route('admin.purchase-orders.requests.edit', $purchaseRequest->id) }}" class="btn btn-primary">Edit Request</a>
+                        <a href="{{ route('admin.purchase-orders.requests', ['selected_request' => $purchaseRequest->id]) }}" class="btn btn-light">Back To List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-default-layout>

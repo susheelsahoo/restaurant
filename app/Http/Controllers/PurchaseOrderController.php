@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PoItem;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseOrderController extends Controller
 {
@@ -18,7 +20,7 @@ class PurchaseOrderController extends Controller
             ->with(['request', 'supplier', 'buyer', 'items.product']);
 
         if ($request->filled('q')) {
-            $search = $request->q;
+            $search = trim((string) $request->q);
 
             $query->where(function ($builder) use ($search) {
                 $builder->where('po_number', 'like', '%' . $search . '%')
@@ -40,12 +42,33 @@ class PurchaseOrderController extends Controller
             $query->where('buyer_id', $request->buyer_id);
         }
 
+        if ($request->filled('date_from')) {
+            $query->whereDate('order_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('order_date', '<=', $request->date_to);
+        }
+
         $purchaseOrders = $query->latest('order_date')
             ->latest('id')
             ->paginate(15)
             ->withQueryString();
 
+        $selectedPurchaseOrder = null;
+        $selectedPurchaseOrderId = $request->integer('po');
+
+        if ($selectedPurchaseOrderId > 0) {
+            $selectedPurchaseOrder = $purchaseOrders->getCollection()->firstWhere('id', $selectedPurchaseOrderId)
+                ?? $this->loadPurchaseOrderDetails($selectedPurchaseOrderId);
+        }
+
+        if (!$selectedPurchaseOrder && $purchaseOrders->isNotEmpty()) {
+            $selectedPurchaseOrder = $this->loadPurchaseOrderDetails((int) $purchaseOrders->first()->id);
+        }
+
         $stats = [
+            'total' => PurchaseOrder::count(),
             'open' => PurchaseOrder::whereIn('status', ['draft', 'sent', 'confirmed', 'partial', 'delayed'])->count(),
             'sent' => PurchaseOrder::where('status', 'sent')->count(),
             'confirmed' => PurchaseOrder::where('status', 'confirmed')->count(),
@@ -56,7 +79,14 @@ class PurchaseOrderController extends Controller
         $buyers = User::orderBy('name')->get(['id', 'name']);
         $statuses = $this->statuses();
 
-        return view('admin.purchase_orders.index', compact('purchaseOrders', 'stats', 'suppliers', 'buyers', 'statuses'));
+        return view('admin.purchase_orders.index', compact(
+            'purchaseOrders',
+            'selectedPurchaseOrder',
+            'stats',
+            'suppliers',
+            'buyers',
+            'statuses'
+        ));
     }
 
     public function create()
@@ -108,6 +138,20 @@ class PurchaseOrderController extends Controller
             ->with('success', 'Purchase order updated successfully.');
     }
 
+    public function updateStatus(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:' . implode(',', $this->statuses()),
+        ]);
+
+        $purchaseOrder->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Purchase order status updated successfully.');
+    }
+
     public function destroy(PurchaseOrder $purchaseOrder)
     {
         DB::transaction(function () use ($purchaseOrder) {
@@ -122,14 +166,14 @@ class PurchaseOrderController extends Controller
     protected function validateData(Request $request, ?int $purchaseOrderId = null): array
     {
         $validated = $request->validate([
-            'po_number' => 'required|string|max:50|unique:purchase_orders,po_number,' . $purchaseOrderId,
+            'po_number' => 'nullable|string|max:50|unique:purchase_orders,po_number,' . $purchaseOrderId,
             'request_id' => 'nullable|exists:requests,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'buyer_id' => 'nullable|exists:users,id',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'buyer_id' => 'required|exists:users,id',
             'status' => 'required|in:' . implode(',', $this->statuses()),
             'order_date' => 'required|date',
             'expected_delivery' => 'nullable|date|after_or_equal:order_date',
-            'items' => 'nullable|array',
+            'items' => 'required|array|min:1',
             'items.*.product_id' => 'nullable|exists:products,id',
             'items.*.quantity' => 'nullable|numeric|min:0.01',
             'items.*.received_qty' => 'nullable|numeric|min:0',
@@ -152,12 +196,18 @@ class PurchaseOrderController extends Controller
             ->values()
             ->all();
 
+        if (empty($items)) {
+            throw ValidationException::withMessages([
+                'items' => 'At least one purchase order item is required.',
+            ]);
+        }
+
         return [
             'purchase_order' => [
-                'po_number' => $validated['po_number'],
+                'po_number' => $validated['po_number'] ?: $this->generatePoNumber(),
                 'request_id' => $validated['request_id'] ?? null,
-                'supplier_id' => $validated['supplier_id'] ?? null,
-                'buyer_id' => $validated['buyer_id'] ?? null,
+                'supplier_id' => $validated['supplier_id'],
+                'buyer_id' => $validated['buyer_id'],
                 'status' => $validated['status'],
                 'order_date' => $validated['order_date'],
                 'expected_delivery' => $validated['expected_delivery'] ?? null,
@@ -179,13 +229,38 @@ class PurchaseOrderController extends Controller
             'requests' => PurchaseRequest::orderByDesc('id')->get(['id', 'request_no']),
             'suppliers' => Supplier::orderBy('name')->get(['id', 'name']),
             'buyers' => User::orderBy('name')->get(['id', 'name']),
-            'products' => \App\Models\Product::orderBy('name')->get(['id', 'name', 'unit']),
+            'products' => Product::orderBy('name')->get(['id', 'name', 'unit']),
             'statuses' => $this->statuses(),
+            'defaultPoNumber' => $this->generatePoNumber(),
         ];
     }
 
     protected function statuses(): array
     {
         return ['draft', 'sent', 'confirmed', 'partial', 'completed', 'delayed'];
+    }
+
+    protected function generatePoNumber(): string
+    {
+        $year = Carbon::now()->format('Y');
+        $prefix = 'PO-' . $year . '-';
+
+        $lastNumber = PurchaseOrder::query()
+            ->where('po_number', 'like', $prefix . '%')
+            ->orderByDesc('id')
+            ->value('po_number');
+
+        if (!$lastNumber || !preg_match('/(\d+)$/', $lastNumber, $matches)) {
+            return $prefix . '0001';
+        }
+
+        return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
+    }
+
+    protected function loadPurchaseOrderDetails(int $purchaseOrderId): ?PurchaseOrder
+    {
+        return PurchaseOrder::query()
+            ->with(['request.requester', 'supplier', 'buyer', 'items.product'])
+            ->find($purchaseOrderId);
     }
 }

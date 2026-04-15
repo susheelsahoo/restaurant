@@ -2,6 +2,7 @@
 	request()->routeIs('admin.purchase-orders.*') ||
 	request()->routeIs('admin.purchase-orders.dashboard') ||
 	request()->routeIs('admin.purchase-orders.requests') ||
+	request()->routeIs('admin.purchase-orders.requests.*') ||
 	request()->routeIs('admin.purchase-orders.approvals') ||
 	request()->routeIs('admin.purchase-orders.products') ||
 	request()->routeIs('admin.purchase-orders.products.*') ||
@@ -19,7 +20,7 @@
 				</a>
 			</div>
 			<div class="menu-item me-lg-1">
-				<a class="menu-link py-3 {{ request()->routeIs('admin.purchase-orders.requests') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.requests') }}">
+				<a class="menu-link py-3 {{ request()->routeIs('admin.purchase-orders.requests') || request()->routeIs('admin.purchase-orders.requests.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.requests') }}">
 					<span class="menu-title">Requests</span>
 				</a>
 			</div>

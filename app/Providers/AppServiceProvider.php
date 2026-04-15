@@ -37,9 +37,15 @@ class AppServiceProvider extends ServiceProvider
         KTBootstrap::init();
 
         if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+            $blogCategoriesQuery = \App\Models\Category::query();
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('categories', 'is_active')) {
+                $blogCategoriesQuery->where('is_active', true);
+            }
+
             view()->share(
                 'blogCategories',
-                \App\Models\Category::where('is_active', true)->get()
+                $blogCategoriesQuery->get()
             );
         } else {
             view()->share('blogCategories', collect());

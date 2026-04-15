@@ -25,6 +25,7 @@ use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ProductManagementController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\SupplierManagementController;
 use App\Http\Controllers\WineCategoryController;
@@ -134,12 +135,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
                 'description' => 'This is the purchase order dashboard area.',
             ]);
         })->name('dashboard');
-        Route::get('/requests', function () {
-            return view('admin.placeholders.index', [
-                'title' => 'PO Requests',
-                'description' => 'Use this page for purchase request management.',
-            ]);
-        })->name('requests');
+        Route::get('/requests', [PurchaseRequestController::class, 'index'])->name('requests');
+        Route::get('/requests/create', [PurchaseRequestController::class, 'create'])->name('requests.create');
+        Route::post('/requests', [PurchaseRequestController::class, 'store'])->name('requests.store');
+        Route::get('/requests/{purchaseRequest}', [PurchaseRequestController::class, 'show'])->name('requests.show');
+        Route::get('/requests/{purchaseRequest}/edit', [PurchaseRequestController::class, 'edit'])->name('requests.edit');
+        Route::match(['put', 'patch'], '/requests/{purchaseRequest}', [PurchaseRequestController::class, 'update'])->name('requests.update');
+        Route::patch('/requests/{purchaseRequest}/status', [PurchaseRequestController::class, 'updateStatus'])->name('requests.status.update');
+        Route::delete('/requests/{purchaseRequest}', [PurchaseRequestController::class, 'destroy'])->name('requests.destroy');
         Route::get('/approvals', function () {
             return view('admin.placeholders.index', [
                 'title' => 'PO Approvals',
@@ -176,6 +179,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         })->name('reports');
         Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
         Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
+        Route::patch('/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])->name('status.update');
         Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('show');
         Route::get('/{purchaseOrder}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
         Route::match(['put', 'patch'], '/{purchaseOrder}', [PurchaseOrderController::class, 'update'])->name('update');
