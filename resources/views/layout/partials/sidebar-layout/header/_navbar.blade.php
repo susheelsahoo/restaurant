@@ -1,4 +1,4 @@
-<div class="app-navbar flex-shrink-0">
+<div class="app-navbar flex-shrink-0 ms-auto">
 
     <div class="app-navbar-item ms-1 ms-md-4" id="kt_header_user_menu_toggle">
 

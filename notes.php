@@ -1,3 +1,5 @@
+
+
 CREATE TABLE product_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -68,10 +70,13 @@ CREATE TABLE requests (
     user_id INT,
     department_id INT,
     priority ENUM('low','normal','urgent'),
-    status ENUM('submitted','approved','rejected','ordered'),
+    status ENUM('submitted','approved','rejected','ordered', 'returned'),
     needed_by DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+
 CREATE TABLE request_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     request_id INT,
