@@ -31,12 +31,7 @@
 					<span class="menu-title">Manage Purchase Order</span>
 				</a>
 			</div>
-			<div class="menu-item">
-				<a class="menu-link {{ request()->routeIs('admin.purchase-orders.departments.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.departments.index') }}">
-					<span class="menu-icon">{!! getIcon('building', 'fs-2') !!}</span>
-					<span class="menu-title">Departments</span>
-				</a>
-			</div>
+			
 			<!-- <div class="menu-item">
 				<a class="menu-link {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
 					<span class="menu-icon">{!! getIcon('gear', 'fs-2') !!}</span>
