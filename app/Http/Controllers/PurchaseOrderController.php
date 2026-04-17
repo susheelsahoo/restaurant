@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
@@ -10,6 +11,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class PurchaseOrderController extends Controller
@@ -17,7 +21,7 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $query = PurchaseOrder::query()
-            ->with(['request', 'supplier', 'buyer', 'items.product']);
+            ->with(['request', 'supplier', 'buyer', 'items.product', 'request.department']);
 
         if ($request->filled('q')) {
             $search = trim((string) $request->q);
@@ -25,7 +29,6 @@ class PurchaseOrderController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('po_number', 'like', '%' . $search . '%')
                     ->orWhereHas('supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', '%' . $search . '%'))
-                    ->orWhereHas('buyer', fn ($buyerQuery) => $buyerQuery->where('name', 'like', '%' . $search . '%'))
                     ->orWhereHas('request', fn ($requestQuery) => $requestQuery->where('request_no', 'like', '%' . $search . '%'));
             });
         }
@@ -38,8 +41,8 @@ class PurchaseOrderController extends Controller
             $query->where('supplier_id', $request->supplier_id);
         }
 
-        if ($request->filled('buyer_id')) {
-            $query->where('buyer_id', $request->buyer_id);
+        if ($request->filled('department_id')) {
+            $query->whereHas('request', fn ($requestQuery) => $requestQuery->where('department_id', $request->department_id));
         }
 
         if ($request->filled('date_from')) {
@@ -76,7 +79,7 @@ class PurchaseOrderController extends Controller
         ];
 
         $suppliers = Supplier::orderBy('name')->get(['id', 'name']);
-        $buyers = User::orderBy('name')->get(['id', 'name']);
+        $departments = $this->safeDepartments();
         $statuses = $this->statuses();
 
         return view('admin.purchase_orders.index', compact(
@@ -84,7 +87,7 @@ class PurchaseOrderController extends Controller
             'selectedPurchaseOrder',
             'stats',
             'suppliers',
-            'buyers',
+            'departments',
             'statuses'
         ));
     }
@@ -144,9 +147,23 @@ class PurchaseOrderController extends Controller
             'status' => 'required|in:' . implode(',', $this->statuses()),
         ]);
 
+        $oldStatus = $purchaseOrder->status;
+        $newStatus = $validated['status'];
+
         $purchaseOrder->update([
-            'status' => $validated['status'],
+            'status' => $newStatus,
         ]);
+
+        // Send email to supplier when status changes to "sent"
+        if ($oldStatus !== 'sent' && $newStatus === 'sent' && $purchaseOrder->supplier && $purchaseOrder->supplier->email) {
+            try {
+                Mail::to($purchaseOrder->supplier->email)
+                    ->queue(new \App\Mail\PurchaseOrderSupplierMail($purchaseOrder));
+            } catch (\Exception $e) {
+                // Log the error but don't fail the status update
+                Log::error('Failed to send PO email: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()
             ->with('success', 'Purchase order status updated successfully.');
@@ -262,5 +279,12 @@ class PurchaseOrderController extends Controller
         return PurchaseOrder::query()
             ->with(['request.requester', 'supplier', 'buyer', 'items.product'])
             ->find($purchaseOrderId);
+    }
+
+    protected function safeDepartments()
+    {
+        return Schema::hasTable('departments')
+            ? Department::orderBy('name')->get(['id', 'name'])
+            : collect();
     }
 }

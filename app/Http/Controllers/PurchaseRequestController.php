@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
@@ -45,10 +46,6 @@ class PurchaseRequestController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
         if ($request->filled('date_from')) {
             $query->whereDate('needed_by', '>=', $request->date_from);
         }
@@ -84,14 +81,12 @@ class PurchaseRequestController extends Controller
         ];
 
         $departments = $this->safeDepartments();
-        $requesters = $this->safeUsers();
 
         return view('admin.purchase_requests.index', [
             'purchaseRequests' => $purchaseRequests,
             'selectedPurchaseRequest' => $selectedPurchaseRequest,
             'stats' => $stats,
             'departments' => $departments,
-            'requesters' => $requesters,
             'statuses' => $this->statuses(),
             'priorities' => $this->priorities(),
         ]);
@@ -152,9 +147,22 @@ class PurchaseRequestController extends Controller
             'status' => 'required|in:' . implode(',', $this->statuses()),
         ]);
 
-        $purchaseRequest->update([
-            'status' => $validated['status'],
-        ]);
+        // Prevent approving requests with past needed_by dates
+        if ($validated['status'] === 'approved' && $purchaseRequest->needed_by && $purchaseRequest->needed_by->isPast()) {
+            return redirect()->back()
+                ->with('error', 'Cannot approve requests with needed by dates in the past.');
+        }
+
+        DB::transaction(function () use ($purchaseRequest, $validated) {
+            $purchaseRequest->update([
+                'status' => $validated['status'],
+            ]);
+
+            // Create Purchase Orders when request is approved
+            if ($validated['status'] === 'approved') {
+                $this->createPurchaseOrdersFromRequest($purchaseRequest);
+            }
+        });
 
         return redirect()->back()
             ->with('success', 'Request status updated successfully.');
@@ -294,5 +302,56 @@ class PurchaseRequestController extends Controller
         return Schema::hasTable('departments')
             ? Department::orderBy('name')->get(['id', 'name'])
             : collect();
+    }
+
+    protected function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
+    {
+        // Load items with relationships
+        $purchaseRequest->load('items.supplier');
+
+        // Group items by supplier
+        $itemsBySupplier = $purchaseRequest->items
+            ->filter(fn ($item) => $item->supplier_id !== null)
+            ->groupBy('supplier_id');
+
+        // Create a PO for each supplier
+        foreach ($itemsBySupplier as $supplierId => $items) {
+            $purchaseOrder = PurchaseOrder::create([
+                'po_number' => $this->generatePoNumber(),
+                'request_id' => $purchaseRequest->id,
+                'supplier_id' => $supplierId,
+                'buyer_id' => auth()->id(),
+                'status' => 'draft',
+                'order_date' => Carbon::now()->toDateString(),
+                'expected_delivery' => $purchaseRequest->needed_by->toDateString(),
+            ]);
+
+            // Create PO items from request items
+            foreach ($items as $requestItem) {
+                $purchaseOrder->items()->create([
+                    'product_id' => $requestItem->product_id,
+                    'quantity' => $requestItem->quantity,
+                    'received_qty' => 0,
+                    'unit_price' => 0, // Will be updated later if needed
+                ]);
+            }
+        }
+    }
+
+    protected function generatePoNumber(): string
+    {
+        $year = Carbon::now()->format('Y');
+        $prefix = 'PO-' . $year . '-';
+
+        $lastNumber = PurchaseOrder::query()
+            ->where('po_number', 'like', $prefix . '%')
+            ->orderByDesc('id')
+            ->value('po_number');
+
+        if (!$lastNumber || !preg_match('/(\d+)$/', $lastNumber, $matches)) {
+            return $prefix . '0001';
+        }
+
+        return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
     }
 }

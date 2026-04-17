@@ -84,9 +84,14 @@
             <form method="GET" class="row g-3 align-items-end mb-6">
                 <input type="hidden" name="selected_request" value="{{ request('selected_request') }}">
 
-                <div class="col-md-6 col-xl-3">
-                    <label class="form-label fw-semibold fs-7">Search</label>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-solid" placeholder="Request number, requester, item...">
+                <div class="col-md-6 col-xl-2">
+                    <label class="form-label fw-semibold fs-7">Status</label>
+                    <select name="status" class="form-select form-select-solid">
+                        <option value="">All statuses</option>
+                        @foreach($statuses as $status)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="col-md-6 col-xl-2">
@@ -95,16 +100,6 @@
                         <option value="">All departments</option>
                         @foreach($departments as $department)
                             <option value="{{ $department->id }}" @selected((string) request('department_id') === (string) $department->id)>{{ $department->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
-                    <label class="form-label fw-semibold fs-7">Status</label>
-                    <select name="status" class="form-select form-select-solid">
-                        <option value="">All statuses</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -120,16 +115,6 @@
                 </div>
 
                 <div class="col-md-6 col-xl-2">
-                    <label class="form-label fw-semibold fs-7">Requester</label>
-                    <select name="user_id" class="form-select form-select-solid">
-                        <option value="">All requesters</option>
-                        @foreach($requesters as $requester)
-                            <option value="{{ $requester->id }}" @selected((string) request('user_id') === (string) $requester->id)>{{ $requester->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
                     <label class="form-label fw-semibold fs-7">From</label>
                     <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-solid">
                 </div>
@@ -139,9 +124,14 @@
                     <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-solid">
                 </div>
 
-                <div class="col-md-6 col-xl-2 d-flex gap-2">
+                <div class="col-md-6 col-xl-3">
+                    <label class="form-label fw-semibold fs-7">Search</label>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-solid" placeholder="Request number, requester, item...">
+                </div>
+
+                <div class="col-md-6 col-xl-3 d-flex gap-2">
                     <button class="btn btn-light-primary flex-fill">Filter</button>
-                    @if(request()->hasAny(['q', 'department_id', 'status', 'priority', 'user_id', 'date_from', 'date_to']))
+                    @if(request()->hasAny(['q', 'department_id', 'status', 'priority', 'date_from', 'date_to']))
                         <a href="{{ route('admin.purchase-orders.requests', ['selected_request' => request('selected_request')]) }}" class="btn btn-light">Reset</a>
                     @endif
                 </div>
@@ -278,7 +268,7 @@
                                     @forelse($selectedPurchaseRequest->items as $item)
                                         <tr>
                                             <td>{{ $item->product->name ?? '-' }}</td>
-                                            <td>{{ number_format((float) $item->quantity, 2) }}</td>
+                                            <td>{{ number_format((float) $item->quantity, 2) }} {{ $item->product->unit ?? '-' }}</td>
                                             <td>{{ $item->supplier->name ?? '-' }}</td>
                                             <td>{{ $item->notes ?: '-' }}</td>
                                         </tr>

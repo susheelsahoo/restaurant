@@ -24,11 +24,11 @@
 					<span class="menu-title">Requests</span>
 				</a>
 			</div>
-			<div class="menu-item me-lg-1">
+			<!--<div class="menu-item me-lg-1">
 				<a class="menu-link py-3 {{ request()->routeIs('admin.purchase-orders.approvals') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.approvals') }}">
 					<span class="menu-title">Approval</span>
 				</a>
-			</div>
+			</div>-->
 			<div class="menu-item me-lg-1">
 				<a class="menu-link py-3 {{ request()->routeIs('admin.purchase-orders.*') ? 'active' : '' }}" href="{{ route('admin.purchase-orders.index') }}">
 					<span class="menu-title">Purchase Orders</span>

@@ -66,11 +66,6 @@
             <form method="GET" class="row g-3 align-items-end mb-6">
                 <input type="hidden" name="po" value="{{ request('po') }}">
 
-                <div class="col-md-6 col-xl-3">
-                    <label class="form-label fw-semibold fs-7">Search</label>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-solid" placeholder="PO number, supplier, buyer...">
-                </div>
-
                 <div class="col-md-6 col-xl-2">
                     <label class="form-label fw-semibold fs-7">Status</label>
                     <select name="status" class="form-select form-select-solid">
@@ -92,28 +87,33 @@
                 </div>
 
                 <div class="col-md-6 col-xl-2">
-                    <label class="form-label fw-semibold fs-7">Buyer</label>
-                    <select name="buyer_id" class="form-select form-select-solid">
-                        <option value="">All buyers</option>
-                        @foreach($buyers as $buyer)
-                            <option value="{{ $buyer->id }}" @selected((string) request('buyer_id') === (string) $buyer->id)>{{ $buyer->name }}</option>
+                    <label class="form-label fw-semibold fs-7">Department</label>
+                    <select name="department_id" class="form-select form-select-solid">
+                        <option value="">All departments</option>
+                        @foreach($departments ?? [] as $department)
+                            <option value="{{ $department->id }}" @selected((string) request('department_id') === (string) $department->id)>{{ $department->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-6 col-xl-1">
+                <div class="col-md-6 col-xl-2">
                     <label class="form-label fw-semibold fs-7">From</label>
                     <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control form-control-solid">
                 </div>
 
-                <div class="col-md-6 col-xl-1">
+                <div class="col-md-6 col-xl-2">
                     <label class="form-label fw-semibold fs-7">To</label>
                     <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control form-control-solid">
                 </div>
 
-                <div class="col-xl-1 d-flex gap-2">
+                <div class="col-md-6 col-xl-3">
+                    <label class="form-label fw-semibold fs-7">Search</label>
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control form-control-solid" placeholder="PO number, supplier...">
+                </div>
+
+                <div class="col-md-6 col-xl-3 d-flex gap-2">
                     <button class="btn btn-light-primary flex-fill">Filter</button>
-                    @if(request()->hasAny(['q', 'status', 'supplier_id', 'buyer_id', 'date_from', 'date_to']))
+                    @if(request()->hasAny(['q', 'status', 'supplier_id', 'department_id', 'date_from', 'date_to']))
                         <a href="{{ route('admin.purchase-orders.index', ['po' => request('po')]) }}" class="btn btn-light">Reset</a>
                     @endif
                 </div>
