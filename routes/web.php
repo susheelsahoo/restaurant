@@ -28,6 +28,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\SupplierManagementController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
@@ -165,6 +166,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
             ->except(['show'])
             ->parameters(['product-categories' => 'productCategory'])
             ->names('product-categories');
+        Route::resource('/departments', DepartmentController::class)->names('departments');
         Route::get('/deliveries', function () {
             return view('admin.placeholders.index', [
                 'title' => 'PO Deliveries',

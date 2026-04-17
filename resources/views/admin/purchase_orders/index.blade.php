@@ -241,8 +241,8 @@
                                     @forelse($selectedPurchaseOrder->items as $item)
                                         <tr>
                                             <td>{{ $item->product->name ?? '-' }}</td>
-                                            <td>{{ number_format((float) $item->quantity, 2) }}</td>
-                                            <td>{{ number_format((float) $item->received_qty, 2) }}</td>
+                                            <td>{{ number_format((float) $item->quantity, 2) }} {{ $item->product->unit ?? '' }}</td>
+                                            <td>{{ number_format((float) $item->received_qty, 2) }} {{ $item->product->unit ?? '' }}</td>
                                             <td>{{ config('app.price_sign') }} {{ number_format((float) $item->unit_price, 2) }}</td>
                                             <td>{{ config('app.price_sign') }} {{ number_format((float) $item->quantity * (float) $item->unit_price, 2) }}</td>
                                         </tr>

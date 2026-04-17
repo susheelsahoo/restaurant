@@ -15,6 +15,7 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 use Spatie\Permission\Models\Role;
 use App\Models\Blog;
 use App\Models\Category;
+use App\Models\Department;
 use App\Models\Tag;
 use Illuminate\Support\Str;
 
@@ -191,6 +192,22 @@ Breadcrumbs::for('admin.categories.create', function ($trail) {
 Breadcrumbs::for('admin.categories.edit', function ($trail, Category $category) {
     $trail->parent('categories.index');
     $trail->push('Edit: ' . Str::limit($category->name, 30), route('admin.categories.edit', $category));
+});
+
+Breadcrumbs::for('admin.purchase-orders.departments.index', function ($trail) {
+    $trail->parent('dashboard');
+    $trail->push('Purchase Orders', route('admin.purchase-orders.index'));
+    $trail->push('Departments', route('admin.purchase-orders.departments.index'));
+});
+
+Breadcrumbs::for('admin.purchase-orders.departments.create', function ($trail) {
+    $trail->parent('purchase-orders.departments.index');
+    $trail->push('Create', route('admin.purchase-orders.departments.create'));
+});
+
+Breadcrumbs::for('admin.purchase-orders.departments.edit', function ($trail, Department $department) {
+    $trail->parent('purchase-orders.departments.index');
+    $trail->push('Edit: ' . Str::limit($department->name, 30), route('admin.purchase-orders.departments.edit', $department));
 });
 
 Breadcrumbs::for('admin.tags.index', function ($trail) {
