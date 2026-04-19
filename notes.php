@@ -49,9 +49,11 @@ CREATE TABLE products (
     sku VARCHAR(50) UNIQUE,
     category VARCHAR(100),
     unit VARCHAR(20),
+    estimated_price DECIMAL(10, 2) NULL,
     barcode VARCHAR(50),
     status ENUM('active','inactive')
 );
+
 CREATE TABLE suppliers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150),

@@ -214,6 +214,12 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="border rounded p-4 h-100">
+                                    <div class="text-muted fs-7">Estimated Price</div>
+                                    <div class="fw-bold fs-5">{{ $selectedProduct->estimated_price ? env('PRICE_SIGN', '$') . number_format((float) $selectedProduct->estimated_price, 2) : '-' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-4 h-100">
                                     <div class="text-muted fs-7">Supplier</div>
                                     <div class="fw-bold fs-5">{{ $selectedSupplierNames->isNotEmpty() ? $selectedSupplierNames->join(', ') : '-' }}</div>
                                 </div>

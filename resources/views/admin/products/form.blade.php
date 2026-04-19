@@ -51,7 +51,19 @@
                     <div class="row mb-6">
                         <label class="col-lg-4 col-form-label fw-semibold fs-6">Unit</label>
                         <div class="col-lg-8 fv-row">
-                            <input type="text" name="unit" class="form-control form-control-lg form-control-solid" value="{{ old('unit', $product->unit ?? '') }}" placeholder="kg, pcs, pack">
+                            <select name="unit" class="form-select form-select-lg form-select-solid">
+                                <option value="">Select unit</option>
+                                <option value="kg" @selected(old('unit', $product->unit ?? '') === 'kg')>kg</option>
+                                <option value="pcs" @selected(old('unit', $product->unit ?? '') === 'pcs')>pcs</option>
+                                <option value="pack" @selected(old('unit', $product->unit ?? '') === 'pack')>pack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6">Estimated Price</label>
+                        <div class="col-lg-8 fv-row">
+                            <input type="number" name="estimated_price" class="form-control form-control-lg form-control-solid" value="{{ old('estimated_price', $product->estimated_price ?? '') }}" step="0.01">
                         </div>
                     </div>
 

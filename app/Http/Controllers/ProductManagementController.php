@@ -198,6 +198,7 @@ class ProductManagementController extends Controller
             'unit' => 'nullable|string|max:20',
             'barcode' => 'nullable|string|max:50',
             'status' => 'required|in:active,inactive',
+            'estimated_price' => 'nullable|numeric|min:0',
             'supplier_ids' => 'nullable|array',
             'supplier_ids.*' => 'exists:suppliers,id',
         ]);
@@ -210,6 +211,7 @@ class ProductManagementController extends Controller
                 'unit' => $validated['unit'] ?? null,
                 'barcode' => $validated['barcode'] ?? null,
                 'status' => $validated['status'],
+                'estimated_price' => $validated['estimated_price'] ?? null,
             ],
             'supplier_ids' => $validated['supplier_ids'] ?? [],
         ];
