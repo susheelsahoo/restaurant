@@ -33,6 +33,7 @@ use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
+use App\Http\Controllers\MobileController;
 
 
 /*
@@ -69,7 +70,7 @@ Route::get('/customers/unsubscribe/{customer}', [CustomersController::class, 'un
 
 // Page Slug (must be last, and exclude reserved keywords like admin, blog, auth, storage, etc.)
 Route::get('/{slug}', [FrontendPageController::class, 'index'])
-    ->where('slug', '^(?!blog|menu|wines|email|admin|auth|storage|error).*$')
+    ->where('slug', '^(?!blog|menu|wines|email|admin|auth|storage|error|mobile).*$')
     ->name('page');
 
 // Social Login
@@ -201,6 +202,19 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/menus', MenuController::class);
     Route::resource('/wine-categories', WineCategoryController::class);
     Route::resource('/wines', WinesController::class);
+});
+
+Route::middleware([])->group(function () { 
+    Route::get('/mobile', function () {
+        return redirect('/mobile/dashboard');
+    });
+    Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
+    Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
+    Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
+    Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
+    Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
+    Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
+    Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
 });
 
 

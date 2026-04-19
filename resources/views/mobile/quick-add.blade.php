@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layout.mobile')
 
 @push('head')
 <script>

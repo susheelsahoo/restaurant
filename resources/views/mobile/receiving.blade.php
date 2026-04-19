@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layout.mobile')
 
 @section('mobile-content')
 <div class="topbar mobile-top">

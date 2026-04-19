@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="%s">', asset($path)) !!}
     @endforeach
     <!--end::Custom Stylesheets-->
+    @stack('styles')
     <!-- Trumbowyg CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.min.css">
 
