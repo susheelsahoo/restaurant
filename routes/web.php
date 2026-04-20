@@ -205,16 +205,20 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 });
 
 Route::middleware([])->group(function () { 
-    Route::get('/mobile', function () {
-        return redirect('/mobile/dashboard');
+    Route::get('/mobile/login', function () {
+        return view('mobile.login');
+    })->middleware('guest')->name('mobile.login');
+    
+    Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest');
+    Route::middleware('mobile.auth')->group(function () {
+        Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
+        Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
+        Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
+        Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
+        Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
+        Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
+        Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
     });
-    Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
-    Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
-    Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
-    Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
-    Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
-    Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
-    Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
 });
 
 

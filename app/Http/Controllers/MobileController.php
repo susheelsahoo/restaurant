@@ -28,6 +28,15 @@ class MobileController extends Controller
 
     public function dashboard()
     {
+        $hour = now()->hour;
+        if ($hour < 12) {
+            $greeting = 'Good morning';
+        } elseif ($hour < 17) {
+            $greeting = 'Good afternoon';
+        } else {
+            $greeting = 'Good evening';
+        }
+
         return view('mobile.dashboard', [
             'stats' => [
                 ['value' => '5', 'label' => 'Open Requests'],
@@ -35,6 +44,7 @@ class MobileController extends Controller
                 ['value' => '12', 'label' => 'Items in Basket'],
                 ['value' => '3', 'label' => 'Urgent Items'],
             ],
+            'greeting' => $greeting,
         ]);
     }
 

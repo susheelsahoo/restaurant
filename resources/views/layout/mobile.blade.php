@@ -6,7 +6,6 @@
 
 @section('content')
 <main class="page-wrap">
-    <div class="handoff">Laravel starter mobile screen with shared Blade layout and CSS.</div>
     <div class="file-nav">
         <a href="/mobile/dashboard">Dashboard</a>
         <a href="/mobile/quick-add">Quick Add</a>
@@ -23,7 +22,14 @@
         <div class="screen">
             @yield('mobile-content')
         </div>
-        @yield('mobile-footer')
+        @if(request()->path() != 'mobile/login')
+        <div class="mobile-nav">
+            <a href="/mobile/dashboard" @if(request()->path() == 'mobile/dashboard') class="active" @endif>Home</a>
+            <a href="/mobile/request-detail" @if(request()->path() == 'mobile/request-detail') class="active" @endif>Requests</a>
+            <a href="/mobile/quick-add" @if(request()->path() == 'mobile/quick-add') class="active" @endif>Templates</a>
+            <a href="/mobile/purchasing" @if(request()->path() == 'mobile/purchasing') class="active" @endif>Purchasing</a>
+        </div>
+        @endif
     </div>
 </main>
 @endsection

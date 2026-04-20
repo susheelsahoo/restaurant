@@ -3,10 +3,15 @@
 @section('mobile-content')
 <div class="topbar mobile-top">
     <div>
-        <h3>Good morning, Nino</h3>
+        <h3>{{ $greeting }}, {{ auth()->user()->name }}</h3>
         <span>Kitchen team · Tuesday overview</span>
     </div>
-    <div class="profile">N</div>
+    <div class="profile" onclick="toggleProfileMenu()">{{ substr(auth()->user()->name, 0, 1) }}</div>
+</div>
+
+<div class="profile-menu" id="profileMenu" style="display:none;">
+    <div class="menu-item">Profile</div>
+    <form method="POST" action="/logout" style="display:inline;">@csrf<button class="menu-item" type="submit">Logout</button></form>
 </div>
 
 <div class="card hero">
@@ -42,11 +47,9 @@
 </div>
 @endsection
 
-@section('mobile-footer')
-<div class="mobile-nav">
-    <div class="active">Home</div>
-    <div>Requests</div>
-    <div>Templates</div>
-    <div>Profile</div>
-</div>
-@endsection
+<script>
+function toggleProfileMenu() {
+    var menu = document.getElementById('profileMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+</script>

@@ -48,7 +48,7 @@ async function lookupBarcode() {
 
 @section('mobile-content')
 <div class="topbar mobile-top">
-    <div class="icon-btn">←</div>
+    <div class="icon-btn" onclick="window.history.back()">←</div>
     <div class="topbar-title"><h3>New Kitchen Request</h3><span>Quick Add workflow</span></div>
     <div class="icon-btn">⋯</div>
 </div>
