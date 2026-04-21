@@ -81,6 +81,11 @@ Route::get('/error', function () {
     abort(500);
 });
 
+// PWA Offline Page
+Route::get('/offline', function () {
+    return file_get_contents(public_path('offline.html'));
+})->name('offline');
+
 Route::post('/contact-us', [ContactController::class, 'store'])
     ->name('contact.store');
 

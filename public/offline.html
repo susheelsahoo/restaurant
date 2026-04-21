@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Restaurant Mobile App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px 30px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #fee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .offline-content {
+            margin: 30px 0;
+        }
+
+        .status-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-item strong {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .actions {
+            margin-top: 30px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .tip {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eef;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #555;
+            border-left: 4px solid #667eea;
+        }
+
+        .offline-content ul {
+            list-style: none;
+            text-align: left;
+            margin: 15px 0;
+            padding: 0;
+        }
+
+        .offline-content li {
+            padding: 8px 0;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .offline-content li:last-child {
+            border-bottom: none;
+        }
+
+        .connection-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .connection-status.offline {
+            background: #fee;
+            color: #c33;
+        }
+
+        .connection-status.online {
+            background: #efe;
+            color: #3c3;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        
+        <h1>You're Offline</h1>
+        <p>It looks like you've lost your internet connection. Some features may not be available.</p>
+
+        <div class="offline-content">
+            <div class="connection-status offline" id="status">
+                ● Offline Mode
+            </div>
+
+            <div class="status-item">
+                <strong>What you can do:</strong>
+                <ul>
+                    <li>✓ View cached pages</li>
+                    <li>✓ Access your dashboard</li>
+                    <li>✓ Browse saved requests</li>
+                    <li>✗ Submit new requests (when online)</li>
+                    <li>✗ Upload files (when online)</li>
+                </ul>
+            </div>
+
+            <div class="actions">
+                <button onclick="location.reload()">Try Again</button>
+                <button onclick="goToCached()">View Dashboard</button>
+            </div>
+
+            <div class="tip">
+                <strong>💡 Tip:</strong> Your app will automatically sync with the server once you're back online.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check connection status periodically
+        function checkConnection() {
+            fetch('/site.webmanifest', { method: 'HEAD' })
+                .then(() => {
+                    document.getElementById('status').className = 'connection-status online';
+                    document.getElementById('status').textContent = '● Back Online!';
+                    // Auto-redirect or notify user
+                    setTimeout(() => {
+                        location.replace('/mobile/dashboard');
+                    }, 2000);
+                })
+                .catch(() => {
+                    document.getElementById('status').className = 'connection-status offline';
+                    document.getElementById('status').textContent = '● Still Offline';
+                });
+        }
+
+        function goToCached() {
+            location.href = '/mobile/dashboard';
+        }
+
+        // Check connection every 3 seconds
+        setInterval(checkConnection, 3000);
+    </script>
+</body>
+</html>

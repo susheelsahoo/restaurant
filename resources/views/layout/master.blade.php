@@ -17,6 +17,14 @@
 
     {!! includeFavicon() !!}
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Restaurant">
+    <!-- End PWA Meta Tags -->
+
     <!--begin::Fonts-->
     {!! includeFonts() !!}
     <!--end::Fonts-->
@@ -109,6 +117,50 @@
     </script>
 
     @livewireScripts
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{{ asset("sw.js") }}')
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful:', registration);
+                        
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000);
+
+                        // Listen for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'activated') {
+                                    // Notify user of app update
+                                    if (confirm('A new version of the app is available. Would you like to update?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // Prevent iOS from zooming on input focus
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+            document.addEventListener('touchmove', (e) => {
+                if (e.target.tagName === 'INPUT') {
+                    e.target.blur();
+                }
+            });
+        }
+    </script>
+    <!-- End PWA Service Worker Registration -->
 </body>
 <!--end::Body-->
 
