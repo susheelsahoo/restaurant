@@ -1,3 +1,13 @@
+If you want smoother UX:
+
+Show “New version available” popup
+Auto reload after SW update
+
+If you want, next I can:
+✅ Add background sync (offline form submit)
+✅ Add push notifications (Laravel + Firebase)
+✅ Make it enterprise-level PWA
+
 
 
 CREATE TABLE product_categories (
