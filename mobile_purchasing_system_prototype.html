@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile Purchasing System Prototype</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #f59e0b;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --chip: #eef2ff;
+      --shadow: 0 14px 30px rgba(23, 32, 51, 0.10);
+      --radius: 20px;
+      --phone-w: 390px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #dde9ff 0%, #eef3fb 18%, #f7f9fd 100%);
+    }
+
+    .prototype {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 22px 18px 48px;
+    }
+
+    .prototype-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .prototype-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .prototype-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--primary);
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(29,78,216,.12);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+    }
+
+    .screens {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 26px 22px;
+      align-items: start;
+    }
+
+    .screen-block h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .screen-block p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      max-width: 100%;
+      min-height: 844px;
+      background: var(--bg);
+      border: 10px solid #111827;
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,.18);
+      position: relative;
+    }
+
+    .statusbar {
+      height: 30px;
+      background: #111827;
+    }
+
+    .screen {
+      padding: 18px 16px 96px;
+      min-height: 814px;
+      background: linear-gradient(180deg, #f4f8ff 0%, var(--bg) 100%);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .topbar-title h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .topbar-title span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .profile {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #1d4ed8, #2563eb);
+      color: white;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,.5);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      color: white;
+      padding: 18px;
+    }
+
+    .hero h4 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .cta-row, .grid-2, .actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .cta-row { grid-template-columns: 1fr 1fr; }
+    .actions { grid-template-columns: 1.3fr .9fr .9fr; }
+
+    .mini-card {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .mini-card strong, .stat strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .mini-card span, .stat span { font-size: 12px; color: rgba(255,255,255,.8); }
+
+    .button, .action, .tab {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 13px 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .button.primary, .action.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .button.soft {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: transparent;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .section-head h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .section-head a, .section-head span {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat span { color: var(--muted); }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--chip);
+      color: #3730a3;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .request-item, .list-row, .approval-card, .po-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .request-item:last-child,
+    .list-row:last-child,
+    .approval-card:last-child,
+    .po-row:last-child { border-bottom: none; }
+
+    .request-item h5, .list-row h5, .approval-card h5, .po-row h5 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .request-item p, .list-row p, .approval-card p, .po-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .pill.green { background: var(--success-soft); color: var(--success); }
+    .pill.orange { background: var(--warning-soft); color: #b45309; }
+    .pill.red { background: var(--danger-soft); color: var(--danger); }
+    .pill.gray { background: #f3f4f6; color: #4b5563; }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .input, .select, textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 12px 13px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 78px;
+      resize: none;
+      font-family: inherit;
+    }
+
+    .product-card {
+      border: 1px solid #dbeafe;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+
+    .product-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .product-top h4 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .product-top p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .meta-box {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .meta-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .meta-box strong { font-size: 14px; }
+
+    .qty-row {
+      display: grid;
+      grid-template-columns: 1fr .9fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .sticky-submit, .mobile-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,.93);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+    }
+
+    .sticky-submit {
+      bottom: 0;
+      padding: 12px 16px 16px;
+    }
+
+    .submit-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .submit-meta strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .mobile-nav {
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 8px 10px 14px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mobile-nav .active {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      overflow: auto;
+      padding-bottom: 2px;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .timeline {
+      position: relative;
+      margin-left: 10px;
+      padding-left: 18px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: #dbeafe;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 14px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -17px;
+      top: 3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px #dbeafe;
+    }
+
+    .timeline-item h5 {
+      margin: 0 0 4px;
+      font-size: 13px;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .progress-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .line-receive {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .8fr;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: end;
+    }
+
+    .note-box {
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 920px) {
+      .screens { grid-template-columns: 1fr; }
+      .screen-block { display: flex; flex-direction: column; align-items: center; }
+      .screen-block h2, .screen-block p { width: min(100%, var(--phone-w)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype">
+    <div class="prototype-header">
+      <div>
+        <h1>Mobile Purchasing System HTML Prototype</h1>
+        <p>A multi-screen mobile-first prototype for kitchen staff, housekeeping staff, approvers, and purchasing team. Each screen is designed as a handoff-ready HTML reference for UI and frontend development.</p>
+      </div>
+      <div class="nav-links">
+        <a href="#login">Login</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#quick-add">Quick Add</a>
+        <a href="#request-detail">Request Detail</a>
+        <a href="#approval">Approval</a>
+        <a href="#purchasing">Purchasing</a>
+        <a href="#po-detail">PO Detail</a>
+        <a href="#receiving">Receiving</a>
+      </div>
+    </div>
+
+    <div class="screens">
+      <section class="screen-block" id="login">
+        <h2>1. Login Screen</h2>
+        <p>Simple and clean mobile login with a branded welcome state and one clear primary action.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen" style="display:flex; flex-direction:column; justify-content:center;">
+            <div class="card hero" style="margin-bottom:16px;">
+              <h4>Welcome back</h4>
+              <p>Internal purchasing platform for kitchen, housekeeping, approvals, and supplier ordering.</p>
+            </div>
+            <div class="card">
+              <div class="field" style="margin-bottom:12px;">
+                <label>Email</label>
+                <input class="input" value="chef@restaurant.com" />
+              </div>
+              <div class="field" style="margin-bottom:12px;">
+                <label>Password</label>
+                <input class="input" value="••••••••" />
+              </div>
+              <div class="button primary">Log In</div>
+              <div style="text-align:center; margin-top:14px; color:var(--muted); font-size:13px;">Forgot password?</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="dashboard">
+        <h2>2. Requester Dashboard</h2>
+        <p>Fast home screen for kitchen or housekeeping employees with one-tap access to request creation and recent activity.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="topbar-title">
+                <h3>Good morning, Nino</h3>
+                <span>Kitchen team · Tuesday overview</span>
+              </div>
+              <div class="profile">N</div>
+            </div>
+
+            <div class="card hero">
+              <h4>Create requests in seconds</h4>
+              <p>Use templates, favorites, recent items, or scan products to submit daily ingredient orders quickly.</p>
+              <div class="cta-row" style="margin-top:14px;">
+                <div class="mini-card">
+                  <strong>5</strong>
+                  <span>Open requests</span>
+                </div>
+                <div class="mini-card">
+                  <strong>2</strong>
+                  <span>Awaiting approval</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="button primary" style="margin-bottom:14px;">+ New Request</div>
+
+            <div class="stats-grid" style="margin-bottom:14px;">
+              <div class="stat"><strong>3</strong><span>Ordered</span></div>
+              <div class="stat"><strong>9</strong><span>Received this week</span></div>
+              <div class="stat"><strong>1</strong><span>Returned for edits</span></div>
+              <div class="stat"><strong>4</strong><span>Templates</span></div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Favorite Templates</h4><span>See all</span></div>
+              <div class="list-row">
+                <div>
+                  <h5>Daily Kitchen Essentials</h5>
+                  <p>Vegetables, dairy, herbs, bread basics</p>
+                </div>
+                <div class="pill blue">12 items</div>
+              </div>
+              <div class="list-row">
+                <div>
+                  <h5>Weekend Prep Order</h5>
+                  <p>Higher quantities for Friday–Sunday service</p>
+                </div>
+                <div class="pill orange">Urgent</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Recent Requests</h4><span>View all</span></div>
+              <div class="request-item">
+                <div>
+                  <h5>REQ-2026-0215</h5>
+                  <p>Tomato, onion, yogurt, oil · Submitted today</p>
+                </div>
+                <div class="pill blue">Pending</div>
+              </div>
+              <div class="request-item">
+                <div>
+                  <h5>REQ-2026-0211</h5>
+                  <p>Chicken, butter, cucumber · Ordered yesterday</p>
+                </div>
+                <div class="pill green">Ordered</div>
+              </div>
+            </div>
+          </div>
+          <div class="mobile-nav">
+            <div class="active">Home</div>
+            <div>Requests</div>
+            <div>Templates</div>
+            <div>Profile</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="quick-add">
+        <h2>3. Quick Add Request</h2>
+        <p>The core mobile screen: favorites, recent items, search, scan, and a basket-based request builder with minimal typing.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="icon-btn">←</div>
+              <div class="topbar-title">
+                <h3>New Kitchen Request</h3>
+                <span>Quick Add workflow</span>
+              </div>
+              <div class="icon-btn">⋯</div>
+            </div>
+
+            <div class="card">
+              <div class="grid-2">
+                <div class="field">
+                  <label>Needed by</label>
+                  <input class="input" value="Today, 18:00" />
+                </div>
+                <div class="field">
+                  <label>Priority</label>
+                  <select class="select"><option>Normal</option><option>Urgent</option><option>Low</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <div class="action primary">Search Product</div>
+              <div class="action">Scan</div>
+              <div class="action">Templates</div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Favorites</h4><span>Manage</span></div>
+              <div class="chips">
+                <div class="chip">Tomato</div>
+                <div class="chip">Onion</div>
+                <div class="chip">Yogurt</div>
+                <div class="chip">Flour</div>
+                <div class="chip">Oil</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Recent Items</h4><span>See all</span></div>
+              <div class="chips">
+                <div class="chip">Chicken Breast</div>
+                <div class="chip">Butter</div>
+                <div class="chip">Lemon</div>
+                <div class="chip">Cucumber</div>
+              </div>
+            </div>
+
+            <div class="card product-card">
+              <div class="product-top">
+                <div>
+                  <h4>Tomato</h4>
+                  <p>Auto-filled after selection</p>
+                </div>
+                <div class="pill blue">Selected</div>
+              </div>
+              <div class="meta">
+                <div class="meta-box"><small>Category</small><strong>Vegetables</strong></div>
+                <div class="meta-box"><small>Unit</small><strong>kg</strong></div>
+                <div class="meta-box"><small>Supplier</small><strong>FreshFarm</strong></div>
+                <div class="meta-box"><small>Pack size</small><strong>1 crate</strong></div>
+              </div>
+              <div class="qty-row">
+                <div class="field">
+                  <label>Quantity</label>
+                  <input class="input" value="2.5" />
+                </div>
+                <div class="field">
+                  <label>Unit</label>
+                  <input class="input" value="kg" />
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:12px;">
+                <label>Notes</label>
+                <textarea>Ripe if possible</textarea>
+              </div>
+              <div class="button primary">Add Item</div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Request Basket</h4><span>3 items</span></div>
+              <div class="request-item">
+                <div>
+                  <h5>Tomato</h5>
+                  <p>FreshFarm · Vegetables</p>
+                </div>
+                <div>
+                  <div class="pill gray">2.5 kg</div>
+                  <p style="margin-top:6px; text-align:right; color:var(--primary); font-weight:800;">Edit · Remove</p>
+                </div>
+              </div>
+              <div class="request-item">
+                <div>
+                  <h5>Onion</h5>
+                  <p>FreshFarm · Vegetables</p>
+                </div>
+                <div>
+                  <div class="pill gray">3 kg</div>
+                  <p style="margin-top:6px; text-align:right; color:var(--primary); font-weight:800;">Edit · Remove</p>
+                </div>
+              </div>
+              <div class="request-item">
+                <div>
+                  <h5>Yogurt</h5>
+                  <p>DairyPlus · Dairy</p>
+                </div>
+                <div>
+                  <div class="pill gray">8 pcs</div>
+                  <p style="margin-top:6px; text-align:right; color:var(--primary); font-weight:800;">Edit · Remove</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-submit">
+            <div class="submit-meta">
+              <span>Total items: <strong>3</strong></span>
+              <span>Status: Draft</span>
+            </div>
+            <div class="button primary">Submit Request</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="request-detail">
+        <h2>4. Request Detail</h2>
+        <p>A clear mobile detail page showing request status, items, approval timeline, and progress after submission.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="icon-btn">←</div>
+              <div class="topbar-title">
+                <h3>REQ-2026-0215</h3>
+                <span>Kitchen request details</span>
+              </div>
+              <div class="pill blue">Pending</div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Request Summary</h4><span>Today</span></div>
+              <div class="grid-2">
+                <div class="meta-box"><small>Requester</small><strong>Nino G.</strong></div>
+                <div class="meta-box"><small>Needed by</small><strong>18:00</strong></div>
+                <div class="meta-box"><small>Priority</small><strong>Normal</strong></div>
+                <div class="meta-box"><small>Department</small><strong>Kitchen</strong></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Items</h4><span>3 total</span></div>
+              <div class="request-item">
+                <div><h5>Tomato</h5><p>FreshFarm · Vegetables</p></div>
+                <div class="pill gray">2.5 kg</div>
+              </div>
+              <div class="request-item">
+                <div><h5>Onion</h5><p>FreshFarm · Vegetables</p></div>
+                <div class="pill gray">3 kg</div>
+              </div>
+              <div class="request-item">
+                <div><h5>Yogurt</h5><p>DairyPlus · Dairy</p></div>
+                <div class="pill gray">8 pcs</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Approval Timeline</h4><span>Live</span></div>
+              <div class="timeline">
+                <div class="timeline-item">
+                  <h5>Submitted by Nino</h5>
+                  <p>Today · 10:14 AM</p>
+                </div>
+                <div class="timeline-item">
+                  <h5>Awaiting kitchen manager approval</h5>
+                  <p>Notification sent to approver</p>
+                </div>
+                <div class="timeline-item">
+                  <h5>Purchasing queue</h5>
+                  <p>Will appear here after approval</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Notes</h4></div>
+              <div class="note-box">Tomatoes should be ripe if possible. Ingredients needed for evening prep and lunch service.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="approval">
+        <h2>5. Approval Queue</h2>
+        <p>Mobile approval view for managers with filters, urgency visibility, and quick approve/reject actions.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="topbar-title">
+                <h3>Approval Queue</h3>
+                <span>Kitchen manager view</span>
+              </div>
+              <div class="profile">M</div>
+            </div>
+
+            <div class="tabs">
+              <div class="tab active">Pending</div>
+              <div class="tab">Urgent</div>
+              <div class="tab">Approved</div>
+            </div>
+
+            <div class="card">
+              <div class="approval-card">
+                <div>
+                  <h5>REQ-2026-0215</h5>
+                  <p>Nino G. · Kitchen · Needed today 18:00</p>
+                </div>
+                <div class="pill orange">Urgent</div>
+              </div>
+              <div class="approval-card">
+                <div>
+                  <h5>Tomato, Onion, Yogurt</h5>
+                  <p>3 items · Requested 25 minutes ago</p>
+                </div>
+                <div class="pill blue">Review</div>
+              </div>
+              <div class="grid-2" style="margin-top:12px;">
+                <div class="button soft">Return</div>
+                <div class="button primary">Approve</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="approval-card">
+                <div>
+                  <h5>REQ-2026-0214</h5>
+                  <p>Lasha T. · Housekeeping · 6 items</p>
+                </div>
+                <div class="pill blue">Pending</div>
+              </div>
+              <div class="approval-card">
+                <div>
+                  <h5>Cleaning spray, gloves, paper towels</h5>
+                  <p>Needed tomorrow morning</p>
+                </div>
+                <div class="pill gray">Normal</div>
+              </div>
+              <div class="grid-2" style="margin-top:12px;">
+                <div class="button" style="color:var(--danger);">Reject</div>
+                <div class="button primary">Open</div>
+              </div>
+            </div>
+          </div>
+          <div class="mobile-nav">
+            <div>Home</div>
+            <div class="active">Queue</div>
+            <div>Reports</div>
+            <div>Profile</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="purchasing">
+        <h2>6. Purchasing Dashboard</h2>
+        <p>Mobile purchasing summary for buyers and managers with operational KPIs, due deliveries, and approved requests waiting for POs.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="topbar-title">
+                <h3>Purchasing</h3>
+                <span>Manager dashboard</span>
+              </div>
+              <div class="profile">P</div>
+            </div>
+
+            <div class="stats-grid" style="margin-bottom:14px;">
+              <div class="stat"><strong>7</strong><span>Approved requests</span></div>
+              <div class="stat"><strong>4</strong><span>Orders in progress</span></div>
+              <div class="stat"><strong>2</strong><span>Due today</span></div>
+              <div class="stat"><strong>1</strong><span>Delayed PO</span></div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Approved Requests</h4><span>Create PO</span></div>
+              <div class="po-row">
+                <div>
+                  <h5>REQ-2026-0215</h5>
+                  <p>Kitchen · 3 items · Suggested supplier: FreshFarm</p>
+                </div>
+                <div class="pill blue">Ready</div>
+              </div>
+              <div class="po-row">
+                <div>
+                  <h5>REQ-2026-0214</h5>
+                  <p>Housekeeping · 6 items · Mixed suppliers</p>
+                </div>
+                <div class="pill orange">Priority</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Deliveries Today</h4><span>View all</span></div>
+              <div class="po-row">
+                <div>
+                  <h5>PO-2026-0087</h5>
+                  <p>FreshFarm · ETA 11:30 AM</p>
+                </div>
+                <div class="pill green">On time</div>
+              </div>
+              <div class="po-row">
+                <div>
+                  <h5>PO-2026-0084</h5>
+                  <p>CleanPro · ETA 16:00 PM</p>
+                </div>
+                <div class="pill gray">Scheduled</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Supplier Alerts</h4></div>
+              <div class="note-box">FreshFarm changed delivery window for today. DairyPlus has not confirmed PO-2026-0089 yet.</div>
+            </div>
+          </div>
+          <div class="mobile-nav">
+            <div class="active">Home</div>
+            <div>Queue</div>
+            <div>Orders</div>
+            <div>More</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="po-detail">
+        <h2>7. Purchase Order Detail</h2>
+        <p>Mobile PO detail showing supplier info, linked request, line items, status steps, and follow-up actions.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="icon-btn">←</div>
+              <div class="topbar-title">
+                <h3>PO-2026-0087</h3>
+                <span>FreshFarm</span>
+              </div>
+              <div class="pill green">Confirmed</div>
+            </div>
+
+            <div class="card">
+              <div class="grid-2">
+                <div class="meta-box"><small>Order date</small><strong>Mar 31</strong></div>
+                <div class="meta-box"><small>Expected</small><strong>Apr 1</strong></div>
+                <div class="meta-box"><small>Buyer</small><strong>Mariam</strong></div>
+                <div class="meta-box"><small>Linked req</small><strong>REQ-0215</strong></div>
+              </div>
+              <div class="progress-row">
+                <div class="pill blue">Sent</div>
+                <div class="pill green">Confirmed</div>
+                <div class="pill gray">In delivery</div>
+                <div class="pill gray">Received</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Supplier</h4><span>Call</span></div>
+              <div class="note-box">FreshFarm LLC<br/>Contact: Giorgi · +36 20 555 1111<br/>Email: orders@freshfarm.hu</div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Line Items</h4><span>3 items</span></div>
+              <div class="po-row">
+                <div><h5>Tomato</h5><p>Ordered 2.5 kg</p></div>
+                <div class="pill gray">€ 10.6</div>
+              </div>
+              <div class="po-row">
+                <div><h5>Onion</h5><p>Ordered 3 kg</p></div>
+                <div class="pill gray">€ 7.2</div>
+              </div>
+              <div class="po-row">
+                <div><h5>Cucumber</h5><p>Ordered 2 kg</p></div>
+                <div class="pill gray">€ 5.0</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Actions</h4></div>
+              <div class="grid-2">
+                <div class="button">Edit PO</div>
+                <div class="button primary">Record Delivery</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block" id="receiving">
+        <h2>8. Delivery / Receiving</h2>
+        <p>Mobile receiving flow for fast quantity confirmation, damaged item notes, and partial vs full receipt handling.</p>
+        <div class="phone">
+          <div class="statusbar"></div>
+          <div class="screen">
+            <div class="topbar">
+              <div class="icon-btn">←</div>
+              <div class="topbar-title">
+                <h3>Record Delivery</h3>
+                <span>PO-2026-0087</span>
+              </div>
+              <div class="pill blue">Partial</div>
+            </div>
+
+            <div class="card">
+              <div class="grid-2">
+                <div class="field">
+                  <label>Delivery date</label>
+                  <input class="input" value="2026-04-01 11:34" />
+                </div>
+                <div class="field">
+                  <label>Note no.</label>
+                  <input class="input" value="DN-7782" />
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h4>Receive Items</h4><span>3 lines</span></div>
+
+              <div class="list-row" style="display:block;">
+                <h5>Tomato</h5>
+                <p>Ordered: 2.5 kg</p>
+                <div class="line-receive">
+                  <div class="field"><label>Received</label><input class="input" value="2.5" /></div>
+                  <div class="field"><label>Damaged</label><input class="input" value="0" /></div>
+                  <div class="field"><label>Unit</label><input class="input" value="kg" /></div>
+                </div>
+              </div>
+
+              <div class="list-row" style="display:block;">
+                <h5>Onion</h5>
+                <p>Ordered: 3 kg</p>
+                <div class="line-receive">
+                  <div class="field"><label>Received</label><input class="input" value="2" /></div>
+                  <div class="field"><label>Damaged</label><input class="input" value="0" /></div>
+                  <div class="field"><label>Unit</label><input class="input" value="kg" /></div>
+                </div>
+              </div>
+
+              <div class="list-row" style="display:block; border-bottom:none;">
+                <h5>Cucumber</h5>
+                <p>Ordered: 2 kg</p>
+                <div class="line-receive">
+                  <div class="field"><label>Received</label><input class="input" value="2" /></div>
+                  <div class="field"><label>Damaged</label><input class="input" value="0.5" /></div>
+                  <div class="field"><label>Unit</label><input class="input" value="kg" /></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="field" style="margin-bottom:10px;">
+                <label>Receiving notes</label>
+                <textarea>Onions partially missing. Some cucumber damaged during transport.</textarea>
+              </div>
+              <div class="grid-2">
+                <div class="button soft">Save Partial</div>
+                <div class="button primary">Complete Receipt</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

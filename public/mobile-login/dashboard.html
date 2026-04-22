@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-text">
+                <h1>Good morning, Noemy Murray</h1>
+                <p>Kitchen team &middot; Tuesday overview</p>
+            </div>
+            <div class="avatar">
+                <span>N</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            
+            <!-- Banner Card -->
+            <section class="banner-card">
+                <h2>Create requests in seconds</h2>
+                <p>Use templates, favorites, recent items, or scan products to submit daily ingredient orders quickly.</p>
+                <div class="banner-stats">
+                    <div class="stat-box">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Open requests</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">Awaiting approval</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Request Button -->
+            <button class="primary-btn" onclick="window.location.href='quick_add.html'">
+                + New Request
+            </button>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="card stat-card">
+                    <span class="stat-number-dark">5</span>
+                    <span class="stat-label-dark">Open Requests</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-number-dark">2</span>
+                    <span class="stat-label-dark">Awaiting Approval</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-number-dark">12</span>
+                    <span class="stat-label-dark">Items in Basket</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-number-dark">3</span>
+                    <span class="stat-label-dark">Urgent Items</span>
+                </div>
+            </section>
+
+            <!-- Favorite Templates -->
+            <section class="card templates-card">
+                <div class="templates-header">
+                    <h3>Favorite Templates</h3>
+                    <a href="#" class="see-all">See all</a>
+                </div>
+                
+                <div class="template-item">
+                    <div class="template-info">
+                        <h4>Daily Kitchen Essentials</h4>
+                        <p>Vegetables, dairy, herbs, bread basics</p>
+                    </div>
+                    <div class="badge badge-blue">
+                        12 items
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <div class="template-item">
+                    <div class="template-info">
+                        <h4>Weekend Prep Order</h4>
+                        <p>Higher quantities for Friday–Sunday service</p>
+                    </div>
+                    <div class="badge badge-yellow">
+                        Urgent
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item active">Home</a>
+            <a href="requests.html" class="nav-item">Requests</a>
+            <a href="templates.html" class="nav-item">Templates</a>
+            <a href="purchasing.html" class="nav-item">Purchasing</a>
+        </nav>
+
+    </div>
+</body>
+</html>

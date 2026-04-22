@@ -1,43 +1,39 @@
 @extends('layout.mobile')
 
+@section('title', 'Requests')
+@section('body-class', 'mobile-app-body')
+@section('mobile-standalone', true)
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
+@endpush
+
 @section('mobile-content')
-<div class="topbar mobile-top">
-    <div class="icon-btn">←</div>
-    <div class="topbar-title"><h3>REQ-2026-0215</h3><span>Kitchen request details</span></div>
-    <div class="pill blue">Pending</div>
-</div>
-
-<div class="card">
-    <div class="section-head"><h4>Request Summary</h4><span>Today</span></div>
-    <div class="grid-2">
-        <div class="meta-box"><small>Requester</small><strong>Nino G.</strong></div>
-        <div class="meta-box"><small>Needed by</small><strong>18:00</strong></div>
-        <div class="meta-box"><small>Priority</small><strong>Normal</strong></div>
-        <div class="meta-box"><small>Department</small><strong>Kitchen</strong></div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="section-head"><h4>Items</h4><span>{{ count($basketItems) }} total</span></div>
-    @foreach($basketItems as $item)
-        <div class="request-item">
-            <div><h5>{{ $item['name'] }}</h5><p>{{ $item['supplier'] }} · {{ $item['category'] }}</p></div>
-            <div class="pill gray">{{ $item['quantity'] }}</div>
+<div class="app-container">
+    <header class="header">
+        <div class="header-text">
+            <h1>Requests</h1>
+            <p>View all your requests</p>
         </div>
-    @endforeach
-</div>
+        @include('mobile.partials.profile-menu')
+    </header>
 
-<div class="card">
-    <div class="section-head"><h4>Approval Timeline</h4><span>Live</span></div>
-    <div class="timeline">
-        <div class="timeline-item"><h5>Submitted by Nino</h5><p>Today · 10:14 AM</p></div>
-        <div class="timeline-item"><h5>Awaiting kitchen manager approval</h5><p>Notification sent to approver</p></div>
-        <div class="timeline-item"><h5>Purchasing queue</h5><p>Will appear here after approval</p></div>
-    </div>
-</div>
+    <main class="content">
+        <section class="card templates-card">
+            <div class="templates-header">
+                <h3>Your Open Requests</h3>
+            </div>
+            <div class="template-item">
+                <p>Page Content under construction...</p>
+            </div>
+        </section>
+    </main>
 
-<div class="card">
-    <div class="section-head"><h4>Notes</h4></div>
-    <div class="note-box">Tomatoes should be ripe if possible. Ingredients needed for evening prep and lunch service.</div>
+    <nav class="bottom-nav">
+        <a href="{{ url('/mobile/dashboard') }}" class="nav-item">Home</a>
+        <a href="{{ url('/mobile/request-detail') }}" class="nav-item active">Requests</a>
+        <a href="{{ url('/mobile/quick-add') }}" class="nav-item">Templates</a>
+        <a href="{{ url('/mobile/purchasing') }}" class="nav-item">Purchasing</a>
+    </nav>
 </div>
 @endsection

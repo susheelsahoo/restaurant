@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile Login</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="login-body">
+    <div class="login-container">
+      <!-- Header -->
+      <header class="app-header">
+        <button class="back-btn" aria-label="Go back">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 12H5M5 12L12 19M5 12L12 5"
+              stroke="#111827"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h1 class="screen-title">Login</h1>
+        <div class="spacer"></div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="app-content">
+        <!-- Welcome Info -->
+        <section class="card welcome-card">
+          <h2>Welcome Back</h2>
+          <p>Please sign in to access the mobile app.</p>
+        </section>
+
+        <!-- Login Form -->
+        <section class="card form-card">
+          <form action="/mobile/login" method="POST" class="login-form">
+            <div class="input-group">
+              <label for="email">EMAIL</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="input-field input-email"
+                placeholder="Email Address"
+                autocomplete="username"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="password">PASSWORD</label>
+              <!-- Used a 10 char string to match the image dots visually -->
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="input-field input-password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+
+            <button type="submit" class="submit-btn">Sign In</button>
+          </form>
+        </section>
+
+        <!-- Footer Info -->
+        <section class="card footer-card">
+          <p>Don't have an account? Contact your administrator.</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

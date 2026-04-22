@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Add</title>
+    <!-- Include dashboard base for app-container and bottom-nav -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <button class="back-btn icon-btn" aria-label="Go back" onclick="window.location.href='dashboard.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="qa-header-text">
+                <h1>New Kitchen Request</h1>
+                <p>Quick Add workflow</p>
+            </div>
+            <button class="dots-btn icon-btn" aria-label="More options">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H5.01M12 12H12.01M19 12H19.01" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <!-- Content scrolling is natively handled since .app-container will expand and the bottom-nav is fixed -->
+        <main class="content qa-content">
+            
+            <!-- Needed By & Priority Card -->
+            <section class="card flex-row-card">
+                <div class="input-col">
+                    <label class="qa-label">NEEDED BY</label>
+                    <input type="text" class="qa-input" value="Today, 18:00">
+                </div>
+                <div class="input-col">
+                    <label class="qa-label">PRIORITY</label>
+                    <div class="select-wrapper">
+                        <select class="qa-select">
+                            <option>Normal</option>
+                            <option>High</option>
+                            <option>Urgent</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Tabs -->
+            <section class="action-tabs">
+                <button class="tab-btn active">Search Product</button>
+                <button class="tab-btn">Scan</button>
+                <button class="tab-btn">Templates</button>
+            </section>
+
+            <!-- Barcode Input Demo Card -->
+            <section class="card">
+                <label class="qa-label">BARCODE INPUT DEMO</label>
+                <div class="lookup-group">
+                    <input type="text" class="qa-input" value="1234567890123">
+                    <button class="lookup-btn">Lookup</button>
+                </div>
+                <p class="qa-help-text">Demo barcodes: 1234567890123, 1234567890456, 9988123412000, 7722009911001</p>
+            </section>
+
+            <!-- Favorites -->
+            <section class="card">
+                <div class="qa-card-header">
+                    <h3>Favorites</h3>
+                    <a href="#" class="qa-link">Manage</a>
+                </div>
+                <div class="pills-container">
+                    <span class="pill">Tomato</span>
+                    <span class="pill">Onion</span>
+                    <span class="pill">Yogurt</span>
+                    <span class="pill">Flour</span>
+                    <span class="pill">Oil</span>
+                </div>
+            </section>
+
+            <!-- Recent Items -->
+            <section class="card">
+                <div class="qa-card-header">
+                    <h3>Recent Items</h3>
+                    <a href="#" class="qa-link">See all</a>
+                </div>
+                <div class="pills-container">
+                    <span class="pill">Chicken Breast</span>
+                    <span class="pill">Butter</span>
+                    <span class="pill">Lemon</span>
+                    <span class="pill">Cucumber</span>
+                </div>
+            </section>
+
+            <!-- Autofilled Tomato Info -->
+            <section class="card tomato-card">
+                <div class="qa-card-header align-start">
+                    <div>
+                        <h3>Tomato</h3>
+                        <p class="subtitle">Auto-filled from barcode lookup</p>
+                    </div>
+                    <span class="badge badge-light-blue">Scanned</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <label>CATEGORY</label>
+                        <p>Vegetables</p>
+                    </div>
+                    <div class="info-box">
+                        <label>UNIT</label>
+                        <p>kg</p>
+                    </div>
+                    <div class="info-box">
+                        <label>SUPPLIER</label>
+                        <p>FreshFarm</p>
+                    </div>
+                    <div class="info-box">
+                        <label>PACK SIZE</label>
+                        <p>1 crate</p>
+                    </div>
+                </div>
+                <div class="dashed-box">
+                    <p>Scanned code: <strong>1234567890123</strong></p>
+                </div>
+            </section>
+
+            <!-- Quantity & Notes -->
+            <section class="card">
+                <div class="flex-row-card no-padding">
+                    <div class="input-col" style="flex: 1.5;">
+                        <label class="qa-label">QUANTITY</label>
+                        <input type="number" class="qa-input" value="2.5" step="0.1">
+                    </div>
+                    <div class="input-col" style="flex: 1;">
+                        <label class="qa-label">UNIT</label>
+                        <input type="text" class="qa-input" value="kg">
+                    </div>
+                </div>
+                <div class="input-col" style="margin-top: 16px;">
+                    <label class="qa-label">NOTES</label>
+                    <textarea class="qa-textarea" rows="2">Ripe if possible</textarea>
+                </div>
+                <button class="qa-primary-btn">Add Item</button>
+            </section>
+
+            <!-- Request Basket -->
+            <section class="card request-basket">
+                <div class="qa-card-header">
+                    <h3>Request Basket</h3>
+                    <span class="text-blue-bold">3 items</span>
+                </div>
+                
+                <div class="basket-item">
+                    <div class="basket-item-info">
+                        <h4>Tomato</h4>
+                        <p>FreshFarm &middot; Vegetables</p>
+                    </div>
+                    <div class="basket-item-actions">
+                        <span class="qty-badge">2.5 kg</span>
+                        <div class="action-links">
+                            <a href="#">Edit</a> &middot; <a href="#">Remove</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="qa-divider">
+
+                <div class="basket-item">
+                    <div class="basket-item-info">
+                        <h4>Onion</h4>
+                        <p>FreshFarm &middot; Vegetables</p>
+                    </div>
+                    <div class="basket-item-actions">
+                        <span class="qty-badge">3 kg</span>
+                        <div class="action-links">
+                            <a href="#">Edit</a> &middot; <a href="#">Remove</a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="qa-divider">
+
+                <div class="basket-item">
+                    <div class="basket-item-info">
+                        <h4>Yogurt</h4>
+                        <p>DairyPlus &middot; Dairy</p>
+                    </div>
+                    <div class="basket-item-actions">
+                        <span class="qty-badge">8 pcs</span>
+                        <div class="action-links">
+                            <a href="#">Edit</a> &middot; <a href="#">Remove</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item">Home</a>
+            <a href="requests.html" class="nav-item">Requests</a>
+            <a href="templates.html" class="nav-item active">Templates</a>
+            <a href="purchasing.html" class="nav-item">Purchasing</a>
+        </nav>
+
+    </div>
+</body>
+</html>

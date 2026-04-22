@@ -1,55 +1,87 @@
 @extends('layout.mobile')
 
+@section('title', 'Dashboard')
+@section('body-class', 'mobile-app-body')
+@section('mobile-standalone', true)
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
+@endpush
+
 @section('mobile-content')
-<div class="topbar mobile-top">
-    <div>
-        <h3>{{ $greeting }}, {{ auth()->user()->name }}</h3>
-        <span>Kitchen team · Tuesday overview</span>
-    </div>
-    <div class="profile" onclick="toggleProfileMenu()">{{ substr(auth()->user()->name, 0, 1) }}</div>
-</div>
-
-<div class="profile-menu" id="profileMenu" style="display:none;">
-    <div class="menu-item">Profile</div>
-    <form method="POST" action="/logout" style="display:inline;">@csrf<button class="menu-item" type="submit">Logout</button></form>
-</div>
-
-<div class="card hero">
-    <h4>Create requests in seconds</h4>
-    <p>Use templates, favorites, recent items, or scan products to submit daily ingredient orders quickly.</p>
-    <div class="cta-row">
-        <div class="mini-card"><strong>5</strong><span>Open requests</span></div>
-        <div class="mini-card"><strong>2</strong><span>Awaiting approval</span></div>
-    </div>
-</div>
-
-<a class="button primary full" href="/mobile/quick-add">+ New Request</a>
-
-<div class="stats-grid">
-    @foreach($stats as $stat)
-        <div class="stat card">
-            <strong>{{ $stat['value'] }}</strong>
-            <span>{{ $stat['label'] }}</span>
+<div class="app-container">
+    <header class="header">
+        <div class="header-text">
+            <h1>{{ $greeting }}, {{ auth()->user()->name }}</h1>
+            <p>Kitchen team &middot; Tuesday overview</p>
         </div>
-    @endforeach
-</div>
+        @include('mobile.partials.profile-menu')
+    </header>
 
-<div class="card">
-    <div class="section-head"><h4>Favorite Templates</h4><span>See all</span></div>
-    <div class="list-row">
-        <div><h5>Daily Kitchen Essentials</h5><p>Vegetables, dairy, herbs, bread basics</p></div>
-        <div class="pill blue">12 items</div>
-    </div>
-    <div class="list-row">
-        <div><h5>Weekend Prep Order</h5><p>Higher quantities for Friday–Sunday service</p></div>
-        <div class="pill orange">Urgent</div>
-    </div>
+    <main class="content">
+        <section class="banner-card">
+            <h2>Create requests in seconds</h2>
+            <p>Use templates, favorites, recent items, or scan products to submit daily ingredient orders quickly.</p>
+            <div class="banner-stats">
+                <div class="stat-box">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">Open requests</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">2</span>
+                    <span class="stat-label">Awaiting approval</span>
+                </div>
+            </div>
+        </section>
+
+        <button class="primary-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
+            + New Request
+        </button>
+
+        <section class="stats-grid">
+            @foreach($stats as $stat)
+                <div class="card stat-card">
+                    <span class="stat-number-dark">{{ $stat['value'] }}</span>
+                    <span class="stat-label-dark">{{ $stat['label'] }}</span>
+                </div>
+            @endforeach
+        </section>
+
+        <section class="card templates-card">
+            <div class="templates-header">
+                <h3>Favorite Templates</h3>
+                <a href="{{ url('/mobile/quick-add') }}" class="see-all">See all</a>
+            </div>
+
+            <div class="template-item">
+                <div class="template-info">
+                    <h4>Daily Kitchen Essentials</h4>
+                    <p>Vegetables, dairy, herbs, bread basics</p>
+                </div>
+                <div class="badge badge-blue">
+                    12 items
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="template-item">
+                <div class="template-info">
+                    <h4>Weekend Prep Order</h4>
+                    <p>Higher quantities for Friday-Sunday service</p>
+                </div>
+                <div class="badge badge-yellow">
+                    Urgent
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="{{ url('/mobile/dashboard') }}" class="nav-item active">Home</a>
+        <a href="{{ url('/mobile/request-detail') }}" class="nav-item">Requests</a>
+        <a href="{{ url('/mobile/quick-add') }}" class="nav-item">Templates</a>
+        <a href="{{ url('/mobile/purchasing') }}" class="nav-item">Purchasing</a>
+    </nav>
 </div>
 @endsection
-
-<script>
-function toggleProfileMenu() {
-    var menu = document.getElementById('profileMenu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-</script>
