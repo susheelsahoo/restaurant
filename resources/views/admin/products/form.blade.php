@@ -71,6 +71,7 @@
                         <label class="col-lg-4 col-form-label fw-semibold fs-6">Barcode</label>
                         <div class="col-lg-8 fv-row">
                             <input type="text" name="barcode" class="form-control form-control-lg form-control-solid" value="{{ old('barcode', $product->barcode ?? '') }}">
+                            <div class="form-text">Barcode must be unique when provided.</div>
                         </div>
                     </div>
 

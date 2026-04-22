@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\HotelAuthController;
+use App\Http\Controllers\ProductManagementController;
 
 
 
@@ -23,6 +24,9 @@ use App\Http\Controllers\Api\HotelAuthController;
 */
 
 Route::post('/hotel/auth', [HotelAuthController::class, 'authenticate']);
+
+Route::get('/products/search', [ProductManagementController::class, 'searchProducts']);
+Route::get('/products/barcode/{barcode}', [ProductManagementController::class, 'lookupBarcode']);
 
 
 

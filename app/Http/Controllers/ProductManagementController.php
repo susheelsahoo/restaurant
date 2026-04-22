@@ -8,6 +8,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 
 class ProductManagementController extends Controller
 {
@@ -196,12 +197,20 @@ class ProductManagementController extends Controller
             'sku' => 'required|string|max:50|unique:products,sku,' . $productId,
             'category_id' => 'nullable|exists:product_categories,id',
             'unit' => 'nullable|string|max:20',
-            'barcode' => 'nullable|string|max:50',
+            'barcode' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('products', 'barcode')->ignore($productId),
+            ],
             'status' => 'required|in:active,inactive',
             'estimated_price' => 'nullable|numeric|min:0',
             'supplier_ids' => 'nullable|array',
             'supplier_ids.*' => 'exists:suppliers,id',
         ]);
+
+        $barcode = isset($validated['barcode']) ? trim((string) $validated['barcode']) : null;
+        $barcode = $barcode === '' ? null : $barcode;
 
         return [
             'product' => [
@@ -209,11 +218,76 @@ class ProductManagementController extends Controller
                 'sku' => $validated['sku'],
                 'category_id' => $validated['category_id'] ?? null,
                 'unit' => $validated['unit'] ?? null,
-                'barcode' => $validated['barcode'] ?? null,
+                'barcode' => $barcode,
                 'status' => $validated['status'],
                 'estimated_price' => $validated['estimated_price'] ?? null,
             ],
             'supplier_ids' => $validated['supplier_ids'] ?? [],
+        ];
+    }
+
+    public function lookupBarcode(string $barcode)
+    {
+        $product = Product::query()
+            ->with(['category:id,name', 'suppliers:id,name'])
+            ->where('barcode', trim($barcode))
+            ->first();
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found for this barcode.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->productLookupPayload($product),
+        ]);
+    }
+
+    public function searchProducts(Request $request)
+    {
+        $search = trim((string) $request->query('q', ''));
+
+        if ($search === '') {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
+
+        $products = Product::query()
+            ->with(['category:id,name', 'suppliers:id,name'])
+            ->where(function ($builder) use ($search) {
+                $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('sku', 'like', '%' . $search . '%')
+                    ->orWhere('barcode', 'like', '%' . $search . '%');
+            })
+            ->orderByRaw('CASE WHEN barcode = ? THEN 0 WHEN sku = ? THEN 1 ELSE 2 END', [$search, $search])
+            ->orderBy('name')
+            ->limit(8)
+            ->get()
+            ->map(fn (Product $product) => $this->productLookupPayload($product));
+
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+        ]);
+    }
+
+    protected function productLookupPayload(Product $product): array
+    {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category' => optional($product->category)->name ?: '-',
+            'unit' => $product->unit ?: '',
+            'preferred_supplier' => optional($product->suppliers->first())->name ?: '-',
+            'supplier_id' => optional($product->suppliers->first())->id,
+            'pack_size' => 'Standard',
+            'barcode' => $product->barcode ?: '',
         ];
     }
 

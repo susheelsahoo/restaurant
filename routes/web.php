@@ -218,6 +218,7 @@ Route::middleware([])->group(function () {
     Route::middleware('mobile.auth')->group(function () {
         Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
         Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
+        Route::post('/mobile/quick-add', [MobileController::class, 'storeQuickAdd']);
         Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
         Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
         Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
