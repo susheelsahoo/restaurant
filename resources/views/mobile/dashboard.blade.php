@@ -6,51 +6,6 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
-<style>
-    .badge-light-success {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .badge-light-danger {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    .badge-light-secondary {
-        background: #f1f5f9;
-        color: #475569;
-    }
-
-    .recent-request-item {
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .recent-request-meta {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 8px;
-        flex-shrink: 0;
-        font-size: 12px;
-        font-weight: 800;
-        color: #64748b;
-    }
-
-    .recent-request-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .empty-state {
-        font-size: 13px;
-        color: #64748b;
-        line-height: 1.5;
-    }
-</style>
 @endpush
 
 @php
@@ -141,11 +96,6 @@
         </section>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="{{ url('/mobile/dashboard') }}" class="nav-item active">Home</a>
-        <a href="{{ url('/mobile/request-detail') }}" class="nav-item">Requests</a>
-        <a href="{{ url('/mobile/quick-add') }}" class="nav-item">Templates</a>
-        <a href="{{ url('/mobile/purchasing') }}" class="nav-item">Purchasing</a>
-    </nav>
+    @include('mobile.partials.bottom-nav')
 </div>
 @endsection

@@ -29,11 +29,6 @@
         </section>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="{{ url('/mobile/dashboard') }}" class="nav-item">Home</a>
-        <a href="{{ url('/mobile/request-detail') }}" class="nav-item">Requests</a>
-        <a href="{{ url('/mobile/templates') }}" class="nav-item active">Templates</a>
-        <a href="{{ url('/mobile/purchasing') }}" class="nav-item">Purchasing</a>
-    </nav>
+    @include('mobile.partials.bottom-nav')
 </div>
 @endsection
