@@ -224,6 +224,7 @@ Route::middleware([])->group(function () {
         Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
         Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
         Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
+        Route::get('/mobile/templates', [MobileController::class, 'templates']);
     });
 });
 

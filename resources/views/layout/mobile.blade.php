@@ -11,6 +11,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Restaurant">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('purchase-orders-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('purchase-orders.png') }}">
 
     {!! includeFavicon() !!}
 
@@ -36,7 +38,7 @@
                 <div class="mobile-nav">
                     <a href="/mobile/dashboard" @if(request()->path() == 'mobile/dashboard') class="active" @endif>Home</a>
                     <a href="/mobile/request-detail" @if(request()->path() == 'mobile/request-detail') class="active" @endif>Requests</a>
-                    <a href="/mobile/quick-add" @if(request()->path() == 'mobile/quick-add') class="active" @endif>Templates</a>
+                    <a href="/mobile/templates" @if(request()->path() == 'mobile/templates') class="active" @endif>Templates</a>
                     <a href="/mobile/purchasing" @if(request()->path() == 'mobile/purchasing') class="active" @endif>Purchasing</a>
                 </div>
             </div>

@@ -43,17 +43,17 @@
 
         <section class="action-tabs">
             <button class="tab-btn active" type="button">Search Product</button>
-            <button class="tab-btn" type="button" onclick="lookupBarcode()">Scan</button>
+            <button class="tab-btn" type="button" onclick="lookupProduct()">Scan</button>
             <button class="tab-btn" type="button">Templates</button>
         </section>
 
         <section class="card">
-            <label class="qa-label" for="barcodeInput">BARCODE INPUT DEMO</label>
+            <label class="qa-label" for="barcodeInput">PRODUCT NAME OR BARCODE</label>
             <div class="lookup-group">
-                <input type="text" id="barcodeInput" class="qa-input" value="{{ $scannedProduct['barcode'] }}">
-                <button class="lookup-btn" type="button" onclick="lookupBarcode()">Lookup</button>
+                <input type="text" id="barcodeInput" class="qa-input" list="productSuggestions" value="{{ $scannedProduct['barcode'] }}" placeholder="Type product name or barcode">
+                <datalist id="productSuggestions"></datalist>
+                <button class="lookup-btn" type="button" onclick="lookupProduct()">Lookup</button>
             </div>
-            <p class="qa-help-text">Demo barcodes: 1234567890123, 1234567890456, 9988123412000, 7722009911001</p>
         </section>
 
         <div id="lookupContent" hidden>
@@ -113,8 +113,10 @@
 <script>
 let currentProduct = null;
 let basketItems = [];
+let productSuggestions = [];
+let lookupTimer = null;
 
-async function lookupBarcode() {
+async function lookupProduct() {
     const code = document.getElementById('barcodeInput').value.trim();
     const result = document.getElementById('barcodeResult');
     const content = document.getElementById('lookupContent');
@@ -122,46 +124,113 @@ async function lookupBarcode() {
     if (!code) return;
 
     try {
-        const response = await fetch('/api/products/barcode/' + encodeURIComponent(code));
-        const payload = await response.json();
+        let product = productSuggestions.find((item) => {
+            return item.name.toLowerCase() === code.toLowerCase() || (item.barcode && item.barcode === code);
+        }) || null;
 
-        if (!response.ok || !payload.success) {
+        if (!product) {
+            const barcodeResponse = await fetch('/api/products/barcode/' + encodeURIComponent(code));
+            const barcodePayload = await barcodeResponse.json();
+
+            if (barcodeResponse.ok && barcodePayload.success) {
+                product = barcodePayload.data;
+            }
+        }
+
+        if (!product) {
+            const response = await fetch('/api/products/search?q=' + encodeURIComponent(code));
+            const payload = await response.json();
+
+            if (response.ok && payload.success && payload.data.length) {
+                product = payload.data[0];
+                productSuggestions = payload.data;
+                renderSuggestions(payload.data);
+            }
+        }
+
+        if (!product) {
             content.hidden = true;
-            message.innerHTML = '<section class="card"><p class="qa-help-text">Barcode not found. Try another product barcode.</p></section>';
+            message.innerHTML = '<section class="card"><p class="qa-help-text">Product not found. Try another product name or barcode.</p></section>';
             return;
         }
 
-        const product = payload.data;
-        currentProduct = product;
+        setLookupProduct(product);
         message.innerHTML = '';
-        content.hidden = false;
-        result.innerHTML = `
-            <section class="card tomato-card">
-                <div class="qa-card-header align-start">
-                    <div>
-                        <h3>${escapeHtml(product.name)}</h3>
-                        <p class="subtitle">Auto-filled from barcode lookup</p>
-                    </div>
-                    <span class="badge badge-light-blue">Scanned</span>
-                </div>
-                <div class="info-grid">
-                    <div class="info-box"><label>CATEGORY</label><p>${escapeHtml(product.category)}</p></div>
-                    <div class="info-box"><label>UNIT</label><p>${escapeHtml(product.unit || '-')}</p></div>
-                    <div class="info-box"><label>SUPPLIER</label><p>${escapeHtml(product.preferred_supplier)}</p></div>
-                    <div class="info-box"><label>PACK SIZE</label><p>${escapeHtml(product.pack_size || 'Standard')}</p></div>
-                </div>
-                <div class="dashed-box">
-                    <p>Scanned code: <strong>${escapeHtml(product.barcode || '-')}</strong></p>
-                </div>
-            </section>
-        `;
-        document.getElementById('quantityInput').value = '';
-        document.getElementById('unitInput').value = product.unit || '';
-        document.getElementById('notesInput').value = '';
     } catch (e) {
         content.hidden = true;
-        message.innerHTML = '<section class="card"><p class="qa-help-text">Barcode lookup failed.</p></section>';
+        message.innerHTML = '<section class="card"><p class="qa-help-text">Product lookup failed.</p></section>';
     }
+}
+
+async function fetchProductSuggestions() {
+    const query = document.getElementById('barcodeInput').value.trim();
+
+    if (query.length < 2) {
+        productSuggestions = [];
+        renderSuggestions([]);
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/products/search?q=' + encodeURIComponent(query));
+        const payload = await response.json();
+
+        if (!response.ok || !payload.success) {
+            return;
+        }
+
+        productSuggestions = payload.data;
+        renderSuggestions(payload.data);
+    } catch (e) {
+        productSuggestions = [];
+        renderSuggestions([]);
+    }
+}
+
+function renderSuggestions(products) {
+    const suggestions = document.getElementById('productSuggestions');
+
+    suggestions.innerHTML = products.map((product) => {
+        const labelParts = [product.name];
+
+        if (product.barcode) {
+            labelParts.push(product.barcode);
+        }
+
+        return `<option value="${escapeHtml(product.name)}" label="${escapeHtml(labelParts.join(' - '))}"></option>`;
+    }).join('');
+}
+
+function setLookupProduct(product) {
+    const result = document.getElementById('barcodeResult');
+    const content = document.getElementById('lookupContent');
+
+    currentProduct = product;
+    document.getElementById('barcodeInput').value = product.name;
+    content.hidden = false;
+    result.innerHTML = `
+        <section class="card tomato-card">
+            <div class="qa-card-header align-start">
+                <div>
+                    <h3>${escapeHtml(product.name)}</h3>
+                    <p class="subtitle">Auto-filled from product lookup</p>
+                </div>
+                <span class="badge badge-light-blue">Matched</span>
+            </div>
+            <div class="info-grid">
+                <div class="info-box"><label>CATEGORY</label><p>${escapeHtml(product.category)}</p></div>
+                <div class="info-box"><label>UNIT</label><p>${escapeHtml(product.unit || '-')}</p></div>
+                <div class="info-box"><label>SUPPLIER</label><p>${escapeHtml(product.preferred_supplier)}</p></div>
+                <div class="info-box"><label>PACK SIZE</label><p>${escapeHtml(product.pack_size || 'Standard')}</p></div>
+            </div>
+            <div class="dashed-box">
+                <p>Barcode: <strong>${escapeHtml(product.barcode || '-')}</strong></p>
+            </div>
+        </section>
+    `;
+    document.getElementById('quantityInput').value = '';
+    document.getElementById('unitInput').value = product.unit || '';
+    document.getElementById('notesInput').value = '';
 }
 
 function addCurrentProductToBasket() {
@@ -301,10 +370,25 @@ function escapeHtml(value) {
     }[char]));
 }
 
+document.getElementById('barcodeInput').addEventListener('input', function () {
+    clearTimeout(lookupTimer);
+    lookupTimer = setTimeout(fetchProductSuggestions, 250);
+});
+
+document.getElementById('barcodeInput').addEventListener('change', function () {
+    const value = this.value.trim();
+    const matchedProduct = productSuggestions.find((item) => item.name.toLowerCase() === value.toLowerCase());
+
+    if (matchedProduct) {
+        setLookupProduct(matchedProduct);
+        document.getElementById('lookupMessage').innerHTML = '';
+    }
+});
+
 document.getElementById('barcodeInput').addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         event.preventDefault();
-        lookupBarcode();
+        lookupProduct();
     }
 });
 </script>

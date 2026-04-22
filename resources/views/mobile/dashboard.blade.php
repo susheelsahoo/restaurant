@@ -110,7 +110,7 @@
         <section class="card templates-card">
             <div class="templates-header">
                 <h3>Recent Requests</h3>
-                <a href="{{ url('/mobile/requests') }}" class="see-all">See all</a>
+                <a href="{{ url('/mobile/request-detail') }}" class="see-all">See all</a>
             </div>
 
             @forelse($recentRequests as $request)

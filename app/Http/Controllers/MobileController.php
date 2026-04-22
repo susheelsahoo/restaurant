@@ -11,6 +11,36 @@ use Illuminate\Validation\ValidationException;
 
 class MobileController extends Controller
 {
+    private function requestListData(?int $limit = null)
+    {
+        $query = PurchaseRequest::query()
+            ->with(['department:id,name', 'items.product:id,name'])
+            ->withCount('items')
+            ->latest('created_at')
+            ->latest('id');
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query->get()->map(function (PurchaseRequest $purchaseRequest) {
+            return [
+                'request_no' => $purchaseRequest->request_no,
+                'department' => optional($purchaseRequest->department)->name ?: '-',
+                'status' => $purchaseRequest->status,
+                'priority' => ucfirst($purchaseRequest->priority),
+                'needed_by' => optional($purchaseRequest->needed_by)->format('d M, H:i') ?: '-',
+                'items_count' => $purchaseRequest->items_count,
+                'summary' => $purchaseRequest->items
+                    ->map(fn ($item) => optional($item->product)->name)
+                    ->filter()
+                    ->take(3)
+                    ->implode(', ') ?: 'No products',
+                'is_urgent' => $purchaseRequest->priority === 'urgent',
+            ];
+        });
+    }
+
     private function commonData(): array
     {
         return [
@@ -47,30 +77,6 @@ class MobileController extends Controller
         $openStatuses = ['submitted', 'approved'];
         $awaitingApprovalStatuses = ['submitted'];
 
-        $recentRequests = PurchaseRequest::query()
-            ->with(['department:id,name', 'items.product:id,name'])
-            ->withCount('items')
-            ->latest('created_at')
-            ->latest('id')
-            ->limit(5)
-            ->get()
-            ->map(function (PurchaseRequest $purchaseRequest) {
-                return [
-                    'request_no' => $purchaseRequest->request_no,
-                    'department' => optional($purchaseRequest->department)->name ?: '-',
-                    'status' => $purchaseRequest->status,
-                    'priority' => ucfirst($purchaseRequest->priority),
-                    'needed_by' => optional($purchaseRequest->needed_by)->format('d M, H:i') ?: '-',
-                    'items_count' => $purchaseRequest->items_count,
-                    'summary' => $purchaseRequest->items
-                        ->map(fn ($item) => optional($item->product)->name)
-                        ->filter()
-                        ->take(3)
-                        ->implode(', ') ?: 'No products',
-                    'is_urgent' => $purchaseRequest->priority === 'urgent',
-                ];
-            });
-
         return view('mobile.dashboard', [
             'stats' => [
                 ['value' => PurchaseRequest::count(), 'label' => 'Total Requests'],
@@ -79,7 +85,7 @@ class MobileController extends Controller
             ],
             'openRequestsCount' => PurchaseRequest::whereIn('status', $openStatuses)->count(),
             'awaitingApprovalCount' => PurchaseRequest::whereIn('status', $awaitingApprovalStatuses)->count(),
-            'recentRequests' => $recentRequests,
+            'recentRequests' => $this->requestListData(5),
             'greeting' => $greeting,
         ]);
     }
@@ -161,7 +167,12 @@ class MobileController extends Controller
         return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
     }
 
-    public function requestDetail() { return view('mobile.request-detail', $this->commonData()); }
+    public function requestDetail()
+    {
+        return view('mobile.request-detail', array_merge($this->commonData(), [
+            'requests' => $this->requestListData(),
+        ]));
+    }
 
     public function approvals()
     {
@@ -174,6 +185,7 @@ class MobileController extends Controller
     }
 
     public function purchasing() { return view('mobile.purchasing'); }
+     public function templates() { return view('mobile.templates'); }
     public function purchaseOrder() { return view('mobile.purchase-order'); }
     public function receiving() { return view('mobile.receiving'); }
 }
