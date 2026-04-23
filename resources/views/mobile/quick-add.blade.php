@@ -5,14 +5,6 @@
 @section('mobile-standalone', true)
 
 @section('mobile-content')
-@php
-    $templateSeeds = [
-        'veg' => ['Tomato', 'Onion', 'Cucumber'],
-        'dairy' => ['Yogurt', 'Butter'],
-        'breakfast' => ['Tomato', 'Yogurt', 'Butter'],
-    ];
-@endphp
-
 <div class="quick-add-page">
     <header class="qa-topbar">
         <button class="qa-icon-btn" type="button" aria-label="Go back" onclick="window.location.href='{{ url('/mobile/dashboard') }}'">
@@ -27,21 +19,6 @@
 
     <main class="qa-main">
         <section class="qa-card">
-            <div class="qa-form-grid">
-                <div class="qa-field">
-                    <label for="needed_by">Needed By</label>
-                    <input type="datetime-local" id="needed_by" value="{{ now()->addDay()->format('Y-m-d\\TH:i') }}">
-                </div>
-                <div class="qa-field">
-                    <label for="priority">Priority</label>
-                    <select id="priority">
-                        <option value="normal">Normal</option>
-                        <option value="urgent">Urgent</option>
-                        <option value="low">Low</option>
-                    </select>
-                </div>
-            </div>
-
             <div class="qa-action-row">
                 <button id="scanBtn" class="qa-action-btn qa-action-primary" type="button">Scan Product</button>
                 <button id="templateBtn" class="qa-action-btn qa-action-secondary" type="button">Templates</button>
@@ -54,9 +31,13 @@
             <div id="templatePanel" class="qa-helper qa-helper-template" hidden>
                 <div class="qa-helper-title">Quick templates</div>
                 <div class="qa-template-list">
-                    <button class="qa-template-chip" type="button" data-template="veg">Vegetable Prep</button>
-                    <button class="qa-template-chip" type="button" data-template="dairy">Dairy Restock</button>
-                    <button class="qa-template-chip" type="button" data-template="breakfast">Breakfast Base</button>
+                    @forelse ($quickAddTemplates as $template)
+                        <button class="qa-template-chip" type="button" data-template-id="{{ $template['id'] }}">
+                            {{ $template['name'] }}
+                        </button>
+                    @empty
+                        <div class="qa-template-empty">No active templates available.</div>
+                    @endforelse
                 </div>
             </div>
 
@@ -115,8 +96,10 @@
                     data-supplier="{{ $product['preferred_supplier'] }}"
                     data-supplier-id="{{ $product['supplier_id'] }}"
                     data-unit="{{ $product['unit'] }}"
+                    data-default-unit="{{ $product['unit'] }}"
                     data-units="{{ $units }}"
                     data-qty="{{ $defaultQty }}"
+                    data-default-qty="{{ $defaultQty }}"
                     data-step-kg="0.5"
                     data-step-pcs="1"
                 >
@@ -156,19 +139,23 @@
             <div class="qa-modal-head">
                 <div>
                     <h3>Submit Request</h3>
-                    <p>Review selected items, confirm delivery time, and send the purchase request.</p>
+                    <p>Review selected items and send the purchase request.</p>
                 </div>
                 <button class="qa-modal-close" id="closeOrderModalBtn" type="button">×</button>
             </div>
 
             <div class="qa-form-grid">
                 <div class="qa-field">
-                    <label>Request No.</label>
-                    <input id="requestPreviewNumber" value="Draft" readonly>
+                    <label for="needed_by">Needed By</label>
+                    <input type="datetime-local" id="needed_by" value="{{ now()->addDay()->format('Y-m-d\\TH:i') }}">
                 </div>
                 <div class="qa-field">
-                    <label>Needed By</label>
-                    <input id="neededByPreview" type="text" readonly>
+                    <label for="priority">Priority</label>
+                    <select id="priority">
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgent</option>
+                        <option value="low">Low</option>
+                    </select>
                 </div>
             </div>
 
@@ -190,581 +177,11 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    :root {
-        --qa-bg: #eef3fb;
-        --qa-surface: #ffffff;
-        --qa-surface-soft: #f8fafc;
-        --qa-text: #172033;
-        --qa-muted: #6b7280;
-        --qa-line: #e5e7eb;
-        --qa-primary: #1d4ed8;
-        --qa-primary-soft: #dbeafe;
-        --qa-success-soft: #dcfce7;
-        --qa-shadow: 0 16px 30px rgba(23, 32, 51, 0.10);
-        --qa-radius: 22px;
-    }
-
-    .quick-add-page {
-        min-height: 100vh;
-        background: linear-gradient(180deg, #dfeafe 0%, var(--qa-bg) 24%, #f8fafc 100%);
-        color: var(--qa-text);
-        padding: 18px 16px 118px;
-    }
-
-    .qa-topbar,
-    .qa-section-head,
-    .qa-product-row,
-    .qa-product-left,
-    .qa-sticky-meta,
-    .qa-modal-head {
-        display: flex;
-        align-items: center;
-    }
-
-    .qa-topbar,
-    .qa-section-head,
-    .qa-product-row,
-    .qa-sticky-meta,
-    .qa-modal-head {
-        justify-content: space-between;
-    }
-
-    .qa-topbar {
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-
-    .qa-icon-btn,
-    .qa-avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        display: grid;
-        place-items: center;
-        box-shadow: var(--qa-shadow);
-        flex: 0 0 auto;
-    }
-
-    .qa-icon-btn {
-        background: #fff;
-        border: 1px solid var(--qa-line);
-        font-size: 18px;
-    }
-
-    .qa-avatar {
-        background: linear-gradient(180deg, var(--qa-primary), #2563eb);
-        color: #fff;
-        font-weight: 800;
-    }
-
-    .qa-title-block {
-        flex: 1;
-    }
-
-    .qa-title-block h1 {
-        margin: 0;
-        font-size: 22px;
-        line-height: 1.2;
-    }
-
-    .qa-title-block p {
-        margin: 4px 0 0;
-        color: var(--qa-muted);
-        font-size: 12px;
-    }
-
-    .qa-card {
-        background: var(--qa-surface);
-        border: 1px solid rgba(255, 255, 255, 0.65);
-        border-radius: var(--qa-radius);
-        box-shadow: var(--qa-shadow);
-        padding: 14px;
-        margin-bottom: 14px;
-    }
-
-    .qa-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 14px;
-    }
-
-    .qa-field label,
-    .qa-helper-title {
-        display: block;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        color: var(--qa-muted);
-        margin-bottom: 6px;
-        font-weight: 800;
-    }
-
-    .qa-field input,
-    .qa-field select,
-    .qa-search-box input,
-    .qa-qty-value,
-    .qa-note-input {
-        width: 100%;
-        border: 1px solid var(--qa-line);
-        border-radius: 12px;
-        padding: 11px 12px;
-        font-size: 14px;
-        outline: none;
-        background: #fff;
-        color: var(--qa-text);
-    }
-
-    .qa-action-row,
-    .qa-modal-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .qa-action-row {
-        margin-bottom: 12px;
-    }
-
-    .qa-action-btn,
-    .qa-submit-btn,
-    .qa-cancel-btn,
-    .qa-template-chip,
-    .qa-chip,
-    .qa-qty-btn,
-    .qa-modal-close {
-        border: none;
-        cursor: pointer;
-    }
-
-    .qa-action-btn,
-    .qa-submit-btn,
-    .qa-cancel-btn {
-        border-radius: 18px;
-        padding: 14px;
-        font-size: 14px;
-        font-weight: 800;
-    }
-
-    .qa-action-primary,
-    .qa-submit-btn {
-        background: var(--qa-primary);
-        color: #fff;
-        box-shadow: var(--qa-shadow);
-    }
-
-    .qa-action-secondary,
-    .qa-cancel-btn {
-        background: #fff;
-        color: var(--qa-text);
-        border: 1px solid var(--qa-line);
-    }
-
-    .qa-helper {
-        margin-bottom: 12px;
-        padding: 12px;
-        border-radius: 14px;
-        font-size: 12px;
-        line-height: 1.45;
-    }
-
-    .qa-helper-scan {
-        background: #eff6ff;
-        border: 1px solid #93c5fd;
-        color: var(--qa-primary);
-    }
-
-    .qa-helper-template {
-        background: var(--qa-surface-soft);
-        border: 1px solid var(--qa-line);
-    }
-
-    .qa-template-list,
-    .qa-chip-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .qa-template-chip,
-    .qa-chip {
-        padding: 8px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .qa-template-chip {
-        background: #eef2ff;
-        color: #3730a3;
-    }
-
-    .qa-search-box {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        background: #fff;
-        border: 1px solid var(--qa-line);
-        border-radius: 16px;
-        padding: 12px 14px;
-        margin-bottom: 12px;
-    }
-
-    .qa-search-box input {
-        border: none;
-        padding: 0;
-        background: transparent;
-    }
-
-    .qa-search-icon {
-        color: var(--qa-muted);
-        font-size: 16px;
-    }
-
-    .qa-chip {
-        background: #eef2ff;
-        color: #3730a3;
-    }
-
-    .qa-chip.active {
-        background: var(--qa-primary);
-        color: #fff;
-    }
-
-    .qa-section-head {
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .qa-list-head {
-        padding: 0 2px;
-    }
-
-    .qa-section-head h2,
-    .qa-modal-head h3,
-    .qa-product-info h3 {
-        margin: 0;
-    }
-
-    .qa-section-head h2 {
-        font-size: 15px;
-    }
-
-    .qa-section-head span {
-        font-size: 12px;
-        color: var(--qa-primary);
-        font-weight: 700;
-    }
-
-    .qa-summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .qa-summary-box {
-        padding: 12px;
-        border-radius: 16px;
-        background: var(--qa-surface-soft);
-        border: 1px solid var(--qa-line);
-    }
-
-    .qa-summary-box strong {
-        display: block;
-        font-size: 20px;
-        margin-bottom: 4px;
-    }
-
-    .qa-summary-box span,
-    .qa-product-info p,
-    .qa-modal-head p,
-    .qa-order-item-meta {
-        color: var(--qa-muted);
-        font-size: 12px;
-        line-height: 1.45;
-    }
-
-    .qa-product-list {
-        display: grid;
-        gap: 12px;
-    }
-
-    .qa-product-item {
-        border: 1px solid var(--qa-line);
-        border-radius: 18px;
-        background: #fff;
-        padding: 12px;
-        transition: .2s ease;
-    }
-
-    .qa-product-item.hidden {
-        display: none;
-    }
-
-    .qa-product-item.selected {
-        border-color: #93c5fd;
-        background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-    }
-
-    .qa-product-row {
-        gap: 10px;
-    }
-
-    .qa-product-left {
-        gap: 10px;
-        flex: 1;
-        min-width: 0;
-        cursor: pointer;
-    }
-
-    .qa-mark {
-        width: 22px;
-        height: 22px;
-        border-radius: 7px;
-        border: 2px solid #cbd5e1;
-        position: relative;
-        flex: 0 0 auto;
-    }
-
-    .qa-product-item.selected .qa-mark {
-        background: var(--qa-primary);
-        border-color: var(--qa-primary);
-    }
-
-    .qa-product-item.selected .qa-mark::after {
-        content: "✓";
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        color: #fff;
-        font-size: 13px;
-        font-weight: 800;
-    }
-
-    .qa-product-info {
-        min-width: 0;
-    }
-
-    .qa-qty-control {
-        display: none;
-        align-items: center;
-        gap: 6px;
-        flex: 0 0 auto;
-    }
-
-    .qa-product-item.selected .qa-qty-control,
-    .qa-product-item.selected .qa-note-row {
-        display: flex;
-    }
-
-    .qa-qty-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 10px;
-        background: #fff;
-        box-shadow: var(--qa-shadow);
-        font-size: 16px;
-    }
-
-    .qa-qty-value {
-        width: 52px;
-        text-align: center;
-        font-size: 15px;
-        font-weight: 800;
-        padding: 6px 4px;
-    }
-
-    .qa-unit-value {
-        min-width: 40px;
-        text-align: center;
-        font-size: 12px;
-        color: var(--qa-muted);
-        font-weight: 800;
-        padding: 6px 8px;
-        border-radius: 999px;
-        background: var(--qa-primary-soft);
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .qa-note-row {
-        display: none;
-        margin-top: 10px;
-    }
-
-    .qa-note-input {
-        background: var(--qa-surface-soft);
-        padding: 10px;
-    }
-
-    .qa-sticky-bar {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 12px 16px 16px;
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(10px);
-        border-top: 1px solid var(--qa-line);
-        z-index: 20;
-    }
-
-    .qa-sticky-meta {
-        margin-bottom: 10px;
-        color: var(--qa-muted);
-        font-size: 13px;
-    }
-
-    .qa-sticky-meta strong {
-        color: var(--qa-text);
-    }
-
-    .qa-modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.55);
-        backdrop-filter: blur(6px);
-        display: none;
-        align-items: flex-end;
-        justify-content: center;
-        padding: 16px;
-        z-index: 40;
-    }
-
-    .qa-modal-overlay.open {
-        display: flex;
-    }
-
-    .qa-modal {
-        width: 100%;
-        max-width: 420px;
-        max-height: 90vh;
-        overflow: auto;
-        background: #fff;
-        border-radius: 24px;
-        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
-        padding: 16px;
-    }
-
-    .qa-modal-head {
-        gap: 12px;
-        align-items: flex-start;
-        margin-bottom: 14px;
-    }
-
-    .qa-modal-close {
-        border: 1px solid var(--qa-line);
-        background: #fff;
-        border-radius: 12px;
-        width: 38px;
-        height: 38px;
-        font-size: 18px;
-    }
-
-    .qa-category-block {
-        border: 1px solid var(--qa-line);
-        border-radius: 16px;
-        padding: 12px;
-        background: var(--qa-surface-soft);
-        margin-bottom: 10px;
-    }
-
-    .qa-category-title {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--qa-primary);
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        margin-bottom: 8px;
-    }
-
-    .qa-order-item {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--qa-line);
-        font-size: 13px;
-    }
-
-    .qa-order-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .qa-order-item-name {
-        font-weight: 700;
-    }
-
-    .qa-submit-state {
-        margin-top: 12px;
-        padding: 12px;
-        border-radius: 14px;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .qa-message-card {
-        background: #fff;
-        border: 1px solid var(--qa-line);
-        border-radius: 16px;
-        padding: 12px 14px;
-        margin-bottom: 14px;
-        box-shadow: var(--qa-shadow);
-        font-size: 13px;
-    }
-
-    .qa-message-card.error {
-        border-color: #fecaca;
-        background: #fef2f2;
-        color: #991b1b;
-    }
-
-    .qa-message-card.success {
-        border-color: #a7f3d0;
-        background: #ecfdf5;
-        color: #065f46;
-    }
-
-    @media (max-width: 520px) {
-        .quick-add-page {
-            padding-left: 12px;
-            padding-right: 12px;
-        }
-
-        .qa-form-grid,
-        .qa-action-row,
-        .qa-modal-actions,
-        .qa-summary-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .qa-product-row {
-            align-items: flex-start;
-        }
-
-        .qa-qty-control {
-            width: 100%;
-            justify-content: flex-end;
-            margin-top: 10px;
-        }
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
 const initialProducts = @json($quickAddProducts);
-const templateSeeds = @json($templateSeeds);
+const quickAddTemplates = @json($quickAddTemplates);
 
-const productList = document.getElementById('productList');
 const searchInput = document.getElementById('searchInput');
 const selectedCountEl = document.getElementById('selectedCount');
 const totalQuantityEl = document.getElementById('totalQuantity');
@@ -786,8 +203,6 @@ const modalItemCount = document.getElementById('modalItemCount');
 const submitState = document.getElementById('submitState');
 const neededByInput = document.getElementById('needed_by');
 const priorityInput = document.getElementById('priority');
-const neededByPreview = document.getElementById('neededByPreview');
-const requestPreviewNumber = document.getElementById('requestPreviewNumber');
 
 let productItems = [];
 let productSearchCache = initialProducts.slice();
@@ -855,6 +270,22 @@ function setItemQuantity(item, nextQuantity) {
 
 function setItemSelected(item, selected) {
     item.classList.toggle('selected', selected);
+}
+
+function resetItemState(item) {
+    const defaultUnit = item.dataset.defaultUnit || 'pcs';
+    const defaultQty = item.dataset.defaultQty || (defaultUnit === 'kg' ? '0.5' : '1');
+    const unitValue = item.querySelector('.qa-unit-value');
+
+    item.dataset.unit = defaultUnit;
+
+    if (unitValue) {
+        unitValue.textContent = defaultUnit;
+    }
+
+    item.querySelector('.qa-note-input').value = '';
+    setItemQuantity(item, defaultQty);
+    setItemSelected(item, false);
 }
 
 function updateSummary() {
@@ -978,8 +409,6 @@ function buildModalPreview() {
     });
 
     modalItemCount.textContent = `${selectedItems.length} items`;
-    neededByPreview.value = neededByInput.value ? new Date(neededByInput.value).toLocaleString() : 'Not selected';
-    requestPreviewNumber.value = `Draft / ${priorityInput.value}`;
 
     if (!selectedItems.length) {
         orderCategoryList.innerHTML = '<div class="qa-category-block">No selected items yet.</div>';
@@ -1018,19 +447,36 @@ function closeOrderModal() {
     orderModal.classList.remove('open');
 }
 
-function applyTemplate(templateName) {
-    const template = templateSeeds[templateName] || [];
+function applyTemplate(templateId) {
+    const template = quickAddTemplates.find((item) => Number(item.id) === Number(templateId));
 
-    if (!template.length) {
+    if (!template || !Array.isArray(template.items) || !template.items.length) {
         return;
     }
 
     let matched = 0;
 
-    productItems.forEach((item) => {
-        if (template.includes(item.dataset.name)) {
-            matched += 1;
-            setItemSelected(item, true);
+    template.items.forEach((templateItem) => {
+        const matchedItem = productItems.find((item) => Number(item.dataset.id) === Number(templateItem.product_id));
+
+        if (!matchedItem) {
+            return;
+        }
+
+        matched += 1;
+        setItemSelected(matchedItem, true);
+        setItemQuantity(matchedItem, templateItem.quantity);
+
+        if (templateItem.unit) {
+            matchedItem.dataset.unit = templateItem.unit;
+            const unitValue = matchedItem.querySelector('.qa-unit-value');
+            if (unitValue) {
+                unitValue.textContent = templateItem.unit;
+            }
+        }
+
+        if (templateItem.note) {
+            matchedItem.querySelector('.qa-note-input').value = templateItem.note;
         }
     });
 
@@ -1175,13 +621,10 @@ async function submitRequest() {
         clearMessage();
 
         productItems.forEach((item) => {
-            setItemSelected(item, false);
-            item.querySelector('.qa-note-input').value = '';
-            setItemQuantity(item, item.dataset.unit === 'kg' ? 0.5 : 1);
+            resetItemState(item);
         });
 
         updateSummary();
-        requestPreviewNumber.value = result.request.request_no;
         searchInput.value = '';
         applyFilters();
         setTimeout(closeOrderModal, 1000);
@@ -1219,7 +662,10 @@ searchInput.addEventListener('keydown', (event) => {
 
 scanBtn.addEventListener('click', () => {
     scanInfo.hidden = !scanInfo.hidden;
-    lookupProduct();
+
+    if (searchInput.value.trim() !== '') {
+        lookupProduct();
+    }
 });
 
 templateBtn.addEventListener('click', () => {
@@ -1227,7 +673,7 @@ templateBtn.addEventListener('click', () => {
 });
 
 document.querySelectorAll('.qa-template-chip').forEach((button) => {
-    button.addEventListener('click', () => applyTemplate(button.dataset.template));
+    button.addEventListener('click', () => applyTemplate(button.dataset.templateId));
 });
 
 openOrderModalBtn.addEventListener('click', openOrderModal);

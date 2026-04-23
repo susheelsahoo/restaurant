@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Product;
+use App\Models\PurchaseOrderTemplate;
 use App\Models\PurchaseRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -42,35 +43,12 @@ class MobileController extends Controller
         });
     }
 
-    private function commonData(): array
-    {
-        return [
-            'favoriteItems' => ['Tomato', 'Onion', 'Yogurt', 'Flour', 'Oil'],
-            'recentItems' => ['Chicken Breast', 'Butter', 'Lemon', 'Cucumber'],
-            'basketItems' => [
-                ['name' => 'Tomato', 'supplier' => 'FreshFarm', 'category' => 'Vegetables', 'quantity' => '2.5 kg'],
-                ['name' => 'Onion', 'supplier' => 'FreshFarm', 'category' => 'Vegetables', 'quantity' => '3 kg'],
-                ['name' => 'Yogurt', 'supplier' => 'DairyPlus', 'category' => 'Dairy', 'quantity' => '8 pcs'],
-            ],
-            'scannedProduct' => [
-                'id' => 101,
-                'name' => 'Tomato',
-                'category' => 'Vegetables',
-                'unit' => 'kg',
-                'preferred_supplier' => 'FreshFarm',
-                'pack_size' => '1 crate',
-                'barcode' => '',
-            ],
-        ];
-    }
-
     private function quickAddCatalogData(): array
     {
         $products = Product::query()
             ->with(['category:id,name', 'suppliers:id,name'])
             ->where('status', 'active')
             ->orderBy('name')
-            ->limit(30)
             ->get()
             ->map(function (Product $product) {
                 $supplier = $product->suppliers->first();
@@ -98,6 +76,39 @@ class MobileController extends Controller
         return [
             'quickAddProducts' => $products,
             'quickAddCategories' => $categories,
+        ];
+    }
+
+    private function quickAddTemplateData(): array
+    {
+        $templates = PurchaseOrderTemplate::query()
+            ->with(['items'])
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get()
+            ->map(function (PurchaseOrderTemplate $template) {
+                return [
+                    'id' => $template->id,
+                    'name' => $template->name,
+                    'description' => $template->description,
+                    'items' => $template->items
+                        ->filter(fn ($item) => !empty($item->product_id))
+                        ->map(function ($item) {
+                            return [
+                                'product_id' => (int) $item->product_id,
+                                'quantity' => (float) $item->default_quantity,
+                                'unit' => $item->unit,
+                                'note' => $item->note,
+                            ];
+                        })
+                        ->values(),
+                ];
+            })
+            ->filter(fn (array $template) => $template['items']->isNotEmpty())
+            ->values();
+
+        return [
+            'quickAddTemplates' => $templates,
         ];
     }
 
@@ -131,8 +142,8 @@ class MobileController extends Controller
     public function quickAdd()
     {
         return view('mobile.quick-add', array_merge(
-            $this->commonData(),
-            $this->quickAddCatalogData()
+            $this->quickAddCatalogData(),
+            $this->quickAddTemplateData()
         ));
     }
 
@@ -213,9 +224,9 @@ class MobileController extends Controller
 
     public function requestDetail()
     {
-        return view('mobile.request-detail', array_merge($this->commonData(), [
+        return view('mobile.request-detail', [
             'requests' => $this->requestListData(),
-        ]));
+        ]);
     }
 
     public function approvals()
