@@ -209,11 +209,17 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/wines', WinesController::class);
 });
 
-Route::middleware([])->group(function () { 
+Route::middleware([])->group(function () {
+    Route::get('/mobile', function () {
+        return auth()->check()
+            ? redirect('/mobile/dashboard')
+            : redirect('/mobile/login');
+    })->name('mobile.home');
+
     Route::get('/mobile/login', function () {
         return view('mobile.login');
     })->middleware('guest')->name('mobile.login');
-    
+
     Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest');
     Route::middleware('mobile.auth')->group(function () {
         Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);

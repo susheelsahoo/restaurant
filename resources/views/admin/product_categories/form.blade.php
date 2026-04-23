@@ -44,6 +44,21 @@
                     </div>
 
                     <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Monthly Budget</label>
+                        <div class="col-lg-8 fv-row">
+                            <input
+                                type="number"
+                                name="monthly_budget"
+                                class="form-control form-control-lg form-control-solid"
+                                value="{{ old('monthly_budget', $productCategory->monthly_budget ?? 0) }}"
+                                min="0"
+                                step="1"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
                         <label class="col-lg-4 col-form-label required fw-semibold fs-6">Status</label>
                         <div class="col-lg-8 fv-row">
                             <select name="status" class="form-select form-select-lg form-select-solid">

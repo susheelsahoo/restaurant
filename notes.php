@@ -15,6 +15,7 @@ CREATE TABLE product_categories (
     name VARCHAR(100) NOT NULL UNIQUE,
     slug VARCHAR(120) NOT NULL UNIQUE,
     description TEXT NULL,
+    monthly_budget INT(11) NOT NULL DEFAULT 0,
     status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

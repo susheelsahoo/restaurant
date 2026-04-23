@@ -2,7 +2,7 @@
   "name": "Restaurant Mobile App",
   "short_name": "Restaurant",
   "description": "Mobile app for restaurant management and ordering",
-  "start_url": "/mobile/login",
+  "start_url": "/mobile",
   "scope": "/mobile/",
   "display": "standalone",
   "orientation": "portrait",

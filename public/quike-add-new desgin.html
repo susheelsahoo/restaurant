@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurchaseFlow - Product Selection</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning-soft: #fef3c7;
+      --shadow: 0 16px 30px rgba(23, 32, 51, 0.10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #dfeafe 0%, var(--bg) 24%, #f8fafc 100%);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      min-height: 844px;
+      margin: 0 auto;
+      background: var(--bg);
+      border: 10px solid #111827;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,.18);
+    }
+
+    .statusbar {
+      height: 30px;
+      background: #111827;
+    }
+
+    .screen {
+      padding: 18px 16px 115px;
+      min-height: 814px;
+      background: linear-gradient(180deg, #f4f8ff 0%, var(--bg) 100%);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .icon-btn,
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      background: white;
+      border: 1px solid var(--line);
+      font-size: 18px;
+    }
+
+    .avatar {
+      background: linear-gradient(180deg, var(--primary), #2563eb);
+      color: white;
+      font-weight: 800;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+
+    .title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .action-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .action-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .action-btn.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .helper-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .helper-panel.scan {
+      background: #eff6ff;
+      border: 1px solid #93c5fd;
+      color: #1d4ed8;
+    }
+
+    .helper-panel.templates {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .template-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .template-chip {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 14px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .section-head span {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .product-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .product-item {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      padding: 12px;
+      transition: .2s ease;
+    }
+
+    .product-item.hidden {
+      display: none;
+    }
+
+    .product-item.selected {
+      border-color: #93c5fd;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .product-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      border: 2px solid #cbd5e1;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .product-item.selected .mark {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .product-item.selected .mark::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .product-info {
+      min-width: 0;
+    }
+
+    .product-info h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .product-info p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .qty-control {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .product-item.selected .qty-control {
+      display: flex;
+    }
+
+    .qty-control button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .qty-value {
+      width: 44px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 6px 4px;
+      outline: none;
+    }
+
+    .unit-value {
+      min-width: 36px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .note-row {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .product-item.selected .note-row {
+      display: block;
+    }
+
+    .note-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 13px;
+      background: var(--surface-soft);
+      outline: none;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .summary-box {
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .summary-box strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .summary-box span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sticky-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px 16px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+    }
+
+    .sticky-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sticky-meta strong {
+      color: var(--text);
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      background: var(--primary);
+      color: white;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      overflow: auto;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
+      padding: 16px;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .modal-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .modal-close {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+
+    .category-block {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--surface-soft);
+      margin-bottom: 10px;
+    }
+
+    .category-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .order-item-name {
+      font-weight: 700;
+    }
+
+    .order-item-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      color: var(--text);
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .submit-state {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="statusbar"></div>
+    <div class="screen">
+      <div class="topbar">
+        <div class="icon-btn">←</div>
+        <div class="title" style="flex:1;">
+          <h1>Choose Products</h1>
+          <p>Select items, mark them, and add quantity</p>
+        </div>
+        <div class="avatar">N</div>
+      </div>
+
+      <div class="card">
+        <div class="action-row">
+          <button id="scanBtn" class="action-btn primary">📷 Scan Product</button>
+          <button id="templateBtn" class="action-btn secondary">📋 Templates</button>
+        </div>
+
+        <div id="scanInfo" class="helper-panel scan">
+          Demo scan mode: this prototype simulates barcode scanning and auto-selects a sample product.
+        </div>
+
+        <div id="templatePanel" class="helper-panel templates">
+          <div style="font-size:12px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px;">Quick templates</div>
+          <div class="template-list">
+            <button class="template-chip" data-template="veg">Vegetable Prep</button>
+            <button class="template-chip" data-template="dairy">Dairy Restock</button>
+            <button class="template-chip" data-template="breakfast">Breakfast Base</button>
+          </div>
+        </div>
+
+        <div class="search-box">
+          <span>🔍</span>
+          <input id="searchInput" type="text" placeholder="Search product name, SKU, category..." />
+        </div>
+        <div class="chips">
+          <button class="chip active" data-category="all">All</button>
+          <button class="chip" data-category="vegetables">Vegetables</button>
+          <button class="chip" data-category="dairy">Dairy</button>
+          <button class="chip" data-category="dry goods">Dry Goods</button>
+          <button class="chip" data-category="cleaning">Cleaning</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <h2>Selection Summary</h2>
+          <span>Live</span>
+        </div>
+        <div class="summary">
+          <div class="summary-box">
+            <strong id="selectedCount">3</strong>
+            <span>Selected products</span>
+          </div>
+          <div class="summary-box">
+            <strong id="totalQuantity">13.5</strong>
+            <span>Total quantity</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head" style="padding:0 2px;">
+        <h2>Product List</h2>
+        <span id="visibleCount">6 products</span>
+      </div>
+
+      <div class="product-list" id="productList">
+        <div class="product-item selected" data-name="Tomato" data-category="vegetables" data-qty="2.5" data-unit="kg" data-units="kg,pcs" data-step-kg="0.5" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Tomato</h3>
+                <p>Category: Vegetables · Preferred supplier: FreshFarm</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="2.5" inputmode="decimal" />
+              <div class="unit-value">kg</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. ripe, large size...)" />
+          </div>
+        </div>
+
+        <div class="product-item selected" data-name="Onion" data-category="vegetables" data-qty="3" data-unit="kg" data-units="kg,pcs" data-step-kg="0.5" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Onion</h3>
+                <p>Category: Vegetables · Preferred supplier: FreshFarm</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="3" inputmode="decimal" />
+              <div class="unit-value">kg</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. dry onions, medium size...)" />
+          </div>
+        </div>
+
+        <div class="product-item" data-name="Cucumber" data-category="vegetables" data-qty="1" data-unit="kg" data-units="kg,pcs" data-step-kg="0.5" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Cucumber</h3>
+                <p>Category: Vegetables · Preferred supplier: FreshFarm</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="1" inputmode="decimal" />
+              <div class="unit-value">kg</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. fresh, small size...)" />
+          </div>
+        </div>
+
+        <div class="product-item selected" data-name="Yogurt" data-category="dairy" data-qty="8" data-unit="pcs" data-units="pcs" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Yogurt</h3>
+                <p>Category: Dairy · Preferred supplier: DairyPlus</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="8" inputmode="numeric" />
+              <div class="unit-value">pcs</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. strawberry flavor...)" />
+          </div>
+        </div>
+
+        <div class="product-item" data-name="Butter" data-category="dairy" data-qty="1" data-unit="pcs" data-units="pcs" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Butter</h3>
+                <p>Category: Dairy · Preferred supplier: DairyPlus</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="1" inputmode="numeric" />
+              <div class="unit-value">pcs</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. unsalted only...)" />
+          </div>
+        </div>
+
+        <div class="product-item" data-name="Flour" data-category="dry goods" data-qty="1" data-unit="kg" data-units="kg,pcs" data-step-kg="0.5" data-step-pcs="1">
+          <div class="product-row">
+            <div class="product-left">
+              <div class="mark"></div>
+              <div class="product-info">
+                <h3>Flour</h3>
+                <p>Category: Dry Goods · Preferred supplier: Baker Supply</p>
+              </div>
+            </div>
+            <div class="qty-control">
+              <button class="minus-btn">-</button>
+              <input class="qty-value" value="1" inputmode="decimal" />
+              <div class="unit-value">kg</div>
+              <button class="plus-btn">+</button>
+            </div>
+          </div>
+          <div class="note-row">
+            <input class="note-input" placeholder="Add note (e.g. type 00 if possible...)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-bar">
+      <div class="sticky-meta">
+        <span>Marked items: <strong id="bottomSelectedCount">3</strong></span>
+        <span>Draft selection</span>
+      </div>
+      <button class="btn-primary" id="openOrderModalBtn">Add Selected Products</button>
+    </div>
+
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3>Submit Purchase Order</h3>
+          <p>Review selected items, choose delivery date, and submit the order.</p>
+        </div>
+        <button class="modal-close" id="closeOrderModalBtn">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Purchase Order No.</label>
+          <input id="poNumberInput" value="PO-2026-0107" />
+        </div>
+        <div class="field">
+          <label>Delivery Date</label>
+          <input id="deliveryDateInput" type="date" />
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top: 2px;">
+        <h2>Selected Items by Category</h2>
+        <span id="modalItemCount">0 items</span>
+      </div>
+
+      <div id="orderCategoryList"></div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelOrderBtn">Cancel</button>
+        <button class="btn-primary" id="submitOrderBtn">Submit Order</button>
+      </div>
+
+      <div class="submit-state" id="submitState">
+        Purchase order submitted successfully.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const productItems = Array.from(document.querySelectorAll('.product-item'));
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const searchInput = document.getElementById('searchInput');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const totalQuantityEl = document.getElementById('totalQuantity');
+    const bottomSelectedCountEl = document.getElementById('bottomSelectedCount');
+    const visibleCountEl = document.getElementById('visibleCount');
+    const scanBtn = document.getElementById('scanBtn');
+    const openOrderModalBtn = document.getElementById('openOrderModalBtn');
+    const orderModal = document.getElementById('orderModal');
+    const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
+    const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+    const submitOrderBtn = document.getElementById('submitOrderBtn');
+    const orderCategoryList = document.getElementById('orderCategoryList');
+    const modalItemCount = document.getElementById('modalItemCount');
+    const submitState = document.getElementById('submitState');
+    const deliveryDateInput = document.getElementById('deliveryDateInput');
+    const poNumberInput = document.getElementById('poNumberInput');
+    const templateBtn = document.getElementById('templateBtn');
+    const scanInfo = document.getElementById('scanInfo');
+    const templatePanel = document.getElementById('templatePanel');
+
+    let activeCategory = 'all';
+
+    function formatQty(value) {
+      return Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, '');
+    }
+
+    function getStep(item) {
+      const unit = item.dataset.unit;
+      return Number(item.dataset[`step${unit.charAt(0).toUpperCase() + unit.slice(1)}`]) || 1;
+    }
+
+    function updateSummary() {
+      const selectedItems = productItems.filter(item => item.classList.contains('selected'));
+      const totalQty = selectedItems.reduce((sum, item) => sum + Number(item.dataset.qty || 0), 0);
+      selectedCountEl.textContent = selectedItems.length;
+      bottomSelectedCountEl.textContent = selectedItems.length;
+      totalQuantityEl.textContent = formatQty(totalQty);
+    }
+
+    function buildOrderPreview() {
+      const selectedItems = productItems.filter(item => item.classList.contains('selected'));
+      modalItemCount.textContent = `${selectedItems.length} items`;
+      const grouped = {};
+
+      selectedItems.forEach(item => {
+        const category = item.dataset.category;
+        if (!grouped[category]) grouped[category] = [];
+        grouped[category].push({
+          name: item.dataset.name,
+          qty: formatQty(Number(item.dataset.qty || 0)),
+          unit: item.dataset.unit,
+          note: item.querySelector('.note-input')?.value?.trim() || ''
+        });
+      });
+
+      const categories = Object.keys(grouped);
+      if (!categories.length) {
+        orderCategoryList.innerHTML = '<div class="category-block"><div class="order-item"><div>No selected items yet.</div></div></div>';
+        return;
+      }
+
+      orderCategoryList.innerHTML = categories.map(category => `
+        <div class="category-block">
+          <div class="category-title">${category}</div>
+          ${grouped[category].map(item => `
+            <div class="order-item">
+              <div>
+                <div class="order-item-name">${item.name}</div>
+                <div class="order-item-meta">${item.note ? 'Note: ' + item.note : 'No note added'}</div>
+              </div>
+              <div>${item.qty} ${item.unit}</div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    function updateVisibleCount() {
+      const visibleItems = productItems.filter(item => !item.classList.contains('hidden'));
+      visibleCountEl.textContent = `${visibleItems.length} products`;
+    }
+
+    function applyFilters() {
+      const query = searchInput.value.trim().toLowerCase();
+      productItems.forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const category = item.dataset.category.toLowerCase();
+        const matchesSearch = name.includes(query) || category.includes(query);
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        item.classList.toggle('hidden', !(matchesSearch && matchesCategory));
+      });
+      updateVisibleCount();
+    }
+
+    productItems.forEach(item => {
+      const left = item.querySelector('.product-left');
+      const minusBtn = item.querySelector('.minus-btn');
+      const plusBtn = item.querySelector('.plus-btn');
+      const qtyValueEl = item.querySelector('.qty-value');
+      const unitValueEl = item.querySelector('.unit-value');
+      const noteRow = item.querySelector('.note-row');
+      const allowedUnits = (item.dataset.units || item.dataset.unit).split(',');
+
+      function sanitizeQty(rawValue) {
+        let value = String(rawValue).replace(',', '.').replace(/[^0-9.]/g, '');
+        if (value === '') value = String(getStep(item));
+        let numeric = Number(value);
+        if (Number.isNaN(numeric)) numeric = getStep(item);
+
+        if (item.dataset.unit === 'pcs') {
+          numeric = Math.max(1, Math.round(numeric));
+        } else {
+          const step = getStep(item);
+          numeric = Math.max(step, Math.round(numeric / step) * step);
+        }
+
+        item.dataset.qty = numeric;
+        qtyValueEl.value = formatQty(numeric);
+        updateSummary();
+      }
+
+      left.addEventListener('click', () => {
+        item.classList.toggle('selected');
+        noteRow.style.display = item.classList.contains('selected') ? 'block' : 'none';
+        updateSummary();
+      });
+
+      plusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let qty = Number(item.dataset.qty || 0);
+        qty += getStep(item);
+        item.dataset.qty = qty;
+        qtyValueEl.value = formatQty(qty);
+        if (!item.classList.contains('selected')) {
+          item.classList.add('selected');
+          noteRow.style.display = 'block';
+        }
+        updateSummary();
+      });
+
+      minusBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        let qty = Number(item.dataset.qty || 0);
+        qty = Math.max(getStep(item), qty - getStep(item));
+        item.dataset.qty = qty;
+        qtyValueEl.value = formatQty(qty);
+        if (!item.classList.contains('selected')) {
+          item.classList.add('selected');
+          noteRow.style.display = 'block';
+        }
+        updateSummary();
+      });
+
+      qtyValueEl.addEventListener('click', (e) => e.stopPropagation());
+      qtyValueEl.addEventListener('input', (e) => e.stopPropagation());
+      qtyValueEl.addEventListener('blur', () => sanitizeQty(qtyValueEl.value));
+      qtyValueEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') qtyValueEl.blur();
+      });
+
+      unitValueEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (allowedUnits.length < 2) return;
+        const currentIndex = allowedUnits.indexOf(item.dataset.unit);
+        const nextUnit = allowedUnits[(currentIndex + 1) % allowedUnits.length];
+        item.dataset.unit = nextUnit;
+        unitValueEl.textContent = nextUnit;
+
+        if (nextUnit === 'pcs') {
+          item.dataset.qty = Math.max(1, Math.round(Number(item.dataset.qty)));
+        } else if (nextUnit === 'kg') {
+          item.dataset.qty = Number(item.dataset.qty).toFixed(1);
+        }
+
+        qtyValueEl.value = formatQty(Number(item.dataset.qty));
+        updateSummary();
+      });
+    });
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeCategory = chip.dataset.category;
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+
+    scanBtn.addEventListener('click', () => {
+      scanInfo.style.display = scanInfo.style.display === 'block' ? 'none' : 'block';
+      const tomato = productItems.find(item => item.dataset.name === 'Tomato');
+      if (tomato) {
+        tomato.classList.add('selected');
+        tomato.dataset.qty = '2.5';
+        tomato.dataset.unit = 'kg';
+        tomato.querySelector('.qty-value').value = '2.5';
+        tomato.querySelector('.unit-value').textContent = 'kg';
+        tomato.querySelector('.note-row').style.display = 'block';
+        updateSummary();
+      }
+    });
+
+    templateBtn.addEventListener('click', () => {
+      templatePanel.style.display = templatePanel.style.display === 'block' ? 'none' : 'block';
+    });
+
+    function openOrderModal() {
+      buildOrderPreview();
+      submitState.style.display = 'none';
+      orderModal.classList.add('open');
+    }
+
+    function closeOrderModal() {
+      orderModal.classList.remove('open');
+    }
+
+    openOrderModalBtn.addEventListener('click', openOrderModal);
+    closeOrderModalBtn.addEventListener('click', closeOrderModal);
+    cancelOrderBtn.addEventListener('click', closeOrderModal);
+
+    orderModal.addEventListener('click', (e) => {
+      if (e.target === orderModal) closeOrderModal();
+    });
+
+    submitOrderBtn.addEventListener('click', () => {
+      buildOrderPreview();
+      submitState.style.display = 'block';
+    });
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate() + 1).padStart(2, '0');
+    deliveryDateInput.value = `${yyyy}-${mm}-${dd}`;
+
+    document.querySelectorAll('.template-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const template = btn.dataset.template;
+
+        if (template === 'veg') {
+          const items = {
+            Tomato: { qty: '2.5', unit: 'kg' },
+            Onion: { qty: '3', unit: 'kg' },
+            Cucumber: { qty: '2', unit: 'kg' }
+          };
+          productItems.forEach(item => {
+            if (items[item.dataset.name]) {
+              item.classList.add('selected');
+              item.dataset.qty = items[item.dataset.name].qty;
+              item.dataset.unit = items[item.dataset.name].unit;
+              item.querySelector('.qty-value').value = items[item.dataset.name].qty;
+              item.querySelector('.unit-value').textContent = items[item.dataset.name].unit;
+              item.querySelector('.note-row').style.display = 'block';
+            }
+          });
+        }
+
+        if (template === 'dairy') {
+          const items = {
+            Yogurt: { qty: '8', unit: 'pcs' },
+            Butter: { qty: '4', unit: 'pcs' }
+          };
+          productItems.forEach(item => {
+            if (items[item.dataset.name]) {
+              item.classList.add('selected');
+              item.dataset.qty = items[item.dataset.name].qty;
+              item.dataset.unit = items[item.dataset.name].unit;
+              item.querySelector('.qty-value').value = items[item.dataset.name].qty;
+              item.querySelector('.unit-value').textContent = items[item.dataset.name].unit;
+              item.querySelector('.note-row').style.display = 'block';
+            }
+          });
+        }
+
+        if (template === 'breakfast') {
+          const items = {
+            Tomato: { qty: '1.5', unit: 'kg' },
+            Yogurt: { qty: '6', unit: 'pcs' },
+            Butter: { qty: '2', unit: 'pcs' }
+          };
+          productItems.forEach(item => {
+            if (items[item.dataset.name]) {
+              item.classList.add('selected');
+              item.dataset.qty = items[item.dataset.name].qty;
+              item.dataset.unit = items[item.dataset.name].unit;
+              item.querySelector('.qty-value').value = items[item.dataset.name].qty;
+              item.querySelector('.unit-value').textContent = items[item.dataset.name].unit;
+              item.querySelector('.note-row').style.display = 'block';
+            }
+          });
+        }
+
+        updateSummary();
+      });
+    });
+
+    updateSummary();
+    updateVisibleCount();
+  </script>
+</body>
+</html>

@@ -16,7 +16,12 @@ class ProductCategory extends Model
         'name',
         'slug',
         'description',
+        'monthly_budget',
         'status',
+    ];
+
+    protected $casts = [
+        'monthly_budget' => 'integer',
     ];
 
     protected static function booted(): void

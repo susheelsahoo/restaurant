@@ -18,7 +18,8 @@ class ProductCategoryController extends Controller
                 $query->where(function ($builder) use ($search) {
                     $builder->where('name', 'like', '%' . $search . '%')
                         ->orWhere('slug', 'like', '%' . $search . '%')
-                        ->orWhere('description', 'like', '%' . $search . '%');
+                        ->orWhere('description', 'like', '%' . $search . '%')
+                        ->orWhere('monthly_budget', 'like', '%' . $search . '%');
                 });
             })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
@@ -74,6 +75,7 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|max:100',
             'slug' => 'nullable|string|max:120|unique:product_categories,slug,' . $productCategoryId,
             'description' => 'nullable|string',
+            'monthly_budget' => 'required|integer|min:0',
             'status' => 'required|in:active,inactive',
         ]);
 

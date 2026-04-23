@@ -82,7 +82,9 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('{{ asset("sw.js") }}').catch(function (error) {
+                navigator.serviceWorker.register('{{ asset("sw.js") }}', {
+                    scope: '/mobile/',
+                }).catch(function (error) {
                     console.log('ServiceWorker registration failed:', error);
                 });
             });
