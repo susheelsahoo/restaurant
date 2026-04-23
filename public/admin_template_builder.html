@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurchaseFlow - Template Builder</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 16px 30px rgba(23, 32, 51, 0.10);
+      --radius: 22px;
+      --sidebar: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #dde9ff 0%, #eef3fb 18%, #f7f9fd 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, var(--sidebar) 0%, #111827 100%);
+      color: #e5e7eb;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand {
+      padding: 8px 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 22px;
+      color: white;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #94a3b8;
+    }
+
+    .nav-group h4 {
+      margin: 0 0 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #64748b;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #cbd5e1;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .nav a.active {
+      background: rgba(37,99,235,.18);
+      color: white;
+      border: 1px solid rgba(96,165,250,.2);
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .user-badge {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.65);
+      margin-bottom: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .section-head span {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .input, .select, textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 12px 13px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      background: var(--surface-soft);
+    }
+
+    .inline-add {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .7fr .7fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .btn.primary { background: var(--primary); color: white; }
+    .btn.secondary { background: white; color: var(--text); border: 1px solid var(--line); }
+    .btn.soft { background: var(--primary-soft); color: var(--primary); }
+    .btn.danger { background: var(--danger-soft); color: var(--danger); }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .catalog-list, .template-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .catalog-item, .template-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .catalog-item.hidden {
+      display: none;
+    }
+
+    .catalog-info h4, .template-info h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .catalog-info p, .template-info p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .pill.green { background: var(--success-soft); color: var(--success); }
+    .pill.orange { background: var(--warning-soft); color: var(--warning); }
+    .pill.gray { background: #f3f4f6; color: #4b5563; }
+
+    .template-items {
+      display: grid;
+      gap: 10px;
+    }
+
+    .template-line {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--surface-soft);
+    }
+
+    .template-line-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .template-line h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .template-line p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .line-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .line-meta span {
+      font-size: 11px;
+      color: var(--muted);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .inline-qty-input {
+      width: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      margin-left: 4px;
+    }
+
+    .summary-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .summary-box {
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .summary-box strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .summary-box span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .result.show { display: block; }
+    .result.success { background: var(--success-soft); color: var(--success); border: 1px solid #86efac; }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
+      .inline-add { grid-template-columns: 1fr 1fr; }
+      .summary-boxes, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 920px) {
+      .page { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 18px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .inline-add { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>PurchaseFlow</h1>
+        <p>Restaurant purchasing operations and reusable order templates.</p>
+      </div>
+      <div class="nav-group">
+        <h4>Admin</h4>
+        <div class="nav">
+          <a href="#">Dashboard</a>
+          <a href="#">Requests</a>
+          <a href="#">Approvals</a>
+          <a href="#">Purchase Orders</a>
+          <a href="#" class="active">Templates</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h2>Template Builder</h2>
+          <p>Create reusable order templates and insert items for kitchen, housekeeping, or department-based requests.</p>
+        </div>
+        <div class="user-badge">System Admin · template management</div>
+      </div>
+
+      <div class="summary-boxes">
+        <div class="summary-box">
+          <strong id="templateCount">3</strong>
+          <span>Existing templates</span>
+        </div>
+        <div class="summary-box">
+          <strong id="currentItemCount">3</strong>
+          <span>Items in current template</span>
+        </div>
+        <div class="summary-box">
+          <strong id="currentDept">Kitchen</strong>
+          <span>Selected department</span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <section>
+          <div class="card">
+            <div class="section-head">
+              <h3>Template Details</h3>
+              <span>Header Setup</span>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label>Template Name</label>
+                <input id="templateName" class="input" value="Daily Kitchen Essentials" />
+              </div>
+              <div class="field">
+                <label>Department</label>
+                <select id="templateDept" class="select">
+                  <option>Kitchen</option>
+                  <option>Housekeeping</option>
+                  <option>Bar</option>
+                  <option>Bakery</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Priority Default</label>
+                <select id="templatePriority" class="select">
+                  <option>Normal</option>
+                  <option>Urgent</option>
+                  <option>Low</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select class="select">
+                  <option>Active</option>
+                  <option>Draft</option>
+                  <option>Archived</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-top:12px;">
+              <label>Description</label>
+              <textarea id="templateDescription">Reusable daily order template for vegetables, dairy, and morning kitchen prep items.</textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h3>Insert Items</h3>
+              <span>Manual Add</span>
+            </div>
+            <div class="inline-add">
+              <div class="field">
+                <label>Product Name</label>
+                <input id="newItemName" class="input" placeholder="e.g. Tomato" />
+              </div>
+              <div class="field">
+                <label>Category</label>
+                <select id="newItemCategory" class="select">
+                  <option>Vegetables</option>
+                  <option>Dairy</option>
+                  <option>Dry Goods</option>
+                  <option>Cleaning</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Default Qty</label>
+                <input id="newItemQty" class="input" value="1" />
+              </div>
+              <div class="field">
+                <label>Unit</label>
+                <select id="newItemUnit" class="select">
+                  <option>kg</option>
+                  <option>pcs</option>
+                  <option>pack</option>
+                  <option>bottle</option>
+                </select>
+              </div>
+              <button id="addItemBtn" class="btn primary">Add Item</button>
+            </div>
+            <div class="field" style="margin-top:12px;">
+              <label>Default Note</label>
+              <input id="newItemNote" class="input" placeholder="Optional note for this template item" />
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h3>Current Template Items</h3>
+              <span id="lineCountLabel">3 lines</span>
+            </div>
+            <div id="templateItems" class="template-items">
+              <div class="template-line" data-category="Vegetables">
+                <div class="template-line-top">
+                  <div>
+                    <h4>Tomato</h4>
+                    <p>Default supplier: FreshFarm</p>
+                  </div>
+                  <button class="btn danger remove-line-btn">Remove</button>
+                </div>
+                <div class="line-meta">
+                  <span>Category: Vegetables</span>
+                  <span>Qty: <input class="inline-qty-input" value="2.5" /></span>
+                  <span>Unit: kg</span>
+                  <span>Note: ripe if possible</span>
+                </div>
+              </div>
+
+              <div class="template-line" data-category="Vegetables">
+                <div class="template-line-top">
+                  <div>
+                    <h4>Onion</h4>
+                    <p>Default supplier: FreshFarm</p>
+                  </div>
+                  <button class="btn danger remove-line-btn">Remove</button>
+                </div>
+                <div class="line-meta">
+                  <span>Category: Vegetables</span>
+                  <span>Qty: <input class="inline-qty-input" value="3" /></span>
+                  <span>Unit: kg</span>
+                  <span>Note: medium size</span>
+                </div>
+              </div>
+
+              <div class="template-line" data-category="Dairy">
+                <div class="template-line-top">
+                  <div>
+                    <h4>Yogurt</h4>
+                    <p>Default supplier: DairyPlus</p>
+                  </div>
+                  <button class="btn danger remove-line-btn">Remove</button>
+                </div>
+                <div class="line-meta">
+                  <span>Category: Dairy</span>
+                  <span>Qty: <input class="inline-qty-input" value="8" /></span>
+                  <span>Unit: pcs</span>
+                  <span>Note: strawberry flavor</span>
+                </div>
+              </div>
+            </div>
+            <div id="saveResult" class="result success">Template saved successfully.</div>
+          </div>
+        </section>
+
+        <aside>
+          <div class="card">
+            <div class="section-head">
+              <h3>Product Catalog</h3>
+              <span>Insert from Master Data</span>
+            </div>
+            <div class="search-box">
+              <span>🔍</span>
+              <input id="catalogSearch" type="text" placeholder="Search product name or category..." />
+            </div>
+            <div class="chips">
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="Vegetables">Vegetables</button>
+              <button class="chip" data-filter="Dairy">Dairy</button>
+              <button class="chip" data-filter="Dry Goods">Dry Goods</button>
+              <button class="chip" data-filter="Cleaning">Cleaning</button>
+            </div>
+            <div id="catalogList" class="catalog-list">
+              <div class="catalog-item" data-category="Vegetables" data-name="Tomato">
+                <div class="catalog-info">
+                  <h4>Tomato</h4>
+                  <p>Vegetables · Preferred supplier: FreshFarm · Unit: kg</p>
+                </div>
+                <button class="btn soft add-from-catalog-btn" data-name="Tomato" data-category="Vegetables" data-qty="2.5" data-unit="kg" data-note="ripe if possible">Insert</button>
+              </div>
+              <div class="catalog-item" data-category="Vegetables" data-name="Cucumber">
+                <div class="catalog-info">
+                  <h4>Cucumber</h4>
+                  <p>Vegetables · Preferred supplier: FreshFarm · Unit: kg</p>
+                </div>
+                <button class="btn soft add-from-catalog-btn" data-name="Cucumber" data-category="Vegetables" data-qty="2" data-unit="kg" data-note="fresh">Insert</button>
+              </div>
+              <div class="catalog-item" data-category="Dairy" data-name="Yogurt">
+                <div class="catalog-info">
+                  <h4>Yogurt</h4>
+                  <p>Dairy · Preferred supplier: DairyPlus · Unit: pcs</p>
+                </div>
+                <button class="btn soft add-from-catalog-btn" data-name="Yogurt" data-category="Dairy" data-qty="8" data-unit="pcs" data-note="strawberry flavor">Insert</button>
+              </div>
+              <div class="catalog-item" data-category="Dry Goods" data-name="Flour">
+                <div class="catalog-info">
+                  <h4>Flour</h4>
+                  <p>Dry Goods · Preferred supplier: Baker Supply · Unit: kg</p>
+                </div>
+                <button class="btn soft add-from-catalog-btn" data-name="Flour" data-category="Dry Goods" data-qty="1" data-unit="kg" data-note="type 00 if possible">Insert</button>
+              </div>
+              <div class="catalog-item" data-category="Cleaning" data-name="Paper Towels">
+                <div class="catalog-info">
+                  <h4>Paper Towels</h4>
+                  <p>Cleaning · Preferred supplier: CleanPro · Unit: pack</p>
+                </div>
+                <button class="btn soft add-from-catalog-btn" data-name="Paper Towels" data-category="Cleaning" data-qty="2" data-unit="pack" data-note="large roll">Insert</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h3>Existing Templates</h3>
+              <span>Quick Load</span>
+            </div>
+            <div class="template-list">
+              <div class="template-item">
+                <div class="template-info">
+                  <h4>Daily Kitchen Essentials</h4>
+                  <p>Kitchen · 3 items · Active</p>
+                </div>
+                <div class="pill blue">Current</div>
+              </div>
+              <div class="template-item">
+                <div class="template-info">
+                  <h4>Weekend Prep Order</h4>
+                  <p>Kitchen · 12 items · Active</p>
+                </div>
+                <button class="btn secondary">Load</button>
+              </div>
+              <div class="template-item">
+                <div class="template-info">
+                  <h4>Housekeeping Restock</h4>
+                  <p>Housekeeping · 9 items · Draft</p>
+                </div>
+                <button class="btn secondary">Load</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h3>Actions</h3>
+              <span>Save / Duplicate</span>
+            </div>
+            <div class="grid-3">
+              <button id="saveTemplateBtn" class="btn primary">Save Template</button>
+              <button class="btn secondary">Duplicate</button>
+              <button class="btn secondary">Archive</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const templateItems = document.getElementById('templateItems');
+    const lineCountLabel = document.getElementById('lineCountLabel');
+    const currentItemCount = document.getElementById('currentItemCount');
+    const templateCount = document.getElementById('templateCount');
+    const currentDept = document.getElementById('currentDept');
+    const templateDept = document.getElementById('templateDept');
+    const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+    const saveResult = document.getElementById('saveResult');
+    const catalogSearch = document.getElementById('catalogSearch');
+    const catalogList = document.getElementById('catalogList');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const addItemBtn = document.getElementById('addItemBtn');
+    const newItemName = document.getElementById('newItemName');
+    const newItemCategory = document.getElementById('newItemCategory');
+    const newItemQty = document.getElementById('newItemQty');
+    const newItemUnit = document.getElementById('newItemUnit');
+    const newItemNote = document.getElementById('newItemNote');
+
+    let activeFilter = 'all';
+
+    function updateCounts() {
+      const count = templateItems.querySelectorAll('.template-line').length;
+      lineCountLabel.textContent = `${count} lines`;
+      currentItemCount.textContent = String(count);
+      currentDept.textContent = templateDept.value;
+    }
+
+    function bindTemplateLineEvents() {
+      templateItems.querySelectorAll('.remove-line-btn').forEach(btn => {
+        btn.onclick = () => {
+          const line = btn.closest('.template-line');
+          if (line) line.remove();
+          updateCounts();
+        };
+      });
+
+      templateItems.querySelectorAll('.inline-qty-input').forEach(input => {
+        input.onblur = () => {
+          const cleaned = input.value.trim();
+          const numeric = Number(cleaned);
+          input.value = !cleaned || Number.isNaN(numeric) || numeric <= 0 ? '1' : cleaned;
+        };
+      });
+    }
+
+    function createTemplateLine(name, category, qty, unit, note) {
+      const line = document.createElement('div');
+      line.className = 'template-line';
+      line.dataset.category = category;
+      line.innerHTML = `
+        <div class="template-line-top">
+          <div>
+            <h4>${name}</h4>
+            <p>Inserted into template</p>
+          </div>
+          <button class="btn danger remove-line-btn">Remove</button>
+        </div>
+        <div class="line-meta">
+          <span>Category: ${category}</span>
+          <span>Qty: <input class="inline-qty-input" value="${qty}" /></span>
+          <span>Unit: ${unit}</span>
+          <span>Note: ${note || '—'}</span>
+        </div>
+      `;
+      templateItems.appendChild(line);
+      bindTemplateLineEvents();
+      updateCounts();
+    }
+
+    function applyCatalogFilter() {
+      const query = catalogSearch.value.trim().toLowerCase();
+      Array.from(catalogList.querySelectorAll('.catalog-item')).forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const category = item.dataset.category;
+        const matchesSearch = name.includes(query) || category.toLowerCase().includes(query);
+        const matchesFilter = activeFilter === 'all' || category === activeFilter;
+        item.classList.toggle('hidden', !(matchesSearch && matchesFilter));
+      });
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        applyCatalogFilter();
+      });
+    });
+
+    catalogSearch.addEventListener('input', applyCatalogFilter);
+
+    document.querySelectorAll('.add-from-catalog-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        createTemplateLine(
+          btn.dataset.name,
+          btn.dataset.category,
+          btn.dataset.qty,
+          btn.dataset.unit,
+          btn.dataset.note
+        );
+      });
+    });
+
+    addItemBtn.addEventListener('click', () => {
+      const name = newItemName.value.trim();
+      if (!name) return;
+
+      createTemplateLine(
+        name,
+        newItemCategory.value,
+        newItemQty.value || '1',
+        newItemUnit.value,
+        newItemNote.value.trim()
+      );
+
+      newItemName.value = '';
+      newItemQty.value = '1';
+      newItemNote.value = '';
+    });
+
+    templateDept.addEventListener('change', updateCounts);
+
+    saveTemplateBtn.addEventListener('click', () => {
+      saveResult.classList.add('show');
+      setTimeout(() => {
+        saveResult.classList.remove('show');
+      }, 2000);
+    });
+
+    bindTemplateLineEvents();
+    updateCounts();
+    applyCatalogFilter();
+  </script>
+</body>
+</html>

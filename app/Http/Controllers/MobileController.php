@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\Product;
 use App\Models\PurchaseRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -63,6 +64,43 @@ class MobileController extends Controller
         ];
     }
 
+    private function quickAddCatalogData(): array
+    {
+        $products = Product::query()
+            ->with(['category:id,name', 'suppliers:id,name'])
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->limit(30)
+            ->get()
+            ->map(function (Product $product) {
+                $supplier = $product->suppliers->first();
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'category' => optional($product->category)->name ?: 'Uncategorized',
+                    'unit' => $product->unit ?: 'pcs',
+                    'preferred_supplier' => optional($supplier)->name ?: '-',
+                    'supplier_id' => optional($supplier)->id,
+                    'barcode' => $product->barcode ?: '',
+                ];
+            })
+            ->values();
+
+        $categories = $products
+            ->pluck('category')
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        return [
+            'quickAddProducts' => $products,
+            'quickAddCategories' => $categories,
+        ];
+    }
+
     public function dashboard()
     {
         $hour = now()->hour;
@@ -90,7 +128,13 @@ class MobileController extends Controller
         ]);
     }
 
-    public function quickAdd() { return view('mobile.quick-add', $this->commonData()); }
+    public function quickAdd()
+    {
+        return view('mobile.quick-add', array_merge(
+            $this->commonData(),
+            $this->quickAddCatalogData()
+        ));
+    }
 
     public function storeQuickAdd(Request $request)
     {

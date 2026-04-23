@@ -29,6 +29,7 @@ use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\SupplierManagementController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PurchaseOrderTemplateController;
 use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
@@ -133,6 +134,15 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/settings', SettingController::class)->names('settings');
     Route::resource('/email-templates', EmailTemplateController::class)->names('email-templates');
+    Route::prefix('purchase-orders/template')->name('purchase-order-templates.')->group(function () {
+        Route::get('/', [PurchaseOrderTemplateController::class, 'index'])->name('index');
+        Route::get('/create', [PurchaseOrderTemplateController::class, 'create'])->name('create');
+        Route::post('/', [PurchaseOrderTemplateController::class, 'store'])->name('store');
+        Route::post('/{purchaseOrderTemplate}/duplicate', [PurchaseOrderTemplateController::class, 'duplicate'])->name('duplicate');
+        Route::get('/{purchaseOrderTemplate}/edit', [PurchaseOrderTemplateController::class, 'edit'])->name('edit');
+        Route::match(['put', 'patch'], '/{purchaseOrderTemplate}', [PurchaseOrderTemplateController::class, 'update'])->name('update');
+        Route::delete('/{purchaseOrderTemplate}', [PurchaseOrderTemplateController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('purchase-orders')->name('purchase-orders.')->group(function () {
         Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');

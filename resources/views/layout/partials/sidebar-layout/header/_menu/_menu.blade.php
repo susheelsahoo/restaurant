@@ -1,5 +1,6 @@
 @if (
 	request()->routeIs('admin.purchase-orders.*') ||
+	request()->routeIs('admin.purchase-order-templates.*') ||
 	request()->routeIs('admin.purchase-orders.dashboard') ||
 	request()->routeIs('admin.purchase-orders.requests') ||
 	request()->routeIs('admin.purchase-orders.requests.*') ||
@@ -36,7 +37,7 @@
 					<span class="menu-title">Purchase Orders</span>
 				</a>
 			</div>
-			<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1 {{ request()->routeIs('admin.purchase-orders.products') || request()->routeIs('admin.purchase-orders.products.*') || request()->routeIs('admin.purchase-orders.product-categories.*') || request()->routeIs('admin.purchase-orders.suppliers') || request()->routeIs('admin.purchase-orders.suppliers.*') || request()->routeIs('admin.purchase-orders.departments') || request()->routeIs('admin.purchase-orders.departments.*') ? 'here show' : '' }}">
+			<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion me-lg-1 {{ request()->routeIs('admin.purchase-orders.products') || request()->routeIs('admin.purchase-orders.products.*') || request()->routeIs('admin.purchase-orders.product-categories.*') || request()->routeIs('admin.purchase-orders.suppliers') || request()->routeIs('admin.purchase-orders.suppliers.*') || request()->routeIs('admin.purchase-orders.departments') || request()->routeIs('admin.purchase-orders.departments.*') || request()->routeIs('admin.purchase-order-templates.*') ? 'here show' : '' }}">
 				<span class="menu-link py-3">
 					<span class="menu-title">Settings</span>
 					<span class="menu-arrow d-lg-none"></span>
@@ -73,6 +74,14 @@
 								<span class="bullet bullet-dot"></span>
 							</span>
 							<span class="menu-title">Departments</span>
+						</a>
+					</div>
+					<div class="menu-item">
+						<a class="menu-link {{ request()->routeIs('admin.purchase-order-templates.*') ? 'active' : '' }}" href="{{ route('admin.purchase-order-templates.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+							<span class="menu-title">Template</span>
 						</a>
 					</div>
 				</div>

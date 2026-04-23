@@ -9,6 +9,50 @@ If you want, next I can:
 ✅ Make it enterprise-level PWA
 
 
+CREATE TABLE `purchase_order_templates` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `department_id` BIGINT UNSIGNED NULL,
+    `priority` ENUM('normal', 'urgent', 'low') NOT NULL DEFAULT 'normal',
+    `status` ENUM('active', 'draft', 'archived') NOT NULL DEFAULT 'active',
+    `description` TEXT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `purchase_order_template_items` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `template_id` BIGINT UNSIGNED NOT NULL,
+    `product_id` BIGINT UNSIGNED NULL,
+    `item_name` VARCHAR(255) NOT NULL,
+    `category_name` VARCHAR(255) NULL,
+    `default_quantity` DECIMAL(12,2) NOT NULL DEFAULT 1.00,
+    `unit` VARCHAR(50) NOT NULL,
+    `note` TEXT NULL,
+    `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `purchase_order_template_items_template_id_index` (`template_id`),
+    KEY `purchase_order_template_items_product_id_index` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `purchase_order_template_items`
+ADD CONSTRAINT `poti_template_id_fk`
+FOREIGN KEY (`template_id`) REFERENCES `purchase_order_templates`(`id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `purchase_order_template_items`
+ADD CONSTRAINT `poti_product_id_fk`
+FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE `purchase_order_templates`
+ADD CONSTRAINT `pot_department_id_fk`
+FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`)
+ON DELETE SET NULL ON UPDATE CASCADE;
+
 
 CREATE TABLE product_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
