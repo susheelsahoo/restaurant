@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('products') || Schema::hasColumn('products', 'estimated_price')) {
+            return;
+        }
+
         Schema::table('products', function (Blueprint $table) {
             $table->decimal('estimated_price', 10, 2)->nullable()->after('barcode');
         });
@@ -21,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (! Schema::hasTable('products') || ! Schema::hasColumn('products', 'estimated_price')) {
+            return;
+        }
+
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn('estimated_price');
         });

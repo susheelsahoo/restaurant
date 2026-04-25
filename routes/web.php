@@ -113,7 +113,7 @@ Route::get('/email', function () {
 });
 
 // ========== ADMIN ROUTES ==========
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth:web', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -221,16 +221,16 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
 Route::middleware([])->group(function () {
     Route::get('/mobile', function () {
-        return auth()->check()
+        return auth('mobile')->check()
             ? redirect('/mobile/dashboard')
             : redirect('/mobile/login');
     })->name('mobile.home');
 
     Route::get('/mobile/login', function () {
         return view('mobile.login');
-    })->middleware('guest')->name('mobile.login');
+    })->middleware('guest:web,mobile')->name('mobile.login');
 
-    Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest');
+    Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest:web,mobile');
     Route::middleware('mobile.auth')->group(function () {
         Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
         Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);

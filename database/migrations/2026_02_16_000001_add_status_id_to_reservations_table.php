@@ -23,14 +23,17 @@ return new class extends Migration
         // Migrate existing status values to the new table
         $statuses = ReservationStatus::all()->keyBy('name');
         
-        DB::table('reservations')->whereNotNull('status')->each(function ($reservation) use ($statuses) {
-            $statusId = $statuses[$reservation->status]->id ?? null;
-            if ($statusId) {
-                DB::table('reservations')
-                    ->where('id', $reservation->id)
-                    ->update(['status_id' => $statusId]);
-            }
-        });
+        DB::table('reservations')
+            ->whereNotNull('status')
+            ->orderBy('id')
+            ->each(function ($reservation) use ($statuses) {
+                $statusId = $statuses[$reservation->status]->id ?? null;
+                if ($statusId) {
+                    DB::table('reservations')
+                        ->where('id', $reservation->id)
+                        ->update(['status_id' => $statusId]);
+                }
+            });
 
         // Add foreign key constraint
         Schema::table('reservations', function (Blueprint $table) {

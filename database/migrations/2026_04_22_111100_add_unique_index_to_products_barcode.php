@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('products') || ! Schema::hasColumn('products', 'barcode')) {
+            return;
+        }
+
         DB::table('products')
             ->where('barcode', '')
             ->update(['barcode' => null]);
@@ -20,6 +24,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (! Schema::hasTable('products') || ! Schema::hasColumn('products', 'barcode')) {
+            return;
+        }
+
         Schema::table('products', function (Blueprint $table) {
             $table->dropUnique(['barcode']);
         });

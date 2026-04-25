@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('reservations', 'status')) {
+        if (!Schema::hasColumn('reservations', 'status') || DB::getDriverName() === 'sqlite') {
             return;
         }
 
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!Schema::hasColumn('reservations', 'status')) {
+        if (!Schema::hasColumn('reservations', 'status') || DB::getDriverName() === 'sqlite') {
             return;
         }
 

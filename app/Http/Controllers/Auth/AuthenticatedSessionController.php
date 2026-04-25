@@ -32,20 +32,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        $request->authenticate();
+        $guard = $this->guardFor($request);
+
+        $request->authenticate($guard);
+        Auth::guard($this->oppositeGuard($guard))->logout();
 
         $request->session()->regenerate();
 
-        $request->user()->update([
+        $request->user($guard)->update([
             'last_login_at' => Carbon::now()->toDateTimeString(),
             'last_login_ip' => $request->getClientIp()
         ]);
 
-        if ($request->is('mobile/login')) {
-            return redirect('/mobile/dashboard');
-        }
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended($this->homePathFor($guard));
     }
 
     /**
@@ -57,12 +56,49 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        $guard = $this->logoutGuardFor($request);
+
+        Auth::guard($guard)->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/mobile/login');
+        return redirect($this->loginPathFor($guard));
+    }
+
+    private function guardFor(Request $request): string
+    {
+        return $request->is('mobile/login') ? 'mobile' : 'web';
+    }
+
+    private function oppositeGuard(string $guard): string
+    {
+        return $guard === 'mobile' ? 'web' : 'mobile';
+    }
+
+    private function homePathFor(string $guard): string
+    {
+        return $guard === 'mobile' ? '/mobile/dashboard' : RouteServiceProvider::HOME;
+    }
+
+    private function loginPathFor(string $guard): string
+    {
+        return $guard === 'mobile' ? '/mobile/login' : route('admin.login');
+    }
+
+    private function logoutGuardFor(Request $request): string
+    {
+        $previousPath = parse_url($request->headers->get('referer', ''), PHP_URL_PATH) ?: '';
+
+        if (str_starts_with($previousPath, '/mobile')) {
+            return 'mobile';
+        }
+
+        if (Auth::guard('mobile')->check() && ! Auth::guard('web')->check()) {
+            return 'mobile';
+        }
+
+        return 'web';
     }
 }

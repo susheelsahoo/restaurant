@@ -23,10 +23,27 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return redirect($this->redirectPathFor($request, $guard));
             }
         }
 
         return $next($request);
+    }
+
+    private function redirectPathFor(Request $request, ?string $guard): string
+    {
+        if ($guard === 'mobile') {
+            return '/mobile/dashboard';
+        }
+
+        if ($guard === 'web') {
+            return RouteServiceProvider::HOME;
+        }
+
+        if ($request->is('mobile/*')) {
+            return '/mobile/dashboard';
+        }
+
+        return RouteServiceProvider::HOME;
     }
 }

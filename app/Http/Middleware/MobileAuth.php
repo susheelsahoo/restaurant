@@ -15,9 +15,15 @@ class MobileAuth
      */
     public function handle(Request $request, \Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (Auth::guard('web')->check()) {
+            return redirect('/admin/dashboard');
+        }
+
+        if (! Auth::guard('mobile')->check()) {
             return redirect('/mobile/login');
         }
+
+        Auth::shouldUse('mobile');
 
         return $next($request);
     }

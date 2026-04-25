@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes under /admin
-Route::prefix('admin')->middleware('guest')->group(function () {
+Route::prefix('admin')->middleware('guest:web,mobile')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('admin.register');
     Route::post('register', [RegisteredUserController::class, 'store']);
 
@@ -27,7 +27,7 @@ Route::prefix('admin')->middleware('guest')->group(function () {
 });
 
 // Authenticated routes under /admin
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware('auth:web')->group(function () {
     Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])->name('admin.verification.notice');
 
     Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])

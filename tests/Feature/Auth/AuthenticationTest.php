@@ -13,7 +13,7 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered()
     {
-        $response = $this->get('/login');
+        $response = $this->get('/admin/login');
 
         $response->assertStatus(200);
     }
@@ -22,12 +22,13 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post('/login', [
+        $response = $this->post('/admin/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
+        $this->assertAuthenticatedAs($user, 'web');
+        $this->assertGuest('mobile');
         $response->assertRedirect(RouteServiceProvider::HOME);
     }
 
@@ -35,11 +36,44 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $this->post('/admin/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
-        $this->assertGuest();
+        $this->assertGuest('web');
+        $this->assertGuest('mobile');
+    }
+
+    public function test_mobile_login_uses_mobile_guard_only()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('/mobile/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user, 'mobile');
+        $this->assertGuest('web');
+        $response->assertRedirect('/mobile/dashboard');
+    }
+
+    public function test_mobile_user_cannot_open_admin_login()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user, 'mobile')->get('/admin/login');
+
+        $response->assertRedirect('/mobile/dashboard');
+    }
+
+    public function test_admin_user_cannot_open_mobile_login()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user, 'web')->get('/mobile/login');
+
+        $response->assertRedirect(RouteServiceProvider::HOME);
     }
 }
