@@ -2205,6 +2205,17 @@ body {
     gap: 10px;
 }
 
+.po-action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.po-action-grid form,
+.po-action-grid button {
+    width: 100%;
+}
+
 .or-mini-btn,
 .or-btn {
     border: none;

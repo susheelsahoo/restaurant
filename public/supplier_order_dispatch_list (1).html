@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurchaseFlow - Supplier Order Dispatch</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 16px 30px rgba(23, 32, 51, 0.10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #dfeafe 0%, var(--bg) 24%, #f8fafc 100%);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      min-height: 844px;
+      margin: 0 auto;
+      background: var(--bg);
+      border: 10px solid #111827;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,.18);
+    }
+
+    .statusbar { height: 30px; background: #111827; }
+
+    .screen {
+      padding: 18px 16px 120px;
+      min-height: 814px;
+      background: linear-gradient(180deg, #f4f8ff 0%, var(--bg) 100%);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .icon-btn,
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      background: white;
+      border: 1px solid var(--line);
+      font-size: 18px;
+    }
+
+    .avatar {
+      background: linear-gradient(180deg, var(--primary), #2563eb);
+      color: white;
+      font-weight: 800;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      color: white;
+    }
+
+    .hero h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.88);
+    }
+
+    .hero-grid,
+    .summary-grid,
+    .action-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hero-grid,
+    .summary-grid {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 12px;
+    }
+
+    .hero-box,
+    .summary-box {
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .summary-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .hero-box strong,
+    .summary-box strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .hero-box span,
+    .summary-box span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero .hero-box span { color: rgba(255,255,255,.82); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .section-head span {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .pill.green { background: var(--success-soft); color: var(--success); }
+    .pill.orange { background: var(--warning-soft); color: var(--warning); }
+    .pill.red { background: var(--danger-soft); color: var(--danger); }
+    .pill.gray { background: #f3f4f6; color: #4b5563; }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .filter-chip {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .filter-chip.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .supplier-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .supplier-card.hidden {
+      display: none;
+    }
+
+    .supplier-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .supplier-name {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .supplier-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .supplier-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .send-btn.whatsapp { background: var(--success-soft); color: var(--success); }
+    .send-btn.viber { background: #ede9fe; color: #6d28d9; }
+    .send-btn.email { background: var(--primary-soft); color: var(--primary); }
+
+    .order-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .order-meta-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background: var(--surface-soft);
+    }
+
+    .order-meta-box small {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 800;
+    }
+
+    .order-meta-box strong {
+      font-size: 14px;
+    }
+
+    .category-block {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--surface-soft);
+      margin-bottom: 10px;
+    }
+
+    .category-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .item-name {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .item-meta {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .item-right {
+      min-width: 88px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .assignment-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .assignment-select {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: white;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .assign-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 0 14px;
+      background: var(--primary);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .dispatch-log {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .dispatch-log.show {
+      display: block;
+    }
+
+    .dispatch-log.success {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid #86efac;
+    }
+
+    .dispatch-log.warning {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid #fcd34d;
+    }
+
+    .message-preview {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .message-preview.show {
+      display: block;
+    }
+
+    .message-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .message-preview-header strong {
+      font-size: 13px;
+    }
+
+    .message-preview-header span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .message-preview textarea {
+      width: 100%;
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: white;
+      resize: vertical;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .message-preview-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .preview-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .preview-btn.secondary {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .preview-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .sticky-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px 16px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+    }
+
+    .sticky-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sticky-meta strong { color: var(--text); }
+
+    .action-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 13px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .footer-btn.primary { background: var(--primary); color: white; }
+    .footer-btn.secondary { background: white; color: var(--text); border: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="statusbar"></div>
+    <div class="screen">
+      <div class="topbar">
+        <div class="icon-btn">←</div>
+        <div class="title" style="flex:1;">
+          <h1>Supplier Order List</h1>
+          <p>Assign suppliers and dispatch approved orders</p>
+        </div>
+        <div class="avatar">P</div>
+      </div>
+
+      <div class="card hero">
+        <h2>Approved Orders Ready for Dispatch</h2>
+        <p>After manager approval, assign supplier and send order by WhatsApp, Viber, or email.</p>
+        <div class="hero-grid">
+          <div class="hero-box">
+            <strong>3</strong>
+            <span>Suppliers needed</span>
+          </div>
+          <div class="hero-box">
+            <strong>€ 124.50</strong>
+            <span>Total dispatch value</span>
+          </div>
+          <div class="hero-box">
+            <strong>PO-2026-0107</strong>
+            <span>Main order number</span>
+          </div>
+          <div class="hero-box">
+            <strong>Apr 24</strong>
+            <span>Requested delivery</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <h3>Dispatch Summary</h3>
+          <span>Purchasing View</span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-box">
+            <strong id="supplierOrderCount">3</strong>
+            <span>Supplier orders</span>
+          </div>
+          <div class="summary-box">
+            <strong id="alreadySentCount">1</strong>
+            <span>Already sent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <h3>Filter by Status</h3>
+          <span>Quick Sort</span>
+        </div>
+        <div class="filters">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="unassigned">Unassigned</button>
+          <button class="filter-chip" data-filter="ready">Ready to Send</button>
+          <button class="filter-chip" data-filter="sent">Sent</button>
+        </div>
+      </div>
+
+      <div class="supplier-card" data-status="ready">
+        <div class="supplier-head">
+          <div>
+            <div class="supplier-name">FreshFarm</div>
+            <div class="supplier-meta">Supplier contact: +36 20 555 1111 · orders@freshfarm.hu</div>
+          </div>
+          <div class="supplier-actions">
+            <span class="pill green status-pill">Ready to Send</span>
+          </div>
+        </div>
+
+        <div class="order-meta">
+          <div class="order-meta-box">
+            <small>Supplier PO</small>
+            <strong>SUP-FF-0107-A</strong>
+          </div>
+          <div class="order-meta-box">
+            <small>Delivery Date</small>
+            <strong>Apr 24, 2026</strong>
+          </div>
+        </div>
+
+        <div class="category-block">
+          <div class="category-title">Vegetables</div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Tomato</div>
+              <div class="item-meta">2.5 kg · Note: ripe if possible</div>
+            </div>
+            <div class="item-right">€ 18.00</div>
+          </div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Onion</div>
+              <div class="item-meta">3 kg · Note: medium size</div>
+            </div>
+            <div class="item-right">€ 12.50</div>
+          </div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Cucumber</div>
+              <div class="item-meta">2 kg · No note</div>
+            </div>
+            <div class="item-right">€ 16.00</div>
+          </div>
+        </div>
+
+        <div class="supplier-actions">
+          <button class="send-btn whatsapp">WhatsApp</button>
+          <button class="send-btn viber">Viber</button>
+          <button class="send-btn email">Email</button>
+        </div>
+
+        <div class="dispatch-log"></div>
+
+        <div class="message-preview">
+          <div class="message-preview-header">
+            <strong>Supplier Message Preview</strong>
+            <span class="preview-channel-label">Channel</span>
+          </div>
+          <textarea class="message-text"></textarea>
+          <div class="message-preview-actions">
+            <button class="preview-btn secondary close-preview-btn">Close</button>
+            <button class="preview-btn primary confirm-send-btn">Send Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="supplier-card" data-status="sent">
+        <div class="supplier-head">
+          <div>
+            <div class="supplier-name">DairyPlus</div>
+            <div class="supplier-meta">Supplier contact: +36 20 444 3344 · dairyplus@orders.hu</div>
+          </div>
+          <div class="supplier-actions">
+            <span class="pill blue status-pill">Sent by Email</span>
+          </div>
+        </div>
+
+        <div class="order-meta">
+          <div class="order-meta-box">
+            <small>Supplier PO</small>
+            <strong>SUP-DP-0107-B</strong>
+          </div>
+          <div class="order-meta-box">
+            <small>Delivery Date</small>
+            <strong>Apr 24, 2026</strong>
+          </div>
+        </div>
+
+        <div class="category-block">
+          <div class="category-title">Dairy</div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Yogurt</div>
+              <div class="item-meta">8 pcs · Note: strawberry flavor</div>
+            </div>
+            <div class="item-right">€ 34.00</div>
+          </div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Butter</div>
+              <div class="item-meta">4 pcs · Note: unsalted</div>
+            </div>
+            <div class="item-right">€ 24.00</div>
+          </div>
+        </div>
+
+        <div class="supplier-actions">
+          <button class="send-btn whatsapp">WhatsApp</button>
+          <button class="send-btn viber">Viber</button>
+          <button class="send-btn email">Email</button>
+        </div>
+
+        <div class="dispatch-log show success">Sent to supplier by Email at 11:24 AM.</div>
+
+        <div class="message-preview">
+          <div class="message-preview-header">
+            <strong>Supplier Message Preview</strong>
+            <span class="preview-channel-label">Channel</span>
+          </div>
+          <textarea class="message-text"></textarea>
+          <div class="message-preview-actions">
+            <button class="preview-btn secondary close-preview-btn">Close</button>
+            <button class="preview-btn primary confirm-send-btn">Send Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="supplier-card" data-status="unassigned">
+        <div class="supplier-head">
+          <div>
+            <div class="supplier-name">Unassigned Order Group</div>
+            <div class="supplier-meta">Assign a supplier before sending this order.</div>
+          </div>
+          <div class="supplier-actions">
+            <span class="pill orange status-pill">Supplier Needed</span>
+          </div>
+        </div>
+
+        <div class="order-meta">
+          <div class="order-meta-box">
+            <small>Supplier PO</small>
+            <strong>Auto after assignment</strong>
+          </div>
+          <div class="order-meta-box">
+            <small>Delivery Date</small>
+            <strong>Apr 24, 2026</strong>
+          </div>
+        </div>
+
+        <div class="category-block">
+          <div class="category-title">Dry Goods</div>
+          <div class="item-row">
+            <div>
+              <div class="item-name">Flour</div>
+              <div class="item-meta">1 kg · Note: type 00 if possible</div>
+            </div>
+            <div class="item-right">€ 20.00</div>
+          </div>
+        </div>
+
+        <div class="assignment-row">
+          <select class="assignment-select">
+            <option value="">Assign supplier...</option>
+            <option>Baker Supply</option>
+            <option>FreshFarm</option>
+            <option>Local Market Hub</option>
+          </select>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+        <div class="dispatch-log show warning">Supplier not assigned yet.</div>
+
+        <div class="message-preview">
+          <div class="message-preview-header">
+            <strong>Supplier Message Preview</strong>
+            <span class="preview-channel-label">Channel</span>
+          </div>
+          <textarea class="message-text"></textarea>
+          <div class="message-preview-actions">
+            <button class="preview-btn secondary close-preview-btn">Close</button>
+            <button class="preview-btn primary confirm-send-btn">Send Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-bar">
+      <div class="sticky-meta">
+        <span>Ready to send: <strong id="readyCount">1</strong></span>
+        <span>Sent: <strong id="sentCount">1</strong></span>
+      </div>
+      <div class="action-grid">
+        <button class="footer-btn secondary" id="exportBtn">Export List</button>
+        <button class="footer-btn primary" id="sendAllBtn">Send All Ready Orders</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const filterChips = Array.from(document.querySelectorAll('.filter-chip'));
+    const supplierCards = Array.from(document.querySelectorAll('.supplier-card'));
+    const readyCount = document.getElementById('readyCount');
+    const sentCount = document.getElementById('sentCount');
+    const supplierOrderCount = document.getElementById('supplierOrderCount');
+    const alreadySentCount = document.getElementById('alreadySentCount');
+    const exportBtn = document.getElementById('exportBtn');
+    const sendAllBtn = document.getElementById('sendAllBtn');
+
+    function updateCounts() {
+      const ready = supplierCards.filter(card => card.dataset.status === 'ready').length;
+      const sent = supplierCards.filter(card => card.dataset.status === 'sent').length;
+      readyCount.textContent = String(ready);
+      sentCount.textContent = String(sent);
+      supplierOrderCount.textContent = String(supplierCards.length);
+      alreadySentCount.textContent = String(sent);
+    }
+
+    function buildSupplierMessage(card, channel) {
+      const supplier = card.querySelector('.supplier-name')?.textContent?.trim() || 'Supplier';
+      const strongs = card.querySelectorAll('.order-meta-box strong');
+      const poNumber = strongs[0] ? strongs[0].textContent.trim() : 'PO Number';
+      const deliveryDate = strongs[1] ? strongs[1].textContent.trim() : 'Delivery Date';
+      const categoryBlocks = Array.from(card.querySelectorAll('.category-block'));
+      const parts = [];
+
+      parts.push(`Hello ${supplier},`);
+      parts.push('');
+      parts.push('Please find our order details below:');
+      parts.push('');
+      parts.push(`PO Number: ${poNumber}`);
+      parts.push(`Delivery Date: ${deliveryDate}`);
+      parts.push('');
+
+      categoryBlocks.forEach(block => {
+        const category = block.querySelector('.category-title')?.textContent?.trim() || 'Category';
+        parts.push(`[${category}]`);
+        const rows = Array.from(block.querySelectorAll('.item-row'));
+        rows.forEach(row => {
+          const name = row.querySelector('.item-name')?.textContent?.trim() || '';
+          const meta = row.querySelector('.item-meta')?.textContent?.trim() || '';
+          const qtyPart = meta.split('·')[0] ? meta.split('·')[0].trim() : '';
+          const notePart = meta.includes('Note:') ? meta.split('Note:')[1].trim() : '';
+          const line = notePart ? `- ${name} — ${qtyPart} (Note: ${notePart})` : `- ${name} — ${qtyPart}`;
+          parts.push(line);
+        });
+        parts.push('');
+      });
+
+      parts.push('Please confirm availability and delivery.');
+      parts.push('');
+      parts.push('Thank you.');
+      parts.push('PurchaseFlow Restaurant');
+
+      if (channel === 'Email') {
+        return `Subject: Purchase Order ${poNumber} - Delivery ${deliveryDate}\n\n${parts.join('\n')}`;
+      }
+
+      return parts.join('\n');
+    }
+
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const filter = chip.dataset.filter;
+        supplierCards.forEach(card => {
+          const shouldShow = filter === 'all' || card.dataset.status === filter;
+          card.classList.toggle('hidden', !shouldShow);
+        });
+      });
+    });
+
+    supplierCards.forEach(card => {
+      const log = card.querySelector('.dispatch-log');
+      const wa = card.querySelector('.send-btn.whatsapp');
+      const vb = card.querySelector('.send-btn.viber');
+      const em = card.querySelector('.send-btn.email');
+      const assignBtn = card.querySelector('.assign-btn');
+      const assignSelect = card.querySelector('.assignment-select');
+      const pill = card.querySelector('.status-pill');
+      const supplierName = card.querySelector('.supplier-name');
+      const messagePreview = card.querySelector('.message-preview');
+      const messageText = card.querySelector('.message-text');
+      const previewChannelLabel = card.querySelector('.preview-channel-label');
+      const closePreviewBtn = card.querySelector('.close-preview-btn');
+      const confirmSendBtn = card.querySelector('.confirm-send-btn');
+      let pendingChannel = '';
+
+      function openPreview(channel) {
+        if (card.dataset.status === 'unassigned') {
+          if (log) {
+            log.className = 'dispatch-log show warning';
+            log.textContent = 'Please assign a supplier before sending this order.';
+          }
+          return;
+        }
+        pendingChannel = channel;
+        if (previewChannelLabel) previewChannelLabel.textContent = channel;
+        if (messageText) messageText.value = buildSupplierMessage(card, channel);
+        if (messagePreview) messagePreview.classList.add('show');
+      }
+
+      function markSent(channel) {
+        card.dataset.status = 'sent';
+        if (pill) {
+          pill.className = 'pill blue status-pill';
+          pill.textContent = `Sent by ${channel}`;
+        }
+        if (log) {
+          log.className = 'dispatch-log show success';
+          log.textContent = `Order sent successfully by ${channel}.`;
+        }
+        if (messagePreview) messagePreview.classList.remove('show');
+        updateCounts();
+      }
+
+      if (wa) wa.addEventListener('click', () => openPreview('WhatsApp'));
+      if (vb) vb.addEventListener('click', () => openPreview('Viber'));
+      if (em) em.addEventListener('click', () => openPreview('Email'));
+
+      if (closePreviewBtn) {
+        closePreviewBtn.addEventListener('click', () => {
+          if (messagePreview) messagePreview.classList.remove('show');
+        });
+      }
+
+      if (confirmSendBtn) {
+        confirmSendBtn.addEventListener('click', () => {
+          if (!pendingChannel) return;
+          markSent(pendingChannel);
+        });
+      }
+
+      if (assignBtn && assignSelect) {
+        assignBtn.addEventListener('click', () => {
+          if (!assignSelect.value) {
+            if (log) {
+              log.className = 'dispatch-log show warning';
+              log.textContent = 'Please choose a supplier first.';
+            }
+            return;
+          }
+          if (supplierName) supplierName.textContent = assignSelect.value;
+          card.dataset.status = 'ready';
+          if (pill) {
+            pill.className = 'pill green status-pill';
+            pill.textContent = 'Ready to Send';
+          }
+          if (log) {
+            log.className = 'dispatch-log show success';
+            log.textContent = `${assignSelect.value} assigned successfully. Order is ready to send.`;
+          }
+          updateCounts();
+        });
+      }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      alert('Export list action placeholder');
+    });
+
+    sendAllBtn.addEventListener('click', () => {
+      const readyCards = supplierCards.filter(card => card.dataset.status === 'ready');
+      readyCards.forEach(card => {
+        const pill = card.querySelector('.status-pill');
+        const log = card.querySelector('.dispatch-log');
+        card.dataset.status = 'sent';
+        if (pill) {
+          pill.className = 'pill blue status-pill';
+          pill.textContent = 'Sent by Email';
+        }
+        if (log) {
+          log.className = 'dispatch-log show success';
+          log.textContent = 'Order sent successfully by Email.';
+        }
+      });
+      updateCounts();
+    });
+
+    updateCounts();
+  </script>
+</body>
+</html>

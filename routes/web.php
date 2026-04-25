@@ -241,7 +241,12 @@ Route::middleware([])->group(function () {
         Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
         Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
         Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
+        Route::get('/mobile/purchase-order/{purchaseOrder}', [MobileController::class, 'purchaseOrder'])
+            ->whereNumber('purchaseOrder');
+        Route::patch('/mobile/purchase-order/{purchaseOrder}/status', [MobileController::class, 'updatePurchaseOrderStatus'])
+            ->whereNumber('purchaseOrder');
         Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
+        Route::get('/mobile/orders', [MobileController::class, 'orders']);
         Route::get('/mobile/templates', [MobileController::class, 'templates']);
     });
 });

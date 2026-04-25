@@ -37,8 +37,8 @@
                 </div>
                 <div class="mobile-nav">
                     <a href="/mobile/dashboard" @if(request()->path() == 'mobile/dashboard') class="active" @endif>Home</a>
-                    <a href="/mobile/request-detail" @if(request()->is('mobile/request-detail*')) class="active" @endif>Requests</a>
-                    <a href="/mobile/templates" @if(request()->path() == 'mobile/templates') class="active" @endif>Templates</a>
+                    <a href="/mobile/request-detail" @if(request()->is('mobile/request-detail*') || request()->is('mobile/quick-add')) class="active" @endif>Requests</a>
+                    <a href="/mobile/orders" @if(request()->is('mobile/orders') || request()->is('mobile/purchase-order*')) class="active" @endif>Orders</a>
                     <a href="/mobile/purchasing" @if(request()->path() == 'mobile/purchasing') class="active" @endif>Purchasing</a>
                 </div>
             </div>
