@@ -247,7 +247,7 @@ class PurchaseRequestController extends Controller
         return [
             'requesters' => $this->safeUsers(),
             'departments' => $this->safeDepartments(),
-            'products' => Schema::hasTable('products') ? Product::orderBy('name')->get(['id', 'name', 'unit']) : collect(),
+            'products' => Schema::hasTable('products') ? Product::orderBy('name')->get(['id', 'name', 'unit', 'estimated_price']) : collect(),
             'suppliers' => Schema::hasTable('suppliers') ? Supplier::orderBy('name')->get(['id', 'name']) : collect(),
             'statuses' => $this->statuses(),
             'priorities' => $this->priorities(),

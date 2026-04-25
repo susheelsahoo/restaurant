@@ -1,5 +1,7 @@
 <x-default-layout>
     @php
+        $money = static fn (float $amount): string => env('PRICE_SIGN', '$') . ' ' . number_format($amount, 2);
+
         $statusTone = match ($purchaseRequest->status) {
             'approved', 'ordered' => 'success',
             'submitted' => 'primary',
@@ -58,21 +60,29 @@
                                 <tr class="fw-bold text-muted">
                                     <th>Item</th>
                                     <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Line Total</th>
                                     <th>Suggested Supplier</th>
                                     <th>Notes</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($purchaseRequest->items as $item)
+                                    @php
+                                        $unitPrice = (float) ($item->product->estimated_price ?? 0);
+                                        $lineTotal = ((float) $item->quantity) * $unitPrice;
+                                    @endphp
                                     <tr>
                                         <td>{{ $item->product->name ?? '-' }}</td>
                                         <td>{{ number_format((float) $item->quantity, 2) }}</td>
+                                        <td>{{ $money($unitPrice) }}</td>
+                                        <td class="fw-bold">{{ $money($lineTotal) }}</td>
                                         <td>{{ $item->supplier->name ?? '-' }}</td>
                                         <td>{{ $item->notes ?: '-' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center py-8">No request items added yet.</td>
+                                        <td colspan="6" class="text-center py-8">No request items added yet.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -90,17 +100,31 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="mb-5">
-                        <div class="fw-bold mb-1">Linked Purchase Orders</div>
-                        <div class="text-gray-600">{{ $purchaseRequest->purchaseOrders->count() }}</div>
-                    </div>
-                    <div class="mb-5">
-                        <div class="fw-bold mb-1">Item Count</div>
-                        <div class="text-gray-600">{{ $purchaseRequest->items->count() }}</div>
-                    </div>
-                    <div class="mb-5">
-                        <div class="fw-bold mb-1">Total Quantity</div>
-                        <div class="text-gray-600">{{ number_format($purchaseRequest->total_quantity, 2) }}</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-6">
+                            <div class="border rounded p-4 h-100">
+                                <div class="fw-bold mb-1">Linked PO</div>
+                                <div class="text-gray-600">{{ $purchaseRequest->purchaseOrders->count() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-4 h-100">
+                                <div class="fw-bold mb-1">Item Count</div>
+                                <div class="text-gray-600">{{ $purchaseRequest->items->count() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-4 h-100">
+                                <div class="fw-bold mb-1">Total Quantity</div>
+                                <div class="text-gray-600">{{ number_format($purchaseRequest->total_quantity, 2) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-4 h-100">
+                                <div class="fw-bold mb-1">Total Price</div>
+                                <div class="text-gray-600">{{ $money($purchaseRequest->total_price) }}</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="separator separator-dashed my-7"></div>

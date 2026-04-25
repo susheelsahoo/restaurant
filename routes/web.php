@@ -236,6 +236,8 @@ Route::middleware([])->group(function () {
         Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
         Route::post('/mobile/quick-add', [MobileController::class, 'storeQuickAdd']);
         Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
+        Route::get('/mobile/request-detail/{requestNo}', [MobileController::class, 'requestDetail'])
+            ->where('requestNo', '[A-Za-z0-9\-]+');
         Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
         Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
         Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurchaseFlow - Manager Order Review</title>
+  <style>
+    :root {
+      --bg: #eef3fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 16px 30px rgba(23, 32, 51, 0.10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg, #dfeafe 0%, var(--bg) 24%, #f8fafc 100%);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      min-height: 844px;
+      margin: 0 auto;
+      background: var(--bg);
+      border: 10px solid #111827;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,.18);
+    }
+
+    .statusbar { height: 30px; background: #111827; }
+    .screen {
+      padding: 18px 16px 128px;
+      min-height: 814px;
+      background: linear-gradient(180deg, #f4f8ff 0%, var(--bg) 100%);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .icon-btn, .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      background: white;
+      border: 1px solid var(--line);
+      font-size: 18px;
+    }
+
+    .avatar {
+      background: linear-gradient(180deg, var(--primary), #2563eb);
+      color: white;
+      font-weight: 800;
+    }
+
+    .title h1 { margin: 0; font-size: 20px; line-height: 1.2; }
+    .title p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+      color: white;
+    }
+
+    .hero h2 { margin: 0 0 6px; font-size: 18px; }
+    .hero p { margin: 0; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,.88); }
+
+    .hero-grid, .summary-grid, .action-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hero-grid, .summary-grid {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 12px;
+    }
+
+    .hero-box, .summary-box {
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.10);
+    }
+
+    .summary-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .hero-box strong, .summary-box strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .hero-box span, .summary-box span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero .hero-box span { color: rgba(255,255,255,.80); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-head h3 { margin: 0; font-size: 15px; }
+    .section-head span { font-size: 12px; color: var(--primary); font-weight: 700; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .pill.green { background: var(--success-soft); color: var(--success); }
+    .pill.orange { background: var(--warning-soft); color: var(--warning); }
+    .pill.red { background: var(--danger-soft); color: var(--danger); }
+
+    .meta-list { display: grid; gap: 10px; }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .meta-row:last-child { padding-bottom: 0; border-bottom: none; }
+    .meta-row strong { display: block; margin-bottom: 2px; }
+    .meta-row small { color: var(--muted); font-size: 12px; }
+
+    .warning-banner {
+      display: none;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+    .warning-banner.show { display: block; }
+    .warning-banner.warning { background: var(--warning-soft); color: var(--warning); border: 1px solid #fcd34d; }
+    .warning-banner.danger { background: var(--danger-soft); color: var(--danger); border: 1px solid #fca5a5; }
+
+    .category-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: white;
+      margin-bottom: 10px;
+    }
+
+    .category-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .category-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 3px;
+    }
+
+    .category-sub { font-size: 12px; color: var(--muted); }
+
+    .budget-box { text-align: right; min-width: 110px; }
+    .budget-box strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .budget-box small { color: var(--muted); font-size: 11px; }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: #e5eefc;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress > div {
+      height: 100%;
+      border-radius: 999px;
+      width: 0;
+    }
+
+    .progress.safe > div { background: var(--success); }
+    .progress.warn > div { background: var(--warning); }
+    .progress.over > div { background: var(--danger); }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .item-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .item-meta { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .item-price { text-align: right; min-width: 90px; font-size: 13px; font-weight: 700; }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    .field textarea {
+      width: 100%;
+      min-height: 88px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      outline: none;
+      resize: none;
+      background: var(--surface-soft);
+      font-family: inherit;
+    }
+
+    .sticky-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px 16px;
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+    }
+
+    .sticky-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sticky-meta strong { color: var(--text); }
+    .action-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+    .btn {
+      border: none;
+      border-radius: 16px;
+      padding: 13px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .btn.confirm { background: var(--primary); color: white; }
+    .btn.modify { background: white; color: var(--text); border: 1px solid var(--line); }
+    .btn.decline { background: var(--danger-soft); color: var(--danger); }
+
+    .sendback-panel {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .sendback-panel.show { display: block; }
+
+    .sendback-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .mini-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mini-btn.secondary {
+      background: white;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .mini-btn.primary {
+      background: var(--warning);
+      color: white;
+    }
+
+    .result-message {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .result-message.show { display: block; }
+    .result-message.success { background: var(--success-soft); color: var(--success); border: 1px solid #86efac; }
+    .result-message.warning { background: var(--warning-soft); color: var(--warning); border: 1px solid #fcd34d; }
+    .result-message.danger { background: var(--danger-soft); color: var(--danger); border: 1px solid #fca5a5; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="statusbar"></div>
+    <div class="screen">
+      <div class="topbar">
+        <div class="icon-btn">←</div>
+        <div class="title" style="flex:1;">
+          <h1>Order Review</h1>
+          <p>Manager approval and budget control</p>
+        </div>
+        <div class="avatar">M</div>
+      </div>
+
+      <div class="card hero">
+        <h2>PO-2026-0107</h2>
+        <p>Submitted by Kitchen team. Review order value, category budgets, and confirm the purchase request.</p>
+        <div class="hero-grid">
+          <div class="hero-box">
+            <strong>Tomorrow</strong>
+            <span>Requested delivery</span>
+          </div>
+          <div class="hero-box">
+            <strong id="heroItemCount">6 items</strong>
+            <span>Selected products</span>
+          </div>
+          <div class="hero-box">
+            <strong id="heroTotal">€ 124.50</strong>
+            <span>Total order value</span>
+          </div>
+          <div class="hero-box">
+            <strong id="heroAlerts">2 alerts</strong>
+            <span>Budget attention needed</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="warningBanner" class="warning-banner"></div>
+
+      <div class="card">
+        <div class="section-head">
+          <h3>Order Summary</h3>
+          <span>Live Review</span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-box">
+            <strong id="summaryTotal">€ 124.50</strong>
+            <span>Current total</span>
+          </div>
+          <div class="summary-box">
+            <strong id="budgetRemaining">€ 145.00</strong>
+            <span>Total monthly category budget left</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <h3>Request Details</h3>
+          <span class="pill blue" id="statusPill">Pending Manager Approval</span>
+        </div>
+        <div class="meta-list">
+          <div class="meta-row">
+            <div>
+              <strong>Requester</strong>
+              <small>Nino Gelashvili · Kitchen</small>
+            </div>
+            <div>
+              <strong>Requested On</strong>
+              <small>Apr 23, 2026 · 10:14</small>
+            </div>
+          </div>
+          <div class="meta-row">
+            <div>
+              <strong>Purchase Order No.</strong>
+              <small>PO-2026-0107</small>
+            </div>
+            <div>
+              <strong>Delivery Date</strong>
+              <small>Apr 24, 2026</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head" style="padding:0 2px;">
+        <h3>Category Pricing & Budget</h3>
+        <span>Grouped Review</span>
+      </div>
+
+      <div class="category-card" data-category="Vegetables" data-cost="46.5" data-budget="60">
+        <div class="category-top">
+          <div>
+            <div class="category-title">Vegetables</div>
+            <div class="category-sub">3 items selected</div>
+          </div>
+          <div class="budget-box">
+            <strong class="budget-amount">€ 46.50 / € 60.00</strong>
+            <small class="budget-status">77.5% of budget used</small>
+          </div>
+        </div>
+        <div class="progress warn"><div style="width:77.5%"></div></div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Tomato</div>
+            <div class="item-meta">2.5 kg · Note: ripe if possible</div>
+          </div>
+          <div class="item-price">€ 18.00</div>
+        </div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Onion</div>
+            <div class="item-meta">3 kg · Note: medium size</div>
+          </div>
+          <div class="item-price">€ 12.50</div>
+        </div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Cucumber</div>
+            <div class="item-meta">2 kg · No note</div>
+          </div>
+          <div class="item-price">€ 16.00</div>
+        </div>
+      </div>
+
+      <div class="category-card" data-category="Dairy" data-cost="58" data-budget="50">
+        <div class="category-top">
+          <div>
+            <div class="category-title">Dairy</div>
+            <div class="category-sub">2 items selected</div>
+          </div>
+          <div class="budget-box">
+            <strong class="budget-amount">€ 58.00 / € 50.00</strong>
+            <small class="budget-status">116% of budget used</small>
+          </div>
+        </div>
+        <div class="progress over"><div style="width:100%"></div></div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Yogurt</div>
+            <div class="item-meta">8 pcs · Note: strawberry flavor</div>
+          </div>
+          <div class="item-price">€ 34.00</div>
+        </div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Butter</div>
+            <div class="item-meta">4 pcs · Note: unsalted</div>
+          </div>
+          <div class="item-price">€ 24.00</div>
+        </div>
+      </div>
+
+      <div class="category-card" data-category="Dry Goods" data-cost="20" data-budget="35">
+        <div class="category-top">
+          <div>
+            <div class="category-title">Dry Goods</div>
+            <div class="category-sub">1 item selected</div>
+          </div>
+          <div class="budget-box">
+            <strong class="budget-amount">€ 20.00 / € 35.00</strong>
+            <small class="budget-status">57% of budget used</small>
+          </div>
+        </div>
+        <div class="progress safe"><div style="width:57%"></div></div>
+        <div class="item-row">
+          <div>
+            <div class="item-name">Flour</div>
+            <div class="item-meta">1 kg · Note: type 00 if possible</div>
+          </div>
+          <div class="item-price">€ 20.00</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head">
+          <h3>Manager Comment</h3>
+          <span>Required for send back</span>
+        </div>
+        <div class="field">
+          <label>Comment for purchasing or requester</label>
+          <textarea id="managerComment" placeholder="Write comment, change request, or approval note..."></textarea>
+        </div>
+
+        <div id="sendbackPanel" class="sendback-panel">
+          <div style="font-size:12px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px;">Send back with comment</div>
+          <div style="font-size:13px; color:var(--muted); line-height:1.45; margin-bottom:10px;">
+            Add a comment explaining what should be changed, then send this order back to the requester.
+          </div>
+          <div class="sendback-actions">
+            <button class="mini-btn secondary" id="cancelSendbackBtn">Cancel</button>
+            <button class="mini-btn primary" id="confirmSendbackBtn">Send Back</button>
+          </div>
+        </div>
+
+        <div id="resultMessage" class="result-message"></div>
+      </div>
+    </div>
+
+    <div class="sticky-bar">
+      <div class="sticky-meta">
+        <span>Budget alerts: <strong id="bottomAlerts">2</strong></span>
+        <span>Total: <strong id="bottomTotal">€ 124.50</strong></span>
+      </div>
+      <div class="action-grid">
+        <button class="btn decline" id="declineBtn">Decline</button>
+        <button class="btn modify" id="modifyBtn">Modify</button>
+        <button class="btn confirm" id="confirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const categoryCards = Array.from(document.querySelectorAll('.category-card'));
+    const warningBanner = document.getElementById('warningBanner');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const budgetRemaining = document.getElementById('budgetRemaining');
+    const heroTotal = document.getElementById('heroTotal');
+    const heroAlerts = document.getElementById('heroAlerts');
+    const heroItemCount = document.getElementById('heroItemCount');
+    const bottomAlerts = document.getElementById('bottomAlerts');
+    const bottomTotal = document.getElementById('bottomTotal');
+    const statusPill = document.getElementById('statusPill');
+    const managerComment = document.getElementById('managerComment');
+    const modifyBtn = document.getElementById('modifyBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const declineBtn = document.getElementById('declineBtn');
+    const sendbackPanel = document.getElementById('sendbackPanel');
+    const cancelSendbackBtn = document.getElementById('cancelSendbackBtn');
+    const confirmSendbackBtn = document.getElementById('confirmSendbackBtn');
+    const resultMessage = document.getElementById('resultMessage');
+
+    function formatMoney(value) {
+      return `€ ${value.toFixed(2)}`;
+    }
+
+    function setResult(type, text) {
+      resultMessage.className = `result-message show ${type}`;
+      resultMessage.textContent = text;
+    }
+
+    function clearResult() {
+      resultMessage.className = 'result-message';
+      resultMessage.textContent = '';
+    }
+
+    function updateBudgetWarnings() {
+      let totalCost = 0;
+      let totalBudget = 0;
+      let alerts = 0;
+      let overBudgetCategories = [];
+      let warningCategories = [];
+      let totalItems = 0;
+
+      categoryCards.forEach(card => {
+        const cost = Number(card.dataset.cost || 0);
+        const budget = Number(card.dataset.budget || 0);
+        const usedPct = budget > 0 ? (cost / budget) * 100 : 0;
+        totalCost += cost;
+        totalBudget += budget;
+        totalItems += card.querySelectorAll('.item-row').length;
+
+        const amountEl = card.querySelector('.budget-amount');
+        const statusEl = card.querySelector('.budget-status');
+        const progress = card.querySelector('.progress');
+        const progressBar = progress.querySelector('div');
+
+        amountEl.textContent = `${formatMoney(cost)} / ${formatMoney(budget)}`;
+
+        progress.classList.remove('safe', 'warn', 'over');
+
+        if (usedPct > 100) {
+          alerts += 1;
+          overBudgetCategories.push(card.dataset.category);
+          progress.classList.add('over');
+          progressBar.style.width = '100%';
+          statusEl.textContent = `${usedPct.toFixed(0)}% of budget used - over budget`;
+        } else if (usedPct >= 75) {
+          alerts += 1;
+          warningCategories.push(card.dataset.category);
+          progress.classList.add('warn');
+          progressBar.style.width = `${usedPct}%`;
+          statusEl.textContent = `${usedPct.toFixed(1)}% of budget used - near limit`;
+        } else {
+          progress.classList.add('safe');
+          progressBar.style.width = `${usedPct}%`;
+          statusEl.textContent = `${usedPct.toFixed(0)}% of budget used`;
+        }
+      });
+
+      summaryTotal.textContent = formatMoney(totalCost);
+      heroTotal.textContent = formatMoney(totalCost);
+      bottomTotal.textContent = formatMoney(totalCost);
+      budgetRemaining.textContent = formatMoney(Math.max(0, totalBudget - totalCost));
+      heroAlerts.textContent = `${alerts} alerts`;
+      bottomAlerts.textContent = String(alerts);
+      heroItemCount.textContent = `${totalItems} items`;
+
+      if (overBudgetCategories.length) {
+        warningBanner.className = 'warning-banner show danger';
+        warningBanner.textContent = `Over-budget warning: ${overBudgetCategories.join(', ')} exceeded the allowed category budget. Manager confirmation should be reviewed carefully.`;
+      } else if (warningCategories.length) {
+        warningBanner.className = 'warning-banner show warning';
+        warningBanner.textContent = `Budget caution: ${warningCategories.join(', ')} is close to the category limit.`;
+      } else {
+        warningBanner.className = 'warning-banner';
+        warningBanner.textContent = '';
+      }
+
+      return { alerts, overBudgetCategories, warningCategories, totalCost };
+    }
+
+    function setStatus(text, variant) {
+      statusPill.textContent = text;
+      statusPill.className = `pill ${variant}`;
+    }
+
+    modifyBtn.addEventListener('click', () => {
+      clearResult();
+      sendbackPanel.classList.add('show');
+      managerComment.focus();
+      setStatus('Modification Requested', 'orange');
+    });
+
+    cancelSendbackBtn.addEventListener('click', () => {
+      sendbackPanel.classList.remove('show');
+      clearResult();
+      setStatus('Pending Manager Approval', 'blue');
+    });
+
+    confirmSendbackBtn.addEventListener('click', () => {
+      const comment = managerComment.value.trim();
+      if (!comment) {
+        setResult('warning', 'Please add a manager comment before sending the order back.');
+        return;
+      }
+      sendbackPanel.classList.remove('show');
+      setStatus('Sent Back to Requester', 'orange');
+      setResult('warning', `Order sent back with comment: "${comment}"`);
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      sendbackPanel.classList.remove('show');
+      const state = updateBudgetWarnings();
+      if (state.overBudgetCategories.length) {
+        setStatus('Confirmed with Budget Exception', 'red');
+        setResult('danger', `Order confirmed, but ${state.overBudgetCategories.join(', ')} is over budget. Exception note should be logged.`);
+      } else if (state.warningCategories.length) {
+        setStatus('Confirmed with Warning', 'orange');
+        setResult('warning', `Order confirmed. ${state.warningCategories.join(', ')} is close to the budget limit.`);
+      } else {
+        setStatus('Confirmed', 'green');
+        setResult('success', 'Order confirmed successfully and sent to purchasing.');
+      }
+    });
+
+    declineBtn.addEventListener('click', () => {
+      sendbackPanel.classList.remove('show');
+      setStatus('Declined', 'red');
+      setResult('danger', 'Order declined. Add a comment if you want to explain the reason to the requester.');
+    });
+
+    updateBudgetWarnings();
+  </script>
+</body>
+</html>

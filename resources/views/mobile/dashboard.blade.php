@@ -69,7 +69,7 @@
             </div>
 
             @forelse($recentRequests as $request)
-                <div class="template-item recent-request-item">
+                <a href="{{ $request['detail_url'] }}" class="template-item recent-request-item request-list-link">
                     <div class="template-info">
                         <div class="recent-request-title">
                             <h4>{{ $request['request_no'] }}</h4>
@@ -85,7 +85,7 @@
                         </span>
                         <span>{{ $request['items_count'] }} items</span>
                     </div>
-                </div>
+                </a>
 
                 @if (!$loop->last)
                     <hr class="divider">

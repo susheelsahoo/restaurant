@@ -22,7 +22,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-    <link rel="stylesheet" href="{{ asset('assets/css/purchaseflow.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/purchaseflow.css') }}?v={{ filemtime(public_path('assets/css/purchaseflow.css')) }}">
     @stack('styles')
 </head>
 <body class="@yield('body-class', 'mobile-body')">
@@ -37,7 +37,7 @@
                 </div>
                 <div class="mobile-nav">
                     <a href="/mobile/dashboard" @if(request()->path() == 'mobile/dashboard') class="active" @endif>Home</a>
-                    <a href="/mobile/request-detail" @if(request()->path() == 'mobile/request-detail') class="active" @endif>Requests</a>
+                    <a href="/mobile/request-detail" @if(request()->is('mobile/request-detail*')) class="active" @endif>Requests</a>
                     <a href="/mobile/templates" @if(request()->path() == 'mobile/templates') class="active" @endif>Templates</a>
                     <a href="/mobile/purchasing" @if(request()->path() == 'mobile/purchasing') class="active" @endif>Purchasing</a>
                 </div>
@@ -82,7 +82,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('{{ asset("sw.js") }}', {
+                navigator.serviceWorker.register('{{ asset("sw.js") }}?v={{ filemtime(public_path("sw.js")) }}', {
                     scope: '/mobile/',
                 }).catch(function (error) {
                     console.log('ServiceWorker registration failed:', error);

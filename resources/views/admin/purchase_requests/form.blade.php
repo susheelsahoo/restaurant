@@ -1,5 +1,8 @@
 <x-default-layout>
     @php
+        $currency = env('PRICE_SIGN', '$');
+        $money = static fn (float $amount): string => $currency . ' ' . number_format($amount, 2);
+
         $existingItems = old('items', isset($purchaseRequest) ? $purchaseRequest->items->map(function ($item) {
             return [
                 'product_id' => $item->product_id,
@@ -14,6 +17,12 @@
         }
 
         $initialQuantityTotal = collect($existingItems)->sum(fn (array $item) => (float) ($item['quantity'] ?? 0));
+        $productsById = $products->keyBy('id');
+        $initialPriceTotal = collect($existingItems)->sum(function (array $item) use ($productsById) {
+            $product = $productsById->get((int) ($item['product_id'] ?? 0));
+
+            return ((float) ($item['quantity'] ?? 0)) * ((float) ($product->estimated_price ?? 0));
+        });
     @endphp
 
     <div class="row g-5 g-xl-8">
@@ -122,6 +131,7 @@
                                     <tr class="fw-bold text-muted">
                                         <th style="min-width: 240px;">Product</th>
                                         <th style="min-width: 140px;">Quantity</th>
+                                        <th style="min-width: 150px;">Line Total</th>
                                         <th style="min-width: 220px;">Supplier</th>
                                         <th style="min-width: 240px;">Notes</th>
                                         <th class="text-end"></th>
@@ -134,13 +144,24 @@
                                                 <select name="items[{{ $index }}][product_id]" class="form-select form-select-solid item-product">
                                                     <option value="">Select product</option>
                                                     @foreach($products as $product)
-                                                        <option value="{{ $product->id }}" @selected((string) ($item['product_id'] ?? '') === (string) $product->id)>
+                                                        <option
+                                                            value="{{ $product->id }}"
+                                                            data-price="{{ (float) ($product->estimated_price ?? 0) }}"
+                                                            @selected((string) ($item['product_id'] ?? '') === (string) $product->id)
+                                                        >
                                                             {{ $product->name }}{{ $product->unit ? ' (' . $product->unit . ')' : '' }}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                             <td><input type="number" step="0.01" min="0" name="items[{{ $index }}][quantity]" value="{{ $item['quantity'] ?? '' }}" class="form-control form-control-solid item-qty"></td>
+                                            <td class="fw-bold item-line-total">
+                                                @php
+                                                    $product = $productsById->get((int) ($item['product_id'] ?? 0));
+                                                    $lineTotal = ((float) ($item['quantity'] ?? 0)) * ((float) ($product->estimated_price ?? 0));
+                                                @endphp
+                                                {{ $money($lineTotal) }}
+                                            </td>
                                             <td>
                                                 <select name="items[{{ $index }}][supplier_id]" class="form-select form-select-solid item-supplier">
                                                     <option value="">Select supplier</option>
@@ -182,6 +203,10 @@
                         <div class="text-muted fs-7">Total Quantity</div>
                         <div class="fs-2 fw-bold"><span id="request-quantity-total">{{ number_format($initialQuantityTotal, 2) }}</span></div>
                     </div>
+                    <div class="border rounded p-4 mb-4">
+                        <div class="text-muted fs-7">Total Price</div>
+                        <div class="fs-2 fw-bold"><span id="request-price-total">{{ $money($initialPriceTotal) }}</span></div>
+                    </div>
                     <div class="text-muted fs-7">Tip: keep new requests as `Submitted`, then move them through review and ordering as the workflow progresses.</div>
                 </div>
             </div>
@@ -194,11 +219,12 @@
                 <select class="form-select form-select-solid item-product">
                     <option value="">Select product</option>
                     @foreach($products as $product)
-                        <option value="{{ $product->id }}">{{ $product->name }}{{ $product->unit ? ' (' . $product->unit . ')' : '' }}</option>
+                        <option value="{{ $product->id }}" data-price="{{ (float) ($product->estimated_price ?? 0) }}">{{ $product->name }}{{ $product->unit ? ' (' . $product->unit . ')' : '' }}</option>
                     @endforeach
                 </select>
             </td>
             <td><input type="number" step="0.01" min="0" class="form-control form-control-solid item-qty"></td>
+            <td class="fw-bold item-line-total">{{ $money(0) }}</td>
             <td>
                 <select class="form-select form-select-solid item-supplier">
                     <option value="">Select supplier</option>
@@ -220,6 +246,18 @@
                 const template = document.getElementById('request-item-template');
                 const itemCountElement = document.getElementById('request-item-count');
                 const quantityTotalElement = document.getElementById('request-quantity-total');
+                const priceTotalElement = document.getElementById('request-price-total');
+                const currency = @json($currency);
+
+                function formatMoney(amount) {
+                    return `${currency} ${amount.toFixed(2)}`;
+                }
+
+                function selectedProductPrice(row) {
+                    const option = row.querySelector('.item-product').selectedOptions[0];
+
+                    return parseFloat(option?.dataset.price || 0);
+                }
 
                 function renameRows() {
                     [...tableBody.querySelectorAll('.request-item-row')].forEach((row, index) => {
@@ -233,17 +271,25 @@
                 }
 
                 function updateTotals() {
-                    let total = 0;
+                    let quantityTotal = 0;
+                    let priceTotal = 0;
 
                     tableBody.querySelectorAll('.request-item-row').forEach((row) => {
-                        total += parseFloat(row.querySelector('.item-qty').value || 0);
+                        const quantity = parseFloat(row.querySelector('.item-qty').value || 0);
+                        const lineTotal = quantity * selectedProductPrice(row);
+
+                        quantityTotal += quantity;
+                        priceTotal += lineTotal;
+                        row.querySelector('.item-line-total').textContent = formatMoney(lineTotal);
                     });
 
-                    quantityTotalElement.textContent = total.toFixed(2);
+                    quantityTotalElement.textContent = quantityTotal.toFixed(2);
+                    priceTotalElement.textContent = formatMoney(priceTotal);
                 }
 
                 function bindRow(row) {
                     row.querySelector('.item-qty').addEventListener('input', updateTotals);
+                    row.querySelector('.item-product').addEventListener('change', updateTotals);
 
                     row.querySelector('.remove-item').addEventListener('click', function () {
                         if (tableBody.querySelectorAll('.request-item-row').length === 1) {

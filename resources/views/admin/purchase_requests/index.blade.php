@@ -1,11 +1,6 @@
 <x-default-layout>
     @php
-        $statusTone = static fn (string $status): string => match ($status) {
-            'approved', 'ordered' => 'success',
-            'submitted' => 'primary',
-            'rejected', 'returned' => 'danger',
-            default => 'secondary',
-        };
+        $money = static fn (float $amount): string => env('PRICE_SIGN', '$') . ' ' . number_format($amount, 2);
 
         $priorityTone = static fn (string $priority): string => match ($priority) {
             'urgent' => 'warning',
@@ -85,16 +80,6 @@
                 <input type="hidden" name="selected_request" value="{{ request('selected_request') }}">
 
                 <div class="col-md-6 col-xl-2">
-                    <label class="form-label fw-semibold fs-7">Status</label>
-                    <select name="status" class="form-select form-select-solid">
-                        <option value="">All statuses</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-md-6 col-xl-2">
                     <label class="form-label fw-semibold fs-7">Department</label>
                     <select name="department_id" class="form-select form-select-solid">
                         <option value="">All departments</option>
@@ -131,7 +116,7 @@
 
                 <div class="col-md-6 col-xl-3 d-flex gap-2">
                     <button class="btn btn-light-primary flex-fill">Filter</button>
-                    @if(request()->hasAny(['q', 'department_id', 'status', 'priority', 'date_from', 'date_to']))
+                    @if(request()->hasAny(['q', 'department_id', 'priority', 'date_from', 'date_to']))
                         <a href="{{ route('admin.purchase-orders.requests', ['selected_request' => request('selected_request')]) }}" class="btn btn-light">Reset</a>
                     @endif
                 </div>
@@ -146,7 +131,6 @@
                             <th>Department</th>
                             <th>Items</th>
                             <th>Priority</th>
-                            <th>Status</th>
                             <th>Approval</th>
                             <th>Needed By</th>
                             <th>Actions</th>
@@ -170,11 +154,6 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-light-{{ $statusTone($purchaseRequest->status) }}">
-                                        {{ ucfirst($purchaseRequest->status) }}
-                                    </span>
-                                </td>
-                                <td>
                                     <span class="badge badge-light-{{ $approvalTone($purchaseRequest->status) }}">
                                         {{ $approvalLabel($purchaseRequest->status) }}
                                     </span>
@@ -194,7 +173,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-10">No purchase requests found.</td>
+                                <td colspan="8" class="text-center py-10">No purchase requests found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -299,13 +278,31 @@
                 </div>
                 <div class="card-body">
                     @if($selectedPurchaseRequest)
-                        <div class="mb-6">
-                            <div class="fw-bold mb-1">Linked Purchase Orders</div>
-                            <div class="text-gray-600">{{ $selectedPurchaseRequest->purchaseOrders->count() }}</div>
-                        </div>
-                        <div class="mb-6">
-                            <div class="fw-bold mb-1">Total Requested Quantity</div>
-                            <div class="text-gray-600">{{ number_format($selectedPurchaseRequest->total_quantity, 2) }}</div>
+                        <div class="row g-4 mb-5">
+                            <div class="col-6">
+                                <div class="border rounded p-4 h-100">
+                                    <div class="fw-bold mb-1">Linked PO</div>
+                                    <div class="text-gray-600">{{ $selectedPurchaseRequest->purchaseOrders->count() }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-4 h-100">
+                                    <div class="fw-bold mb-1">Item Count</div>
+                                    <div class="text-gray-600">{{ $selectedPurchaseRequest->items->count() }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-4 h-100">
+                                    <div class="fw-bold mb-1">Total Quantity</div>
+                                    <div class="text-gray-600">{{ number_format($selectedPurchaseRequest->total_quantity, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-4 h-100">
+                                    <div class="fw-bold mb-1">Total Price</div>
+                                    <div class="text-gray-600">{{ $money($selectedPurchaseRequest->total_price) }}</div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-3">
