@@ -34,7 +34,9 @@ use App\Http\Controllers\WineCategoryController;
 use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
-use App\Http\Controllers\MobileController;
+use App\Http\Controllers\Mobile\DashboardController as MobileDashboardController;
+use App\Http\Controllers\Mobile\PurchasingController as MobilePurchasingController;
+use App\Http\Controllers\Mobile\RequestController as MobileRequestController;
 
 
 /*
@@ -232,22 +234,21 @@ Route::middleware([])->group(function () {
 
     Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest:web,mobile');
     Route::middleware('mobile.auth')->group(function () {
-        Route::get('/mobile/dashboard', [MobileController::class, 'dashboard']);
-        Route::get('/mobile/quick-add', [MobileController::class, 'quickAdd']);
-        Route::post('/mobile/quick-add', [MobileController::class, 'storeQuickAdd']);
-        Route::get('/mobile/request-detail', [MobileController::class, 'requestDetail']);
-        Route::get('/mobile/request-detail/{requestNo}', [MobileController::class, 'requestDetail'])
+        Route::get('/mobile/dashboard', [MobileDashboardController::class, 'index']);
+        Route::get('/mobile/quick-add', [MobileRequestController::class, 'create']);
+        Route::post('/mobile/quick-add', [MobileRequestController::class, 'store']);
+        Route::get('/mobile/request-detail', [MobileRequestController::class, 'index']);
+        Route::get('/mobile/request-detail/{requestNo}', [MobileRequestController::class, 'index'])
             ->where('requestNo', '[A-Za-z0-9\-]+');
-        Route::get('/mobile/approvals', [MobileController::class, 'approvals']);
-        Route::get('/mobile/purchasing', [MobileController::class, 'purchasing']);
-        Route::get('/mobile/purchase-order', [MobileController::class, 'purchaseOrder']);
-        Route::get('/mobile/purchase-order/{purchaseOrder}', [MobileController::class, 'purchaseOrder'])
+        Route::patch('/mobile/request-detail/{purchaseRequest}/status', [MobileRequestController::class, 'updateStatus'])
+            ->whereNumber('purchaseRequest');
+        Route::get('/mobile/purchasing', [MobilePurchasingController::class, 'index']);
+        Route::get('/mobile/orders', [MobilePurchasingController::class, 'index']);
+        Route::get('/mobile/purchase-order', [MobilePurchasingController::class, 'show']);
+        Route::get('/mobile/purchase-order/{purchaseOrder}', [MobilePurchasingController::class, 'show'])
             ->whereNumber('purchaseOrder');
-        Route::patch('/mobile/purchase-order/{purchaseOrder}/status', [MobileController::class, 'updatePurchaseOrderStatus'])
+        Route::patch('/mobile/purchase-order/{purchaseOrder}/status', [MobilePurchasingController::class, 'update'])
             ->whereNumber('purchaseOrder');
-        Route::get('/mobile/receiving', [MobileController::class, 'receiving']);
-        Route::get('/mobile/orders', [MobileController::class, 'orders']);
-        Route::get('/mobile/templates', [MobileController::class, 'templates']);
     });
 });
 

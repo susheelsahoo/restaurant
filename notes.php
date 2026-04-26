@@ -1,3 +1,11 @@
+this one :
+/Applications/XAMPP/xamppfiles/htdocs/restaurant/resources/views/mobile/purchase-order.blade.php
+
+i want like :
+/Applications/XAMPP/xamppfiles/htdocs/restaurant/public/supplier_order_dispatch_list (1).html
+
+
+
 If you want smoother UX:
 
 Show “New version available” popup

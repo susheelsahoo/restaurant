@@ -307,7 +307,7 @@ class PurchaseRequestController extends Controller
     protected function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
     {
         // Load items with relationships
-        $purchaseRequest->load('items.supplier');
+        $purchaseRequest->load(['items.supplier', 'items.product:id,estimated_price']);
 
         // Group items by supplier
         $itemsBySupplier = $purchaseRequest->items
@@ -332,7 +332,7 @@ class PurchaseRequestController extends Controller
                     'product_id' => $requestItem->product_id,
                     'quantity' => $requestItem->quantity,
                     'received_qty' => 0,
-                    'unit_price' => 0, // Will be updated later if needed
+                    'unit_price' => (float) ($requestItem->product?->estimated_price ?? 0),
                 ]);
             }
         }
