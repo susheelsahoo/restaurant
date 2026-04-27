@@ -200,6 +200,7 @@ Route::middleware(['auth:web', 'verified'])->prefix('admin')->name('admin.')->gr
         Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
         Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
         Route::patch('/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])->name('status.update');
+        Route::patch('/{purchaseOrder}/receiving', [PurchaseOrderController::class, 'receive'])->name('receiving.update');
         Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('show');
         Route::get('/{purchaseOrder}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
         Route::match(['put', 'patch'], '/{purchaseOrder}', [PurchaseOrderController::class, 'update'])->name('update');
@@ -242,12 +243,16 @@ Route::middleware([])->group(function () {
             ->where('requestNo', '[A-Za-z0-9\-]+');
         Route::patch('/mobile/request-detail/{purchaseRequest}/status', [MobileRequestController::class, 'updateStatus'])
             ->whereNumber('purchaseRequest');
+        Route::patch('/mobile/request-detail/{purchaseRequest}/delivery-date', [MobileRequestController::class, 'updateDeliveryDate'])
+            ->whereNumber('purchaseRequest');
         Route::get('/mobile/purchasing', [MobilePurchasingController::class, 'index']);
         Route::get('/mobile/orders', [MobilePurchasingController::class, 'index']);
         Route::get('/mobile/purchase-order', [MobilePurchasingController::class, 'show']);
         Route::get('/mobile/purchase-order/{purchaseOrder}', [MobilePurchasingController::class, 'show'])
             ->whereNumber('purchaseOrder');
         Route::patch('/mobile/purchase-order/{purchaseOrder}/status', [MobilePurchasingController::class, 'update'])
+            ->whereNumber('purchaseOrder');
+        Route::patch('/mobile/purchase-order/{purchaseOrder}/receiving', [MobilePurchasingController::class, 'receive'])
             ->whereNumber('purchaseOrder');
     });
 });

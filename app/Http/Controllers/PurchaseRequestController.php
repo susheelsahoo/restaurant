@@ -27,6 +27,8 @@ class PurchaseRequestController extends Controller
 
             $query->where(function ($builder) use ($search) {
                 $builder->where('request_no', 'like', '%' . $search . '%')
+                    ->orWhere('manager_comment', 'like', '%' . $search . '%')
+                    ->orWhere('admin_comment', 'like', '%' . $search . '%')
                     ->orWhereHas('requester', fn ($requesterQuery) => $requesterQuery->where('name', 'like', '%' . $search . '%'))
                     ->orWhereHas('department', fn ($departmentQuery) => $departmentQuery->where('name', 'like', '%' . $search . '%'))
                     ->orWhereHas('items.product', fn ($productQuery) => $productQuery->where('name', 'like', '%' . $search . '%'))
@@ -145,7 +147,15 @@ class PurchaseRequestController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->statuses()),
+            'admin_comment' => 'nullable|string|max:2000',
         ]);
+
+        $hasAdminComment = $request->has('admin_comment');
+
+        if ($hasAdminComment) {
+            $adminComment = trim((string) ($validated['admin_comment'] ?? ''));
+            $validated['admin_comment'] = $adminComment !== '' ? $adminComment : null;
+        }
 
         // Prevent approving requests with past needed_by dates
         if ($validated['status'] === 'approved' && $purchaseRequest->needed_by && $purchaseRequest->needed_by->isPast()) {
@@ -153,10 +163,16 @@ class PurchaseRequestController extends Controller
                 ->with('error', 'Cannot approve requests with needed by dates in the past.');
         }
 
-        DB::transaction(function () use ($purchaseRequest, $validated) {
-            $purchaseRequest->update([
+        DB::transaction(function () use ($purchaseRequest, $validated, $hasAdminComment) {
+            $updateData = [
                 'status' => $validated['status'],
-            ]);
+            ];
+
+            if ($hasAdminComment) {
+                $updateData['admin_comment'] = $validated['admin_comment'];
+            }
+
+            $purchaseRequest->update($updateData);
 
             // Create Purchase Orders when request is approved
             if ($validated['status'] === 'approved') {
@@ -192,6 +208,7 @@ class PurchaseRequestController extends Controller
             'department_id' => 'required|exists:departments,id',
             'priority' => 'required|in:' . implode(',', $this->priorities()),
             'status' => 'required|in:' . implode(',', $this->statuses()),
+            'admin_comment' => 'nullable|string|max:2000',
             'needed_by' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'nullable|exists:products,id',
@@ -229,6 +246,9 @@ class PurchaseRequestController extends Controller
                 'department_id' => $validated['department_id'],
                 'priority' => $validated['priority'],
                 'status' => $validated['status'],
+                'admin_comment' => filled($validated['admin_comment'] ?? null)
+                    ? trim($validated['admin_comment'])
+                    : null,
                 'needed_by' => $validated['needed_by'],
             ],
             'items' => $items,

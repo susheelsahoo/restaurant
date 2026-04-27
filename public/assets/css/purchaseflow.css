@@ -2165,9 +2165,9 @@ body {
     font-weight: 800;
 }
 
-.or-field textarea {
+.or-field textarea,
+.or-field input {
     width: 100%;
-    min-height: 88px;
     border: 1px solid var(--or-line);
     border-radius: 14px;
     padding: 12px;
@@ -2177,6 +2177,20 @@ body {
     background: var(--or-surface-soft);
     color: var(--or-text);
     font-family: inherit;
+}
+
+.or-field textarea {
+    min-height: 88px;
+    resize: none;
+}
+
+.or-delivery-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: end;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--or-line);
 }
 
 .or-sendback-panel {
@@ -2205,6 +2219,66 @@ body {
     gap: 10px;
 }
 
+.or-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: grid;
+    place-items: end center;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.or-modal-backdrop[hidden] {
+    display: none;
+}
+
+.or-modal {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid var(--or-line);
+    box-shadow: var(--or-shadow);
+    padding: 16px;
+}
+
+.po-preview-modal {
+    max-height: 88vh;
+    overflow: hidden;
+}
+
+.or-modal h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.or-modal p {
+    margin: 0 0 14px;
+    color: var(--or-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.or-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.or-inline-error {
+    display: none;
+    margin-top: 8px;
+    color: var(--or-danger);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.or-inline-error.show {
+    display: block;
+}
+
 .po-action-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2212,7 +2286,9 @@ body {
 }
 
 .po-action-grid form,
-.po-action-grid button {
+.po-action-grid button,
+.or-action-grid form,
+.or-action-grid button {
     width: 100%;
 }
 
@@ -2399,11 +2475,6 @@ body {
     color: var(--or-success);
 }
 
-.po-send-btn.viber {
-    background: #ede9fe;
-    color: #6d28d9;
-}
-
 .po-send-btn.email {
     background: var(--or-primary-soft);
     color: var(--or-primary);
@@ -2545,18 +2616,40 @@ body {
     color: var(--or-muted);
 }
 
-.po-message-preview textarea {
-    width: 100%;
-    min-height: 150px;
+.po-preview-subject {
     border: 1px solid var(--or-line);
     border-radius: 12px;
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.5;
     background: #ffffff;
-    resize: vertical;
-    font-family: inherit;
-    outline: none;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+
+.po-preview-subject small {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--or-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.po-preview-subject strong {
+    display: block;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.po-message-frame {
+    width: 100%;
+    height: 360px;
+    border: 1px solid var(--or-line);
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.po-preview-modal .po-message-frame {
+    height: min(52vh, 460px);
 }
 
 .po-message-preview-actions {
@@ -2590,6 +2683,71 @@ body {
 .po-dispatch-footer-actions button:disabled {
     cursor: not-allowed;
     opacity: .58;
+}
+
+.po-receive-mobile-modal {
+    max-height: 88vh;
+    overflow: hidden;
+}
+
+.po-receive-mobile-modal form {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(88vh - 32px);
+}
+
+.po-receive-list {
+    display: grid;
+    gap: 10px;
+    max-height: min(48vh, 380px);
+    overflow: auto;
+    padding-right: 2px;
+}
+
+.po-receive-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid var(--or-line);
+    border-radius: 14px;
+    background: var(--or-surface-soft);
+}
+
+.po-receive-row strong {
+    display: block;
+    color: var(--or-text);
+    font-size: 13px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.po-receive-row small {
+    display: block;
+    margin-top: 3px;
+    color: var(--or-muted);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.po-receive-input {
+    width: 100%;
+    border: 1px solid var(--or-line);
+    border-radius: 12px;
+    padding: 10px 8px;
+    background: #ffffff;
+    color: var(--or-text);
+    font-size: 13px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.po-receive-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 #poSendStatusForm {

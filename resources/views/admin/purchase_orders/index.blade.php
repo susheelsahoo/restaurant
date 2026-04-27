@@ -7,6 +7,7 @@
             'sent' => 'primary',
             default => 'secondary',
         };
+        $receiveModalId = $selectedPurchaseOrder ? 'admin-po-receive-' . $selectedPurchaseOrder->id : null;
     @endphp
 
     <div class="row g-5 g-xl-8 mb-8">
@@ -288,8 +289,30 @@
                         </div>
 
                         <div class="d-grid gap-3">
+                            @if($selectedPurchaseOrder->status === 'partial')
+                                <button
+                                    type="button"
+                                    class="btn btn-light-warning w-100"
+                                    data-po-receive-open="#{{ $receiveModalId }}"
+                                >
+                                    Update Receiving
+                                </button>
+                            @endif
+
                             @foreach($statuses as $status)
                                 @continue($status === $selectedPurchaseOrder->status)
+
+                                @if($status === 'partial')
+                                    <button
+                                        type="button"
+                                        class="btn btn-light-primary w-100"
+                                        data-po-receive-open="#{{ $receiveModalId }}"
+                                    >
+                                        Mark as Partial
+                                    </button>
+
+                                    @continue
+                                @endif
 
                                 <form method="POST" action="{{ route('admin.purchase-orders.status.update', $selectedPurchaseOrder->id) }}">
                                     @csrf
@@ -308,4 +331,12 @@
             </div>
         </div>
     </div>
+
+    @if($selectedPurchaseOrder)
+        @include('admin.purchase_orders.partials.receive-modal', [
+            'purchaseOrder' => $selectedPurchaseOrder,
+            'formAction' => route('admin.purchase-orders.receiving.update', $selectedPurchaseOrder->id),
+            'modalId' => $receiveModalId,
+        ])
+    @endif
 </x-default-layout>

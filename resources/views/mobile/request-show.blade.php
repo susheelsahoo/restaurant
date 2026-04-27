@@ -6,6 +6,8 @@
 
 @php
     $money = static fn (float $amount): string => $requestReview['currency'] . ' ' . number_format($amount, 2);
+    $managerComment = old('manager_comment', $requestReview['manager_comment'] ?? '');
+    $showSendbackPanel = old('status') === 'returned' || $errors->has('manager_comment');
 @endphp
 
 @section('mobile-content')
@@ -22,6 +24,18 @@
     </header>
 
     <main>
+        @if(session('success'))
+            <div class="or-result-message show success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="or-result-message show danger">{{ session('error') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="or-result-message show danger">{{ $errors->first() }}</div>
+        @endif
+
         <section class="or-card or-hero">
             <h2>{{ $requestReview['request_no'] }}</h2>
             <p>
@@ -165,6 +179,16 @@
             </section>
         @endforelse
 
+        @if(filled($requestReview['admin_comment'] ?? null))
+            <section class="or-card">
+                <div class="or-section-head">
+                    <h3>Admin Comment</h3>
+                    <span>Latest response</span>
+                </div>
+                <p class="or-empty-state">{!! nl2br(e($requestReview['admin_comment'])) !!}</p>
+            </section>
+        @endif
+
         <section class="or-card">
             <div class="or-section-head">
                 <h3>Manager Comment</h3>
@@ -172,16 +196,29 @@
             </div>
             <div class="or-field">
                 <label for="managerComment">Comment for purchasing or requester</label>
-                <textarea id="managerComment" placeholder="Write comment, change request, or approval note..."></textarea>
+                <textarea
+                    id="managerComment"
+                    name="manager_comment"
+                    form="sendbackStatusForm"
+                    placeholder="Write comment, change request, or approval note..."
+                >{{ $managerComment }}</textarea>
             </div>
 
-            <div id="sendbackPanel" class="or-sendback-panel">
+            <div id="sendbackPanel" class="or-sendback-panel {{ $showSendbackPanel ? 'show' : '' }}">
                 <div class="or-sendback-title">Send back with comment</div>
                 <p>Add a comment explaining what should be changed, then send this request back to the requester.</p>
-                <div class="or-sendback-actions">
+                <form
+                    id="sendbackStatusForm"
+                    class="or-sendback-actions"
+                    method="POST"
+                    action="{{ $requestReview['status_action_url'] }}"
+                >
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="returned">
                     <button class="or-mini-btn secondary" id="cancelSendbackBtn" type="button">Cancel</button>
-                    <button class="or-mini-btn primary" id="confirmSendbackBtn" type="button">Send Back</button>
-                </div>
+                    <button class="or-mini-btn primary" id="confirmSendbackBtn" type="submit">Send Back</button>
+                </form>
             </div>
 
             <div id="resultMessage" class="or-result-message"></div>
@@ -194,9 +231,45 @@
             <span>Total: <strong id="bottomTotal">{{ $money($requestReview['total_cost']) }}</strong></span>
         </div>
         <div class="or-action-grid">
-            <button class="or-btn decline" id="declineBtn" type="button">Decline</button>
-            <button class="or-btn modify" id="modifyBtn" type="button">Modify</button>
-            <button class="or-btn confirm" id="confirmBtn" type="button">Confirm</button>
+            <form method="POST" action="{{ $requestReview['status_action_url'] }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="rejected">
+                <input type="hidden" name="manager_comment" class="status-comment-input">
+                <button class="or-btn decline" id="declineBtn" type="submit">Decline</button>
+            </form>
+            <button class="or-btn modify" id="modifyBtn" type="button">Send Back</button>
+            <form method="POST" action="{{ $requestReview['status_action_url'] }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="approved">
+                <input type="hidden" name="manager_comment" class="status-comment-input">
+                <input type="hidden" name="needed_by" id="confirmNeededByInput">
+                <button class="or-btn confirm" id="confirmBtn" type="submit">Confirm</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="or-modal-backdrop" id="expiredDeliveryModal" hidden>
+        <div class="or-modal" role="dialog" aria-modal="true" aria-labelledby="expiredDeliveryTitle">
+            <h3 id="expiredDeliveryTitle">Delivery date is expired</h3>
+            <p>Please select a future delivery date before confirming this request.</p>
+            <form id="expiredDeliveryForm">
+                <div class="or-field">
+                    <label for="expiredDeliveryInput">New Delivery Date</label>
+                    <input
+                        id="expiredDeliveryInput"
+                        type="datetime-local"
+                        min="{{ $requestReview['min_needed_by_input'] }}"
+                        required
+                    >
+                </div>
+                <div id="expiredDeliveryError" class="or-inline-error"></div>
+                <div class="or-modal-actions">
+                    <button class="or-mini-btn secondary" id="cancelExpiredDeliveryBtn" type="button">Cancel</button>
+                    <button class="or-mini-btn primary" type="submit">Update &amp; Confirm</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -217,13 +290,23 @@ const statusPill = document.getElementById('statusPill');
 const managerComment = document.getElementById('managerComment');
 const modifyBtn = document.getElementById('modifyBtn');
 const confirmBtn = document.getElementById('confirmBtn');
+const confirmStatusForm = confirmBtn.closest('form');
+const confirmNeededByInput = document.getElementById('confirmNeededByInput');
 const declineBtn = document.getElementById('declineBtn');
 const sendbackPanel = document.getElementById('sendbackPanel');
 const cancelSendbackBtn = document.getElementById('cancelSendbackBtn');
 const confirmSendbackBtn = document.getElementById('confirmSendbackBtn');
 const resultMessage = document.getElementById('resultMessage');
+const expiredDeliveryModal = document.getElementById('expiredDeliveryModal');
+const expiredDeliveryForm = document.getElementById('expiredDeliveryForm');
+const expiredDeliveryInput = document.getElementById('expiredDeliveryInput');
+const expiredDeliveryError = document.getElementById('expiredDeliveryError');
+const cancelExpiredDeliveryBtn = document.getElementById('cancelExpiredDeliveryBtn');
 const currency = @json($requestReview['currency']);
 const requestTotal = @json($requestReview['total_cost']);
+const deliveryDateExpired = @json($requestReview['needed_by_is_past']);
+const minNeededByInput = @json($requestReview['min_needed_by_input']);
+let confirmWithUpdatedDelivery = false;
 
 function formatMoney(value) {
     return `${currency} ${Number(value || 0).toFixed(2)}`;
@@ -242,6 +325,24 @@ function clearResult() {
 function setStatus(text, variant) {
     statusPill.textContent = text;
     statusPill.className = `or-pill ${variant}`;
+}
+
+function showExpiredDeliveryModal() {
+    expiredDeliveryError.className = 'or-inline-error';
+    expiredDeliveryError.textContent = '';
+    expiredDeliveryInput.value = minNeededByInput;
+    expiredDeliveryModal.hidden = false;
+    expiredDeliveryInput.focus();
+}
+
+function hideExpiredDeliveryModal() {
+    expiredDeliveryModal.hidden = true;
+}
+
+function isFutureDateTime(value) {
+    const selectedTime = new Date(value).getTime();
+
+    return Number.isFinite(selectedTime) && selectedTime > Date.now();
 }
 
 function updateBudgetWarnings() {
@@ -327,39 +428,55 @@ cancelSendbackBtn.addEventListener('click', () => {
     setStatus(@json($requestReview['status_label']), @json($requestReview['status_tone']));
 });
 
-confirmSendbackBtn.addEventListener('click', () => {
+confirmSendbackBtn.addEventListener('click', (event) => {
     const comment = managerComment.value.trim();
 
     if (!comment) {
+        event.preventDefault();
         setResult('warning', 'Please add a manager comment before sending the request back.');
         return;
     }
-
-    sendbackPanel.classList.remove('show');
-    setStatus('Sent Back to Requester', 'orange');
-    setResult('warning', `Request sent back with comment: "${comment}"`);
 });
 
 confirmBtn.addEventListener('click', () => {
     sendbackPanel.classList.remove('show');
-    const state = updateBudgetWarnings();
+    updateBudgetWarnings();
+});
 
-    if (state.overBudgetCategories.length) {
-        setStatus('Confirmed with Budget Exception', 'red');
-        setResult('danger', `Request confirmed, but ${state.overBudgetCategories.join(', ')} is over budget.`);
-    } else if (state.warningCategories.length) {
-        setStatus('Confirmed with Warning', 'orange');
-        setResult('warning', `Request confirmed. ${state.warningCategories.join(', ')} needs budget attention.`);
-    } else {
-        setStatus('Confirmed', 'green');
-        setResult('success', 'Request confirmed successfully and sent to purchasing.');
+confirmStatusForm.addEventListener('submit', (event) => {
+    if (!deliveryDateExpired || confirmWithUpdatedDelivery) {
+        return;
     }
+
+    event.preventDefault();
+    showExpiredDeliveryModal();
 });
 
 declineBtn.addEventListener('click', () => {
     sendbackPanel.classList.remove('show');
-    setStatus('Declined', 'red');
-    setResult('danger', 'Request declined. Add a comment if you want to explain the reason to the requester.');
+});
+
+cancelExpiredDeliveryBtn.addEventListener('click', hideExpiredDeliveryModal);
+
+expiredDeliveryForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (!isFutureDateTime(expiredDeliveryInput.value)) {
+        expiredDeliveryError.className = 'or-inline-error show';
+        expiredDeliveryError.textContent = 'Please select a delivery date greater than today.';
+        return;
+    }
+
+    confirmNeededByInput.value = expiredDeliveryInput.value;
+    confirmWithUpdatedDelivery = true;
+    hideExpiredDeliveryModal();
+    confirmStatusForm.requestSubmit();
+});
+
+document.querySelectorAll('.status-comment-input').forEach((input) => {
+    input.form.addEventListener('submit', () => {
+        input.value = managerComment.value.trim();
+    });
 });
 
 updateBudgetWarnings();

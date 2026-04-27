@@ -8,6 +8,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Services\PurchaseOrderReceivingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -167,6 +168,25 @@ class PurchaseOrderController extends Controller
 
         return redirect()->back()
             ->with('success', 'Purchase order status updated successfully.');
+    }
+
+    public function receive(
+        Request $request,
+        PurchaseOrder $purchaseOrder,
+        PurchaseOrderReceivingService $receivingService
+    ) {
+        $validated = $request->validate([
+            'receipts' => 'required|array|min:1',
+            'receipts.*' => 'required|numeric|min:0',
+        ]);
+
+        $updatedPurchaseOrder = $receivingService->receive($purchaseOrder, $validated['receipts']);
+        $message = $updatedPurchaseOrder->status === 'completed'
+            ? 'All items received. Purchase order marked completed.'
+            : 'Received quantities updated. Purchase order marked partial.';
+
+        return redirect()->back()
+            ->with('success', $message);
     }
 
     public function destroy(PurchaseOrder $purchaseOrder)

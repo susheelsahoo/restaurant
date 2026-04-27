@@ -10,6 +10,8 @@
         $purchaseOrderReview['supplier_phone'],
         $purchaseOrderReview['supplier_email'],
     ])->filter(fn ($value) => $value !== '-')->values();
+    $hasReceiveErrors = $errors->has('receipts')
+        || collect($errors->getMessages())->keys()->contains(fn ($key) => str_starts_with($key, 'receipts.'));
 @endphp
 
 @section('mobile-content')
@@ -29,11 +31,14 @@
         @if(session('success'))
             <div class="or-result-message show success">{{ session('success') }}</div>
         @endif
+        @if($errors->any())
+            <div class="or-result-message show danger">{{ $errors->first() }}</div>
+        @endif
 
         <section class="or-card or-hero">
             <h2>Approved Order Ready for Dispatch</h2>
             <p>
-                Review {{ $purchaseOrderReview['po_number'] }} for {{ $purchaseOrderReview['supplier'] }} and send it by WhatsApp, Viber, or email.
+                Review {{ $purchaseOrderReview['po_number'] }} for {{ $purchaseOrderReview['supplier'] }} and send it by WhatsApp or email.
             </p>
             <div class="or-hero-grid">
                 <div class="or-hero-box">
@@ -144,7 +149,6 @@
 
             <div class="po-supplier-actions po-channel-actions">
                 <button class="po-send-btn whatsapp" data-channel="whatsapp" type="button">WhatsApp</button>
-                <button class="po-send-btn viber" data-channel="viber" type="button">Viber</button>
                 <button class="po-send-btn email" data-channel="email" type="button">Email</button>
             </div>
 
@@ -158,17 +162,6 @@
                 @endif
             </div>
 
-            <div class="po-message-preview">
-                <div class="po-message-preview-header">
-                    <strong>Supplier Message Preview</strong>
-                    <span class="po-preview-channel-label">Channel</span>
-                </div>
-                <textarea class="po-message-text" aria-label="Supplier message preview"></textarea>
-                <div class="po-message-preview-actions">
-                    <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
-                    <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
-                </div>
-            </div>
         </article>
 
         <section class="or-card">
@@ -238,8 +231,34 @@
                 <span>Quick update</span>
             </div>
             <div class="po-action-grid">
-                @foreach($purchaseOrderReview['statuses'] as $status)
+                @if($purchaseOrderReview['status'] === 'partial')
+                    <button class="or-mini-btn primary po-receive-open-btn" type="button">
+                        Update Receiving
+                    </button>
+                @endif
+
+                @foreach($purchaseOrderReview['status_actions'] as $status)
                     @continue($status === $purchaseOrderReview['status'])
+
+                    @if($status === 'sent')
+                        <button
+                            class="or-mini-btn secondary po-status-send-btn"
+                            type="button"
+                            @disabled(!$canSendOrder)
+                        >
+                            Mark Sent
+                        </button>
+
+                        @continue
+                    @endif
+
+                    @if($status === 'partial')
+                        <button class="or-mini-btn secondary po-receive-open-btn" type="button">
+                            Mark Partial
+                        </button>
+
+                        @continue
+                    @endif
 
                     <form method="POST" action="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/status') }}">
                         @csrf
@@ -271,6 +290,78 @@
             <button class="or-btn confirm" id="sendAllBtn" type="button" @disabled(!$canSendOrder)>Send Ready PO</button>
         </div>
     </div>
+
+    <div class="or-modal-backdrop" id="supplierPreviewModal" hidden>
+        <div class="or-modal po-preview-modal" role="dialog" aria-modal="true" aria-labelledby="supplierPreviewTitle">
+            <div class="po-message-preview-header">
+                <strong id="supplierPreviewTitle">Supplier Message Preview</strong>
+                <span class="po-preview-channel-label">Email</span>
+            </div>
+            <div class="po-preview-subject">
+                <small>Subject</small>
+                <strong class="po-preview-subject-text"></strong>
+            </div>
+            <iframe class="po-message-frame" title="Supplier email template preview" sandbox></iframe>
+            <div id="poPreviewError" class="or-inline-error"></div>
+            <div class="po-message-preview-actions">
+                <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
+                <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="or-modal-backdrop" id="poReceiveModal" hidden>
+        <div class="or-modal po-receive-mobile-modal" role="dialog" aria-modal="true" aria-labelledby="poReceiveTitle">
+            <form method="POST" action="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/receiving') }}" id="poReceiveForm">
+                @csrf
+                @method('PATCH')
+
+                <div class="po-message-preview-header">
+                    <strong id="poReceiveTitle">Receive PO Items</strong>
+                    <span>{{ $purchaseOrderReview['po_number'] }}</span>
+                </div>
+
+                <p>Update total received quantities for this PO. It will complete automatically when every line is fully received.</p>
+
+                <div class="po-receive-list">
+                    @forelse($purchaseOrderReview['items'] as $item)
+                        <label class="po-receive-row">
+                            <span>
+                                <strong>{{ $item['name'] }}</strong>
+                                <small>
+                                    Requested {{ $item['ordered_label'] }}
+                                    &middot;
+                                    Current {{ $item['received_label'] }}
+                                </small>
+                            </span>
+                            <input
+                                class="po-receive-input"
+                                type="number"
+                                name="receipts[{{ $item['id'] }}]"
+                                value="{{ old('receipts.' . $item['id'], number_format((float) $item['received_quantity'], 2, '.', '')) }}"
+                                min="0"
+                                max="{{ number_format((float) $item['ordered_quantity'], 2, '.', '') }}"
+                                step="0.01"
+                                data-po-receive-input
+                                data-ordered="{{ number_format((float) $item['ordered_quantity'], 2, '.', '') }}"
+                                aria-label="Received quantity for {{ $item['name'] }}"
+                            >
+                        </label>
+                    @empty
+                        <div class="or-empty-state">No purchase order items added yet.</div>
+                    @endforelse
+                </div>
+
+                <div id="poReceiveValidationError" class="or-inline-error"></div>
+
+                <div class="po-receive-actions">
+                    <button class="po-preview-btn secondary po-receive-close-btn" type="button">Cancel</button>
+                    <button class="po-preview-btn secondary" id="poReceiveAllBtn" type="button" @disabled($purchaseOrderReview['items_count'] === 0)>Receive All</button>
+                    <button class="po-preview-btn primary" type="submit" @disabled($purchaseOrderReview['items_count'] === 0)>Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -285,13 +376,31 @@ const sendAllBtn = document.getElementById('sendAllBtn');
 const exportBtn = document.getElementById('exportBtn');
 const sendStatusForm = document.getElementById('poSendStatusForm');
 const sendChannelInput = document.getElementById('poSendChannel');
+const statusSendButtons = Array.from(document.querySelectorAll('.po-status-send-btn'));
+const supplierPreviewModal = document.getElementById('supplierPreviewModal');
+const previewFrame = supplierPreviewModal.querySelector('.po-message-frame');
+const previewChannelLabel = supplierPreviewModal.querySelector('.po-preview-channel-label');
+const previewSubjectText = supplierPreviewModal.querySelector('.po-preview-subject-text');
+const previewError = document.getElementById('poPreviewError');
+const closePreviewBtn = supplierPreviewModal.querySelector('.po-close-preview-btn');
+const confirmSendBtn = supplierPreviewModal.querySelector('.po-confirm-send-btn');
+const receiveModal = document.getElementById('poReceiveModal');
+const receiveForm = document.getElementById('poReceiveForm');
+const receiveOpenButtons = Array.from(document.querySelectorAll('.po-receive-open-btn'));
+const receiveCloseBtn = receiveModal.querySelector('.po-receive-close-btn');
+const receiveAllBtn = document.getElementById('poReceiveAllBtn');
+const receiveValidationError = document.getElementById('poReceiveValidationError');
 let activePreviewCard = null;
 let pendingChannel = 'email';
+const emailPreviewSubject = @json($purchaseOrderReview['email_preview_subject']);
+const emailPreviewHtml = @json($purchaseOrderReview['email_preview_html']);
+const supplierMessageText = @json($purchaseOrderReview['supplier_message_text']);
+const supplierPhone = @json($purchaseOrderReview['supplier_phone']);
+const shouldOpenReceiveModal = @json($hasReceiveErrors);
 
 function channelLabel(channel) {
     const labels = {
         whatsapp: 'WhatsApp',
-        viber: 'Viber',
         email: 'Email',
     };
 
@@ -318,48 +427,6 @@ function updateCounts() {
     alreadySentCount.textContent = String(sent);
 }
 
-function buildSupplierMessage(card, channel) {
-    const supplier = card.querySelector('.po-supplier-name')?.textContent?.trim() || 'Supplier';
-    const orderBoxes = card.querySelectorAll('.po-order-meta-box strong');
-    const poNumber = orderBoxes[0]?.textContent?.trim() || 'PO Number';
-    const deliveryDate = orderBoxes[1]?.textContent?.trim() || 'Delivery Date';
-    const parts = [
-        `Hello ${supplier},`,
-        '',
-        'Please find our order details below:',
-        '',
-        `PO Number: ${poNumber}`,
-        `Delivery Date: ${deliveryDate}`,
-        '',
-    ];
-
-    card.querySelectorAll('.po-category-block').forEach((block) => {
-        const category = block.querySelector('.po-category-title')?.textContent?.trim() || 'Category';
-        parts.push(`[${category}]`);
-
-        block.querySelectorAll('.po-item-row').forEach((row) => {
-            const name = row.querySelector('.po-item-name')?.textContent?.trim() || '';
-            const meta = row.querySelector('.po-item-meta')?.textContent?.trim() || '';
-            const price = row.querySelector('.po-item-right')?.textContent?.trim() || '';
-
-            parts.push(`- ${name} - ${meta} - ${price}`);
-        });
-
-        parts.push('');
-    });
-
-    parts.push('Please confirm availability and delivery.');
-    parts.push('');
-    parts.push('Thank you.');
-    parts.push('PurchaseFlow Restaurant');
-
-    if (channel === 'email') {
-        return `Subject: Purchase Order ${poNumber} - Delivery ${deliveryDate}\n\n${parts.join('\n')}`;
-    }
-
-    return parts.join('\n');
-}
-
 function openPreview(card, channel) {
     if (card.dataset.status === 'unassigned') {
         setLog(card, 'warning', 'Please assign a supplier before sending this order.');
@@ -369,21 +436,12 @@ function openPreview(card, channel) {
     activePreviewCard = card;
     pendingChannel = channel;
 
-    const preview = card.querySelector('.po-message-preview');
-    const textarea = card.querySelector('.po-message-text');
-    const label = card.querySelector('.po-preview-channel-label');
-
-    if (label) {
-        label.textContent = channelLabel(channel);
-    }
-
-    if (textarea) {
-        textarea.value = buildSupplierMessage(card, channel);
-    }
-
-    if (preview) {
-        preview.classList.add('show');
-    }
+    previewError.className = 'or-inline-error';
+    previewError.textContent = '';
+    previewChannelLabel.textContent = channelLabel(channel);
+    previewSubjectText.textContent = emailPreviewSubject;
+    previewFrame.srcdoc = emailPreviewHtml;
+    supplierPreviewModal.hidden = false;
 }
 
 filterChips.forEach((chip) => {
@@ -405,29 +463,115 @@ supplierCards.forEach((card) => {
             openPreview(card, button.dataset.channel || 'email');
         });
     });
+});
 
-    const preview = card.querySelector('.po-message-preview');
-    const closePreviewBtn = card.querySelector('.po-close-preview-btn');
-    const confirmSendBtn = card.querySelector('.po-confirm-send-btn');
+statusSendButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        const readyCard = supplierCards.find((card) => card.dataset.status === 'ready');
+        const fallbackCard = supplierCards[0];
 
-    if (closePreviewBtn) {
-        closePreviewBtn.addEventListener('click', () => {
-            preview?.classList.remove('show');
+        if (readyCard) {
+            openPreview(readyCard, 'email');
+            return;
+        }
+
+        if (fallbackCard?.dataset.status === 'unassigned') {
+            setLog(fallbackCard, 'warning', 'Supplier must be assigned before marking this order sent.');
+            return;
+        }
+
+        if (fallbackCard) {
+            openPreview(fallbackCard, 'email');
+        }
+    });
+});
+
+function closePreview() {
+    supplierPreviewModal.hidden = true;
+}
+
+function normalizedWhatsAppPhone(phone) {
+    return String(phone || '').replace(/\D/g, '');
+}
+
+closePreviewBtn.addEventListener('click', closePreview);
+
+supplierPreviewModal.addEventListener('click', (event) => {
+    if (event.target === supplierPreviewModal) {
+        closePreview();
+    }
+});
+
+function openReceiveModal() {
+    receiveValidationError.className = 'or-inline-error';
+    receiveValidationError.textContent = '';
+    receiveModal.hidden = false;
+}
+
+function closeReceiveModal() {
+    receiveModal.hidden = true;
+}
+
+receiveOpenButtons.forEach((button) => {
+    button.addEventListener('click', openReceiveModal);
+});
+
+receiveCloseBtn.addEventListener('click', closeReceiveModal);
+
+receiveModal.addEventListener('click', (event) => {
+    if (event.target === receiveModal) {
+        closeReceiveModal();
+    }
+});
+
+if (receiveAllBtn) {
+    receiveAllBtn.addEventListener('click', () => {
+        receiveForm.querySelectorAll('[data-po-receive-input]').forEach((input) => {
+            input.value = input.dataset.ordered || '0.00';
         });
+    });
+}
+
+receiveForm.addEventListener('submit', (event) => {
+    const invalidInput = Array.from(receiveForm.querySelectorAll('[data-po-receive-input]')).find((input) => {
+        const receivedQuantity = Number(input.value || 0);
+        const orderedQuantity = Number(input.dataset.ordered || 0);
+
+        return receivedQuantity < 0 || receivedQuantity > orderedQuantity;
+    });
+
+    if (!invalidInput) {
+        return;
     }
 
-    if (confirmSendBtn) {
-        confirmSendBtn.addEventListener('click', () => {
-            if (!activePreviewCard) {
-                return;
-            }
+    event.preventDefault();
+    receiveValidationError.className = 'or-inline-error show';
+    receiveValidationError.textContent = 'Received quantity cannot be negative or greater than requested quantity.';
+    invalidInput.focus();
+});
 
-            sendChannelInput.value = pendingChannel;
-            confirmSendBtn.disabled = true;
-            confirmSendBtn.textContent = 'Sending...';
-            sendStatusForm.submit();
-        });
+confirmSendBtn.addEventListener('click', () => {
+    if (!activePreviewCard) {
+        return;
     }
+
+    if (pendingChannel === 'whatsapp') {
+        const phone = normalizedWhatsAppPhone(supplierPhone);
+
+        if (!phone) {
+            previewError.className = 'or-inline-error show';
+            previewError.textContent = 'Supplier phone number is not available for WhatsApp.';
+            return;
+        }
+
+        const message = `${emailPreviewSubject}\n\n${supplierMessageText}`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+    }
+
+    sendChannelInput.value = pendingChannel;
+    confirmSendBtn.disabled = true;
+    confirmSendBtn.textContent = 'Sending...';
+    sendStatusForm.submit();
 });
 
 if (exportBtn) {
@@ -458,5 +602,9 @@ if (sendAllBtn) {
 }
 
 updateCounts();
+
+if (shouldOpenReceiveModal) {
+    openReceiveModal();
+}
 </script>
 @endpush

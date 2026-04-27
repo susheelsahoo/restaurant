@@ -7,6 +7,7 @@
             'sent' => 'primary',
             default => 'secondary',
         };
+        $receiveModalId = 'admin-po-receive-' . $purchaseOrder->id;
     @endphp
 
     <div class="row g-5 g-xl-8">
@@ -126,8 +127,30 @@
                     <div class="separator separator-dashed my-7"></div>
 
                     <div class="d-grid gap-3 mb-6">
+                        @if($purchaseOrder->status === 'partial')
+                            <button
+                                type="button"
+                                class="btn btn-light-warning w-100"
+                                data-po-receive-open="#{{ $receiveModalId }}"
+                            >
+                                Update Receiving
+                            </button>
+                        @endif
+
                         @foreach(['sent', 'confirmed', 'partial', 'completed', 'delayed'] as $status)
                             @continue($status === $purchaseOrder->status)
+
+                            @if($status === 'partial')
+                                <button
+                                    type="button"
+                                    class="btn btn-light-primary w-100"
+                                    data-po-receive-open="#{{ $receiveModalId }}"
+                                >
+                                    Mark as Partial
+                                </button>
+
+                                @continue
+                            @endif
 
                             <form method="POST" action="{{ route('admin.purchase-orders.status.update', $purchaseOrder->id) }}">
                                 @csrf
@@ -146,4 +169,10 @@
             </div>
         </div>
     </div>
+
+    @include('admin.purchase_orders.partials.receive-modal', [
+        'purchaseOrder' => $purchaseOrder,
+        'formAction' => route('admin.purchase-orders.receiving.update', $purchaseOrder->id),
+        'modalId' => $receiveModalId,
+    ])
 </x-default-layout>

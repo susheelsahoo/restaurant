@@ -19,6 +19,8 @@ class PurchaseRequest extends Model
         'department_id',
         'priority',
         'status',
+        'manager_comment',
+        'admin_comment',
         'needed_by',
         'created_at',
     ];

@@ -1,8 +1,7 @@
-this one :
-/Applications/XAMPP/xamppfiles/htdocs/restaurant/resources/views/mobile/purchase-order.blade.php
+when i mark Partial in admin and mobile it will show popup 
+in popup show total item list request in po and recivied item funtionlity submit and update the staus
+if all item recive then mark complete
 
-i want like :
-/Applications/XAMPP/xamppfiles/htdocs/restaurant/public/supplier_order_dispatch_list (1).html
 
 
 
@@ -216,6 +215,13 @@ LIMIT 5;
 
 CREATE INDEX idx_request_user ON requests(user_id);
 CREATE INDEX idx_po_supplier ON purchase_orders(supplier_id);
+
+ALTER TABLE requests 
+ADD COLUMN manager_comment TEXT NULL AFTER status,
+ADD COLUMN admin_comment TEXT NULL AFTER manager_comment;
+
+
+
 
 
 

@@ -116,19 +116,46 @@ class RequestController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->statuses()),
+            'manager_comment' => 'nullable|string|max:2000',
+            'needed_by' => 'nullable|date|after:now',
+        ], [
+            'needed_by.after' => 'Delivery date must be in the future before confirming.',
         ]);
 
-        if ($validated['status'] === 'approved' && $purchaseRequest->needed_by && $purchaseRequest->needed_by->isPast()) {
+        $managerComment = trim((string) ($validated['manager_comment'] ?? ''));
+        $newNeededBy = filled($validated['needed_by'] ?? null)
+            ? Carbon::parse($validated['needed_by'])
+            : null;
+
+        if ($validated['status'] === 'returned' && $managerComment === '') {
+            throw ValidationException::withMessages([
+                'manager_comment' => 'Please add a manager comment before sending the request back.',
+            ]);
+        }
+
+        $validated['manager_comment'] = $managerComment !== '' ? $managerComment : null;
+
+        if ($validated['status'] === 'approved' && $purchaseRequest->needed_by && $purchaseRequest->needed_by->isPast() && !$newNeededBy) {
             return redirect()->back()
                 ->with('error', 'Cannot approve requests with needed by dates in the past.');
         }
 
         $oldStatus = $purchaseRequest->status;
 
-        DB::transaction(function () use ($purchaseRequest, $validated, $oldStatus) {
-            $purchaseRequest->update([
+        DB::transaction(function () use ($purchaseRequest, $validated, $oldStatus, $newNeededBy) {
+            $updateData = [
                 'status' => $validated['status'],
-            ]);
+            ];
+
+            if ($newNeededBy) {
+                $updateData['needed_by'] = $newNeededBy;
+            }
+
+            if (array_key_exists('manager_comment', $validated)) {
+                $updateData['manager_comment'] = $validated['manager_comment'];
+            }
+
+            $purchaseRequest->update($updateData);
 
             if ($oldStatus !== 'approved' && $validated['status'] === 'approved') {
                 $this->createPurchaseOrdersFromRequest($purchaseRequest);
@@ -137,6 +164,22 @@ class RequestController extends Controller
 
         return redirect()->back()
             ->with('success', 'Request status updated successfully.');
+    }
+
+    public function updateDeliveryDate(Request $request, PurchaseRequest $purchaseRequest)
+    {
+        $validated = $request->validate([
+            'needed_by' => 'required|date|after:now',
+        ], [
+            'needed_by.after' => 'Delivery date must be in the future before confirming.',
+        ]);
+
+        $purchaseRequest->update([
+            'needed_by' => Carbon::parse($validated['needed_by']),
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Delivery date updated successfully.');
     }
 
     private function requestReviewData(PurchaseRequest $purchaseRequest): array
@@ -226,6 +269,7 @@ class RequestController extends Controller
         $purchaseOrder = $purchaseRequest->purchaseOrders->first();
 
         return [
+            'id' => $purchaseRequest->id,
             'request_no' => $purchaseRequest->request_no,
             'po_number' => $purchaseOrder?->po_number ?: 'Pending PO',
             'requester' => $purchaseRequest->requester?->name ?: 'Unknown requester',
@@ -234,7 +278,14 @@ class RequestController extends Controller
             'status' => $purchaseRequest->status,
             'status_label' => $statusMeta['label'],
             'status_tone' => $statusMeta['tone'],
+            'manager_comment' => $purchaseRequest->manager_comment,
+            'admin_comment' => $purchaseRequest->admin_comment,
+            'status_action_url' => url('/mobile/request-detail/' . $purchaseRequest->id . '/status'),
+            'delivery_update_url' => url('/mobile/request-detail/' . $purchaseRequest->id . '/delivery-date'),
             'needed_by' => $purchaseRequest->needed_by?->format('M d, Y H:i') ?: '-',
+            'needed_by_input' => $purchaseRequest->needed_by?->format('Y-m-d\TH:i') ?: '',
+            'needed_by_is_past' => (bool) $purchaseRequest->needed_by?->isPast(),
+            'min_needed_by_input' => now()->addMinute()->format('Y-m-d\TH:i'),
             'needed_by_short' => $purchaseRequest->needed_by?->format('M d') ?: '-',
             'created_at' => $purchaseRequest->created_at?->format('M d, Y H:i') ?: '-',
             'items_count' => $items->count(),

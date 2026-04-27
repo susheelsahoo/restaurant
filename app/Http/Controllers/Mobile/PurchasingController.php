@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Mobile\Concerns\FormatsMobileValues;
 use App\Mail\PurchaseOrderSupplierMail;
 use App\Models\PurchaseOrder;
+use App\Services\PurchaseOrderReceivingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -43,7 +44,7 @@ class PurchasingController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->purchaseOrderStatuses()),
-            'channel' => 'nullable|in:email,whatsapp,viber',
+            'channel' => 'nullable|in:email,whatsapp',
         ]);
 
         $oldStatus = $purchaseOrder->status;
@@ -65,6 +66,25 @@ class PurchasingController extends Controller
 
         return redirect('/mobile/purchase-order/' . $purchaseOrder->id)
             ->with('success', 'Purchase order status updated successfully.');
+    }
+
+    public function receive(
+        Request $request,
+        PurchaseOrder $purchaseOrder,
+        PurchaseOrderReceivingService $receivingService
+    ) {
+        $validated = $request->validate([
+            'receipts' => 'required|array|min:1',
+            'receipts.*' => 'required|numeric|min:0',
+        ]);
+
+        $updatedPurchaseOrder = $receivingService->receive($purchaseOrder, $validated['receipts']);
+        $message = $updatedPurchaseOrder->status === 'completed'
+            ? 'All items received. Purchase order marked completed.'
+            : 'Received quantities updated. Purchase order marked partial.';
+
+        return redirect('/mobile/purchase-order/' . $purchaseOrder->id)
+            ->with('success', $message);
     }
 
     private function purchaseOrderListData(?int $limit = null)
@@ -123,8 +143,12 @@ class PurchasingController extends Controller
                 $unit = $item->product?->unit ?: 'unit';
 
                 return [
+                    'id' => $item->id,
                     'name' => $item->product?->name ?: 'Unknown product',
                     'category' => $item->product?->category?->name ?: 'Uncategorized',
+                    'ordered_quantity' => $quantity,
+                    'received_quantity' => $receivedQuantity,
+                    'unit' => $unit,
                     'ordered_label' => $this->formatQuantity($quantity) . ' ' . $unit,
                     'received_label' => $this->formatQuantity($receivedQuantity) . ' ' . $unit,
                     'unit_price_label' => $this->formatMoney($unitPrice),
@@ -165,6 +189,7 @@ class PurchasingController extends Controller
             'delayed' => ['label' => 'Delayed', 'tone' => 'red'],
             default => ['label' => 'Ready to Send', 'tone' => 'green'],
         };
+        $emailPreview = (new PurchaseOrderSupplierMail($purchaseOrder))->renderedContent();
 
         return [
             'id' => $purchaseOrder->id,
@@ -197,6 +222,10 @@ class PurchasingController extends Controller
             'sent_count' => $dispatchStatus === 'sent' ? 1 : 0,
             'supplier_needed_count' => $dispatchStatus === 'unassigned' ? 1 : 0,
             'statuses' => $this->purchaseOrderStatuses(),
+            'status_actions' => ['sent', 'confirmed', 'partial', 'completed', 'delayed'],
+            'email_preview_subject' => $emailPreview['subject'],
+            'email_preview_html' => $emailPreview['html'],
+            'supplier_message_text' => $emailPreview['text'],
         ];
     }
 

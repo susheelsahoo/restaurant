@@ -14,7 +14,7 @@ class PurchaseOrderSupplierMail extends Mailable
     use Queueable, SerializesModels;
 
     public PurchaseOrder $purchaseOrder;
-    public EmailTemplate $template;
+    public ?EmailTemplate $template;
 
     /**
      * Create a new message instance.
@@ -30,16 +30,32 @@ class PurchaseOrderSupplierMail extends Mailable
      */
     public function build()
     {
+        $content = $this->renderedContent();
+
+        return $this
+            ->subject($content['subject'])
+            ->html($content['html']);
+    }
+
+    public function renderedContent(): array
+    {
         $this->purchaseOrder->loadMissing(['supplier', 'buyer', 'items.product', 'request']);
 
         $data = $this->templateData();
 
-        $renderedSubject = $this->renderBladeString($this->template->subject, $data);
-        $renderedMessage = $this->renderBladeString($this->template->message, $data);
+        $html = $this->renderBladeString(
+            $this->template?->message ?: $this->fallbackMessageTemplate(),
+            $data
+        );
 
-        return $this
-            ->subject($renderedSubject)
-            ->html($renderedMessage);
+        return [
+            'subject' => $this->renderBladeString(
+                $this->template?->subject ?: 'Purchase Order {{ $po_number }}',
+                $data
+            ),
+            'html' => $html,
+            'text' => $this->htmlToText($html),
+        ];
     }
 
     private function renderBladeString(?string $value, array $data): string
@@ -64,7 +80,7 @@ class PurchaseOrderSupplierMail extends Mailable
             return [
                 'name' => $item->product->name ?? 'Unknown Product',
                 'quantity' => $item->quantity,
-                'unit' => $item->unit ?? 'pcs',
+                'unit' => $item->product?->unit ?? 'pcs',
                 'unit_price' => number_format($item->unit_price, 2),
                 'line_total' => number_format($item->quantity * $item->unit_price, 2),
             ];
@@ -86,5 +102,26 @@ class PurchaseOrderSupplierMail extends Mailable
             'items' => $items,
             'special_instructions' => $po->notes ?? null,
         ];
+    }
+
+    private function fallbackMessageTemplate(): string
+    {
+        return <<<'HTML'
+            <p>Dear {{ $supplier_name }},</p>
+            <p>Please find purchase order {{ $po_number }} for expected delivery on {{ $expected_delivery }}.</p>
+            <p>Total Amount: {{ $total_amount }}</p>
+            <p>Please confirm receipt of this order.</p>
+            <p>Best regards,<br>{{ $location }}</p>
+        HTML;
+    }
+
+    private function htmlToText(string $html): string
+    {
+        $withBreaks = preg_replace('/<(br|\/p|\/tr|\/div|\/h[1-6])\b[^>]*>/i', "\n", $html) ?? $html;
+        $text = html_entity_decode(strip_tags($withBreaks), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace("/[ \t]+/", ' ', $text) ?? $text;
+        $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? $text;
+
+        return trim($text);
     }
 }

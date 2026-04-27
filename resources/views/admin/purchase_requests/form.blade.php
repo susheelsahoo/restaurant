@@ -115,6 +115,30 @@
                             </div>
                         </div>
 
+                        @if(isset($purchaseRequest) && filled($purchaseRequest->manager_comment))
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-semibold fs-6">Manager Comment</label>
+                                <div class="col-lg-8">
+                                    <div class="alert alert-warning mb-0">
+                                        {!! nl2br(e($purchaseRequest->manager_comment)) !!}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="row mb-6">
+                            <label class="col-lg-4 col-form-label fw-semibold fs-6">Admin Comment</label>
+                            <div class="col-lg-8">
+                                <textarea
+                                    name="admin_comment"
+                                    class="form-control form-control-lg form-control-solid"
+                                    rows="4"
+                                    placeholder="Write admin response or action note..."
+                                >{{ old('admin_comment', $purchaseRequest->admin_comment ?? '') }}</textarea>
+                                <div class="text-muted fs-7 mt-2">Use this when you adjust quantities, suppliers, or request status.</div>
+                            </div>
+                        </div>
+
                         <div class="separator separator-dashed my-10"></div>
 
                         <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-4">

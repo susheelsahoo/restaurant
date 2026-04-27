@@ -54,6 +54,20 @@
                         </div>
                     </div>
 
+                    @if(filled($purchaseRequest->manager_comment))
+                        <div class="alert alert-warning d-flex flex-column gap-2 mb-8">
+                            <div class="fw-bold">Manager Comment</div>
+                            <div>{!! nl2br(e($purchaseRequest->manager_comment)) !!}</div>
+                        </div>
+                    @endif
+
+                    @if(filled($purchaseRequest->admin_comment))
+                        <div class="alert alert-primary d-flex flex-column gap-2 mb-8">
+                            <div class="fw-bold">Admin Comment</div>
+                            <div>{!! nl2br(e($purchaseRequest->admin_comment)) !!}</div>
+                        </div>
+                    @endif
+
                     <div class="table-responsive">
                         <table class="table table-row-bordered align-middle">
                             <thead>
@@ -129,6 +143,17 @@
 
                     <div class="separator separator-dashed my-7"></div>
 
+                    <div class="mb-6">
+                        <label for="adminCommentDetail" class="form-label fw-semibold">Admin Comment</label>
+                        <textarea
+                            id="adminCommentDetail"
+                            class="form-control form-control-solid"
+                            rows="4"
+                            placeholder="Write admin response or action note..."
+                        >{{ old('admin_comment', $purchaseRequest->admin_comment) }}</textarea>
+                        <div class="text-muted fs-7 mt-2">This note is saved with the next status action.</div>
+                    </div>
+
                     <div class="d-grid gap-3 mb-6">
                         @foreach(['submitted', 'approved', 'rejected', 'returned', 'ordered'] as $status)
                             @continue($status === $purchaseRequest->status)
@@ -137,6 +162,7 @@
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="status" value="{{ $status }}">
+                                <input type="hidden" name="admin_comment" class="admin-comment-input">
                                 <button class="btn btn-light-primary w-100">Mark as {{ ucfirst($status) }}</button>
                             </form>
                         @endforeach
@@ -150,4 +176,14 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('.admin-comment-input').forEach((input) => {
+                input.form.addEventListener('submit', () => {
+                    input.value = document.getElementById('adminCommentDetail')?.value.trim() || '';
+                });
+            });
+        </script>
+    @endpush
 </x-default-layout>
