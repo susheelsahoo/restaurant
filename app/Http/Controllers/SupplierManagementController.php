@@ -16,7 +16,7 @@ class SupplierManagementController extends Controller
             ->groupBy('supplier_id');
 
         $suppliersQuery = Supplier::query()
-            ->withCount('products')
+            ->withCount(['productCategories as products_count'])
             ->leftJoinSub($openPoSubquery, 'open_po_stats', function ($join) {
                 $join->on('open_po_stats.supplier_id', '=', 'suppliers.id');
             })
@@ -60,7 +60,7 @@ class SupplierManagementController extends Controller
             'total' => Supplier::count(),
             'active' => Supplier::where('status', 'active')->count(),
             'review' => Supplier::where('status', 'review')->count(),
-            'linked_products' => DB::table('product_suppliers')->count(),
+            'linked_products' => DB::table('category_suppliers')->count(),
         ];
 
         $statuses = Supplier::query()
@@ -108,9 +108,9 @@ class SupplierManagementController extends Controller
 
     public function destroy(Supplier $supplier)
     {
-        if ($supplier->products()->exists() || $supplier->purchaseOrders()->exists()) {
+        if ($supplier->productCategories()->exists() || $supplier->purchaseOrders()->exists()) {
             return redirect()->route('admin.purchase-orders.suppliers')
-                ->with('error', 'This supplier is linked to products or purchase orders and cannot be deleted.');
+                ->with('error', 'This supplier is linked to product categories or purchase orders and cannot be deleted.');
         }
 
         $supplier->delete();
@@ -144,8 +144,8 @@ class SupplierManagementController extends Controller
             ->whereIn('status', ['draft', 'sent', 'confirmed', 'partial', 'delayed']);
 
         return Supplier::query()
-            ->with(['products:id,name,category_id', 'products.category:id,name'])
-            ->withCount('products')
+            ->with(['productCategories:id,name'])
+            ->withCount(['productCategories as products_count'])
             ->addSelect([
                 'open_purchase_orders_count' => $openPoSubquery,
             ])

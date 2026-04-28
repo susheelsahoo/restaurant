@@ -25,6 +25,14 @@
     </header>
 
     <main class="content">
+        @if(session('success'))
+            <div class="or-result-message show success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="or-result-message show danger">{{ session('error') }}</div>
+        @endif
+
         <section class="card templates-card">
             <div class="templates-header">
                 <h3>All Purchase Orders</h3>

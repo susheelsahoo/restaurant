@@ -37,4 +37,10 @@ class ProductCategory extends Model
     {
         return $this->hasMany(Product::class, 'category_id');
     }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'category_suppliers', 'category_id', 'supplier_id')
+            ->orderBy('suppliers.name');
+    }
 }

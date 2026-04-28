@@ -1,9 +1,10 @@
-when i mark Partial in admin and mobile it will show popup 
-in popup show total item list request in po and recivied item funtionlity submit and update the staus
-if all item recive then mark complete
-
-
-
+Right now when request is approve with multiple category then it will create multiple PO for each category. 
+I want to create only one PO with sub PO like 
+main PO: PO-2026-0107
+- sub PO 1: PO-2026-0107-A
+- sub PO 2: PO-2026-0107-B
+- sub PO 3: PO-2026-0107-C
+for html design you can review this html:/Applications/XAMPP/xamppfiles/htdocs/restaurant/public/supplier_order_dispatch_list.html
 
 If you want smoother UX:
 
@@ -139,6 +140,19 @@ CREATE TABLE requests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS category_suppliers (
+    category_id BIGINT UNSIGNED NOT NULL,
+    supplier_id BIGINT UNSIGNED NOT NULL,
+    UNIQUE KEY category_suppliers_unique (category_id, supplier_id),
+    KEY category_suppliers_supplier_idx (supplier_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO category_suppliers (category_id, supplier_id)
+SELECT DISTINCT p.category_id, ps.supplier_id
+FROM products p
+INNER JOIN product_suppliers ps ON ps.product_id = p.id
+WHERE p.category_id IS NOT NULL
+  AND ps.supplier_id IS NOT NULL;
 
 
 CREATE TABLE request_items (
@@ -157,16 +171,26 @@ CREATE TABLE approvals (
     comment TEXT,
     updated_at TIMESTAMP
 );
+
 CREATE TABLE purchase_orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     po_number VARCHAR(50) UNIQUE,
+
+    parent_po_id BIGINT UNSIGNED NULL,
+    po_suffix VARCHAR(10) NULL,
+
     request_id INT,
     supplier_id INT,
     buyer_id INT,
+
     status ENUM('draft','sent','confirmed','partial','completed','delayed'),
+
     order_date DATE,
-    expected_delivery DATE
+    expected_delivery DATE,
+
+    INDEX purchase_orders_parent_po_id_idx (parent_po_id)
 );
+
 CREATE TABLE po_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     po_id INT,

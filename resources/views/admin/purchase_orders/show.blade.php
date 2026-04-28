@@ -8,6 +8,11 @@
             default => 'secondary',
         };
         $receiveModalId = 'admin-po-receive-' . $purchaseOrder->id;
+        $subOrders = $purchaseOrder->subPurchaseOrders ?? collect();
+        $hasSubOrders = $subOrders->isNotEmpty();
+        $supplierNames = $hasSubOrders
+            ? $subOrders->pluck('supplier.name')->filter()->unique()->values()
+            : collect([$purchaseOrder->supplier->name ?? null])->filter();
     @endphp
 
     <div class="row g-5 g-xl-8">
@@ -31,7 +36,7 @@
                         <div class="col-md-3">
                             <div class="border rounded p-4 h-100">
                                 <div class="text-muted fs-7">Supplier</div>
-                                <div class="fw-bold fs-5">{{ $purchaseOrder->supplier->name ?? '-' }}</div>
+                                <div class="fw-bold fs-5">{{ $supplierNames->isNotEmpty() ? $supplierNames->join(', ') : '-' }}</div>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -64,35 +69,63 @@
                         <table class="table table-row-bordered align-middle">
                             <thead>
                                 <tr class="fw-bold text-muted">
-                                    <th>Item</th>
+                                    <th>{{ $hasSubOrders ? 'Sub PO' : 'Item' }}</th>
                                     <th>Category</th>
-                                    <th>Ordered</th>
-                                    <th>Received</th>
-                                    <th>Outstanding</th>
-                                    <th>Unit Price</th>
+                                    <th>{{ $hasSubOrders ? 'Supplier' : 'Ordered' }}</th>
+                                    <th>{{ $hasSubOrders ? 'Items' : 'Received' }}</th>
+                                    <th>{{ $hasSubOrders ? 'Status' : 'Outstanding' }}</th>
+                                    <th>{{ $hasSubOrders ? 'Expected' : 'Unit Price' }}</th>
                                     <th>Line Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($purchaseOrder->items as $item)
-                                    @php
-                                        $ordered = (float) $item->quantity;
-                                        $received = (float) $item->received_qty;
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $item->product->name ?? '-' }}</td>
-                                        <td>{{ $item->product->category->name ?? 'Uncategorized' }}</td>
-                                        <td>{{ number_format($ordered, 2) }}</td>
-                                        <td>{{ number_format($received, 2) }}</td>
-                                        <td>{{ number_format(max($ordered - $received, 0), 2) }}</td>
-                                        <td>{{ config('app.price_sign') }} {{ number_format((float) $item->unit_price, 2) }}</td>
-                                        <td>{{ config('app.price_sign') }} {{ number_format($ordered * (float) $item->unit_price, 2) }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center py-8">No PO items added yet.</td>
-                                    </tr>
-                                @endforelse
+                                @if($hasSubOrders)
+                                    @foreach($subOrders as $subOrder)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('admin.purchase-orders.show', $subOrder->id) }}" class="fw-bold text-hover-primary">
+                                                    {{ $subOrder->po_number }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $subOrder->category_summary }}</td>
+                                            <td>{{ $subOrder->supplier->name ?? '-' }}</td>
+                                            <td>{{ $subOrder->items->count() }}</td>
+                                            <td>
+                                                <span class="badge badge-light-{{ match ($subOrder->status) {
+                                                    'confirmed', 'completed' => 'success',
+                                                    'partial' => 'warning',
+                                                    'delayed' => 'danger',
+                                                    'sent' => 'primary',
+                                                    default => 'secondary',
+                                                } }}">
+                                                    {{ ucfirst($subOrder->status) }}
+                                                </span>
+                                            </td>
+                                            <td>{{ optional($subOrder->expected_delivery)->format('d M Y') ?: '-' }}</td>
+                                            <td>{{ config('app.price_sign') }} {{ number_format($subOrder->total_amount, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    @forelse($purchaseOrder->items as $item)
+                                        @php
+                                            $ordered = (float) $item->quantity;
+                                            $received = (float) $item->received_qty;
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $item->product->name ?? '-' }}</td>
+                                            <td>{{ $item->product->category->name ?? 'Uncategorized' }}</td>
+                                            <td>{{ number_format($ordered, 2) }}</td>
+                                            <td>{{ number_format($received, 2) }}</td>
+                                            <td>{{ number_format(max($ordered - $received, 0), 2) }}</td>
+                                            <td>{{ config('app.price_sign') }} {{ number_format((float) $item->unit_price, 2) }}</td>
+                                            <td>{{ config('app.price_sign') }} {{ number_format($ordered * (float) $item->unit_price, 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center py-8">No PO items added yet.</td>
+                                        </tr>
+                                    @endforelse
+                                @endif
                             </tbody>
                             <tfoot>
                                 <tr>
@@ -128,14 +161,18 @@
                     </div>
                     <div class="mb-5">
                         <div class="fw-bold mb-1">Supplier Contact</div>
-                        <div class="text-gray-600">{{ $purchaseOrder->supplier->email ?? '-' }}</div>
-                        <div class="text-gray-600">{{ $purchaseOrder->supplier->phone ?? '' }}</div>
+                        @if($hasSubOrders)
+                            <div class="text-gray-600">{{ $subOrders->count() }} supplier sub POs</div>
+                        @else
+                            <div class="text-gray-600">{{ $purchaseOrder->supplier->email ?? '-' }}</div>
+                            <div class="text-gray-600">{{ $purchaseOrder->supplier->phone ?? '' }}</div>
+                        @endif
                     </div>
 
                     <div class="separator separator-dashed my-7"></div>
 
                     <div class="d-grid gap-3 mb-6">
-                        @if($purchaseOrder->status === 'partial')
+                        @if(!$hasSubOrders && $purchaseOrder->status === 'partial')
                             <button
                                 type="button"
                                 class="btn btn-light-warning w-100"
@@ -146,6 +183,7 @@
                         @endif
 
                         @foreach(['sent', 'confirmed', 'partial', 'completed', 'delayed'] as $status)
+                            @continue($hasSubOrders && $status === 'partial')
                             @continue($status === $purchaseOrder->status)
 
                             @if($status === 'partial')
@@ -170,7 +208,9 @@
                     </div>
 
                     <div class="d-flex gap-3 flex-wrap">
-                        <a href="{{ route('admin.purchase-orders.edit', $purchaseOrder->id) }}" class="btn btn-primary">Edit PO</a>
+                        @unless($hasSubOrders)
+                            <a href="{{ route('admin.purchase-orders.edit', $purchaseOrder->id) }}" class="btn btn-primary">Edit PO</a>
+                        @endunless
                         <a href="{{ route('admin.purchase-orders.index', ['po' => $purchaseOrder->id]) }}" class="btn btn-light">Back To List</a>
                     </div>
                 </div>
@@ -178,9 +218,11 @@
         </div>
     </div>
 
-    @include('admin.purchase_orders.partials.receive-modal', [
-        'purchaseOrder' => $purchaseOrder,
-        'formAction' => route('admin.purchase-orders.receiving.update', $purchaseOrder->id),
-        'modalId' => $receiveModalId,
-    ])
+    @unless($hasSubOrders)
+        @include('admin.purchase_orders.partials.receive-modal', [
+            'purchaseOrder' => $purchaseOrder,
+            'formAction' => route('admin.purchase-orders.receiving.update', $purchaseOrder->id),
+            'modalId' => $receiveModalId,
+        ])
+    @endunless
 </x-default-layout>

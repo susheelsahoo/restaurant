@@ -252,6 +252,8 @@ Route::middleware([])->group(function () {
             ->whereNumber('purchaseOrder');
         Route::patch('/mobile/purchase-order/{purchaseOrder}/status', [MobilePurchasingController::class, 'update'])
             ->whereNumber('purchaseOrder');
+        Route::patch('/mobile/purchase-order/{purchaseOrder}/supplier', [MobilePurchasingController::class, 'assignSupplier'])
+            ->whereNumber('purchaseOrder');
         Route::patch('/mobile/purchase-order/{purchaseOrder}/receiving', [MobilePurchasingController::class, 'receive'])
             ->whereNumber('purchaseOrder');
     });

@@ -1482,6 +1482,39 @@ body.mobile-app-body {
     color: #3730a3;
 }
 
+.qa-template-chip.active {
+    background: var(--qa-primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.qa-selected-template {
+    margin-top: 10px;
+    display: grid;
+    gap: 3px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+}
+
+.qa-selected-template[hidden] {
+    display: none;
+}
+
+.qa-selected-template span,
+.qa-selected-template small {
+    color: var(--qa-muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.qa-selected-template strong {
+    color: var(--qa-primary);
+    font-size: 14px;
+    line-height: 1.25;
+}
+
 .qa-search-box {
     display: flex;
     gap: 10px;
@@ -1589,6 +1622,11 @@ body.mobile-app-body {
     border-color: #93c5fd;
     background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.qa-product-item.template-highlight {
+    border-color: var(--qa-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16), var(--qa-shadow);
 }
 
 .qa-product-row {
@@ -2506,6 +2544,41 @@ body.mobile-app-body {
     margin-top: 12px;
 }
 
+.po-assignment-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.po-assignment-select {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--or-line);
+    border-radius: 12px;
+    background: var(--or-surface-soft);
+    color: var(--or-text);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 12px;
+}
+
+.po-assign-btn {
+    border: none;
+    border-radius: 12px;
+    background: var(--or-primary);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.po-assign-btn:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
 .po-send-btn {
     border: none;
     border-radius: 12px;
@@ -2838,6 +2911,7 @@ body.mobile-app-body {
     .po-dispatch-page .or-sticky-bar,
     .po-filter-card,
     .po-channel-actions,
+    .po-assignment-row,
     .po-message-preview,
     .po-dispatch-log,
     .po-dispatch-page .or-card:last-of-type {

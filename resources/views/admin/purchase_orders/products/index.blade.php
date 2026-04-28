@@ -1,6 +1,6 @@
 <x-default-layout>
     @php
-        $selectedSuppliers = $selectedProduct?->suppliers ?? collect();
+        $selectedSuppliers = $selectedProduct?->category?->suppliers ?? collect();
         $selectedSupplierNames = $selectedSuppliers->pluck('name')->filter();
         $selectedStatus = strtolower((string) ($selectedProduct->status ?? 'inactive'));
         $selectedBadgeClass = match ($selectedStatus) {
@@ -39,7 +39,7 @@
             <div class="card card-xl-stretch">
                 <div class="card-body">
                     <div class="fs-2hx fw-bold text-warning">{{ $stats['catalog_linked_suppliers'] }}</div>
-                    <div class="fs-6 fw-semibold text-gray-500">Linked Suppliers</div>
+                    <div class="fs-6 fw-semibold text-gray-500">Category Suppliers</div>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
             <div class="card-title">
                 <div>
                     <h3 class="fw-bold mb-1">Products</h3>
-                    <div class="text-muted fw-semibold fs-6">Manage requestable items, scan codes, and preferred suppliers.</div>
+                    <div class="text-muted fw-semibold fs-6">Manage requestable items, scan codes, and category-based suppliers.</div>
                 </div>
             </div>
             <div class="card-toolbar">
@@ -111,7 +111,7 @@
                             <th>SKU</th>
                             <th>Category</th>
                             <th>Unit</th>
-                            <th>Preferred Supplier</th>
+                            <th>Category Supplier</th>
                             <th>Barcode</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -220,7 +220,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="border rounded p-4 h-100">
-                                    <div class="text-muted fs-7">Supplier</div>
+                                    <div class="text-muted fs-7">Category Supplier</div>
                                     <div class="fw-bold fs-5">{{ $selectedSupplierNames->isNotEmpty() ? $selectedSupplierNames->join(', ') : '-' }}</div>
                                 </div>
                             </div>

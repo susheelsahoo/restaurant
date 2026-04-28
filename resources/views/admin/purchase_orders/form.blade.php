@@ -70,10 +70,10 @@
                         </div>
 
                         <div class="row mb-6">
-                            <label class="col-lg-4 col-form-label required fw-semibold fs-6">Supplier</label>
+                            <label class="col-lg-4 col-form-label fw-semibold fs-6">Supplier</label>
                             <div class="col-lg-8">
-                                <select name="supplier_id" class="form-select form-select-solid" required>
-                                    <option value="">Select supplier</option>
+                                <select name="supplier_id" class="form-select form-select-solid">
+                                    <option value="">No supplier</option>
                                     @foreach($suppliers as $supplier)
                                         <option value="{{ $supplier->id }}" @selected((string) old('supplier_id', $purchaseOrder->supplier_id ?? '') === (string) $supplier->id)>
                                             {{ $supplier->name }}

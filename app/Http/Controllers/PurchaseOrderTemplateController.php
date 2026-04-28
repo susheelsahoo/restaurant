@@ -137,15 +137,15 @@ class PurchaseOrderTemplateController extends Controller
 
     private function formData(): array
     {
-        $supplierSubquery = DB::table('product_suppliers')
-            ->join('suppliers', 'suppliers.id', '=', 'product_suppliers.supplier_id')
-            ->selectRaw('product_suppliers.product_id, MIN(suppliers.name) as preferred_supplier_name')
-            ->groupBy('product_suppliers.product_id');
+        $supplierSubquery = DB::table('category_suppliers')
+            ->join('suppliers', 'suppliers.id', '=', 'category_suppliers.supplier_id')
+            ->selectRaw('category_suppliers.category_id, MIN(suppliers.name) as preferred_supplier_name')
+            ->groupBy('category_suppliers.category_id');
 
         $products = Product::query()
             ->leftJoin('product_categories', 'product_categories.id', '=', 'products.category_id')
             ->leftJoinSub($supplierSubquery, 'preferred_suppliers', function ($join) {
-                $join->on('preferred_suppliers.product_id', '=', 'products.id');
+                $join->on('preferred_suppliers.category_id', '=', 'products.category_id');
             })
             ->orderBy('products.name')
             ->get([

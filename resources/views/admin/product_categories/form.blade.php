@@ -59,6 +59,23 @@
                     </div>
 
                     <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6">Suppliers</label>
+                        <div class="col-lg-8 fv-row">
+                            @php
+                                $selectedSuppliers = collect(old('supplier_ids', isset($productCategory) ? $productCategory->suppliers->pluck('id')->all() : []))
+                                    ->map(fn ($id) => (string) $id)
+                                    ->all();
+                            @endphp
+                            <select name="supplier_ids[]" class="form-select form-select-lg form-select-solid" multiple data-control="select2" data-placeholder="Select suppliers">
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}" @selected(in_array((string) $supplier->id, $selectedSuppliers, true))>{{ $supplier->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">Products in this category will use the first supplier alphabetically as the preferred supplier in Quick Add.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
                         <label class="col-lg-4 col-form-label required fw-semibold fs-6">Status</label>
                         <div class="col-lg-8 fv-row">
                             <select name="status" class="form-select form-select-lg form-select-solid">

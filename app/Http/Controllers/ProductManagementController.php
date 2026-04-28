@@ -14,10 +14,10 @@ class ProductManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $supplierSubquery = DB::table('product_suppliers')
-            ->join('suppliers', 'suppliers.id', '=', 'product_suppliers.supplier_id')
-            ->selectRaw('product_suppliers.product_id, MIN(suppliers.name) as preferred_supplier_name')
-            ->groupBy('product_suppliers.product_id');
+        $supplierSubquery = DB::table('category_suppliers')
+            ->join('suppliers', 'suppliers.id', '=', 'category_suppliers.supplier_id')
+            ->selectRaw('category_suppliers.category_id, MIN(suppliers.name) as preferred_supplier_name')
+            ->groupBy('category_suppliers.category_id');
 
         $requestItemsSubquery = DB::table('request_items')
             ->selectRaw('product_id, COUNT(*) as request_lines_count, COALESCE(SUM(quantity), 0) as requested_quantity')
@@ -30,7 +30,7 @@ class ProductManagementController extends Controller
         $productsQuery = Product::query()
             ->with('category:id,name')
             ->leftJoinSub($supplierSubquery, 'preferred_suppliers', function ($join) {
-                $join->on('preferred_suppliers.product_id', '=', 'products.id');
+                $join->on('preferred_suppliers.category_id', '=', 'products.category_id');
             })
             ->leftJoinSub($requestItemsSubquery, 'request_item_stats', function ($join) {
                 $join->on('request_item_stats.product_id', '=', 'products.id');
@@ -68,9 +68,9 @@ class ProductManagementController extends Controller
         if ($request->filled('supplier')) {
             $productsQuery->whereExists(function ($builder) use ($request) {
                 $builder->selectRaw('1')
-                    ->from('product_suppliers')
-                    ->whereColumn('product_suppliers.product_id', 'products.id')
-                    ->where('product_suppliers.supplier_id', $request->supplier);
+                    ->from('category_suppliers')
+                    ->whereColumn('category_suppliers.category_id', 'products.category_id')
+                    ->where('category_suppliers.supplier_id', $request->supplier);
             });
         }
 
@@ -95,8 +95,8 @@ class ProductManagementController extends Controller
             'total' => Product::count(),
             'active' => Product::where('status', 'active')->count(),
             'barcode_enabled' => Product::whereNotNull('barcode')->where('barcode', '!=', '')->count(),
-            'catalog_linked_suppliers' => Schema::hasTable('product_suppliers')
-                ? DB::table('product_suppliers')->distinct('supplier_id')->count('supplier_id')
+            'catalog_linked_suppliers' => Schema::hasTable('category_suppliers')
+                ? DB::table('category_suppliers')->distinct('supplier_id')->count('supplier_id')
                 : 0,
         ];
 
@@ -134,8 +134,7 @@ class ProductManagementController extends Controller
         $data = $this->validatedData($request);
 
         DB::transaction(function () use ($data) {
-            $product = Product::create($data['product']);
-            $product->suppliers()->sync($data['supplier_ids']);
+            Product::create($data);
         });
 
         return redirect()->route('admin.purchase-orders.products')
@@ -144,8 +143,6 @@ class ProductManagementController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load('suppliers:id,name');
-
         return view('admin.products.form', array_merge(
             $this->formData(),
             compact('product')
@@ -157,8 +154,7 @@ class ProductManagementController extends Controller
         $data = $this->validatedData($request, $product->id);
 
         DB::transaction(function () use ($data, $product) {
-            $product->update($data['product']);
-            $product->suppliers()->sync($data['supplier_ids']);
+            $product->update($data);
         });
 
         return redirect()->route('admin.purchase-orders.products')
@@ -173,7 +169,6 @@ class ProductManagementController extends Controller
         }
 
         DB::transaction(function () use ($product) {
-            $product->suppliers()->detach();
             $product->delete();
         });
 
@@ -185,7 +180,6 @@ class ProductManagementController extends Controller
     {
         return [
             'categories' => ProductCategory::orderBy('name')->get(['id', 'name']),
-            'suppliers' => Supplier::orderBy('name')->get(['id', 'name']),
             'statuses' => ['active', 'inactive'],
         ];
     }
@@ -205,31 +199,26 @@ class ProductManagementController extends Controller
             ],
             'status' => 'required|in:active,inactive',
             'estimated_price' => 'nullable|numeric|min:0',
-            'supplier_ids' => 'nullable|array',
-            'supplier_ids.*' => 'exists:suppliers,id',
         ]);
 
         $barcode = isset($validated['barcode']) ? trim((string) $validated['barcode']) : null;
         $barcode = $barcode === '' ? null : $barcode;
 
         return [
-            'product' => [
-                'name' => $validated['name'],
-                'sku' => $validated['sku'],
-                'category_id' => $validated['category_id'] ?? null,
-                'unit' => $validated['unit'] ?? null,
-                'barcode' => $barcode,
-                'status' => $validated['status'],
-                'estimated_price' => $validated['estimated_price'] ?? null,
-            ],
-            'supplier_ids' => $validated['supplier_ids'] ?? [],
+            'name' => $validated['name'],
+            'sku' => $validated['sku'],
+            'category_id' => $validated['category_id'] ?? null,
+            'unit' => $validated['unit'] ?? null,
+            'barcode' => $barcode,
+            'status' => $validated['status'],
+            'estimated_price' => $validated['estimated_price'] ?? null,
         ];
     }
 
     public function lookupBarcode(string $barcode)
     {
         $product = Product::query()
-            ->with(['category:id,name', 'suppliers:id,name'])
+            ->with(['category:id,name', 'category.suppliers:id,name'])
             ->where('barcode', trim($barcode))
             ->first();
 
@@ -258,7 +247,7 @@ class ProductManagementController extends Controller
         }
 
         $products = Product::query()
-            ->with(['category:id,name', 'suppliers:id,name'])
+            ->with(['category:id,name', 'category.suppliers:id,name'])
             ->where(function ($builder) use ($search) {
                 $builder->where('name', 'like', '%' . $search . '%')
                     ->orWhere('sku', 'like', '%' . $search . '%')
@@ -284,8 +273,8 @@ class ProductManagementController extends Controller
             'sku' => $product->sku,
             'category' => optional($product->category)->name ?: '-',
             'unit' => $product->unit ?: '',
-            'preferred_supplier' => optional($product->suppliers->first())->name ?: '-',
-            'supplier_id' => optional($product->suppliers->first())->id,
+            'preferred_supplier' => optional($product->category?->suppliers->first())->name ?: '-',
+            'supplier_id' => optional($product->category?->suppliers->first())->id,
             'pack_size' => 'Standard',
             'barcode' => $product->barcode ?: '',
         ];
@@ -310,8 +299,7 @@ class ProductManagementController extends Controller
             ->whereColumn('po_items.product_id', 'products.id');
 
         return Product::query()
-            ->with('category:id,name')
-            ->with('suppliers:id,name')
+            ->with(['category:id,name', 'category.suppliers:id,name'])
             ->withCount('poItems')
             ->withSum('poItems as ordered_quantity_total', 'quantity')
             ->addSelect([

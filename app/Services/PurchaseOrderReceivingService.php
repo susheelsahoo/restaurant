@@ -63,6 +63,7 @@ class PurchaseOrderReceivingService
             $purchaseOrder->update([
                 'status' => $this->allItemsReceived($purchaseOrder) ? 'completed' : 'partial',
             ]);
+            $purchaseOrder->refreshStatusFromSubOrders();
 
             return $purchaseOrder->refresh()->load('items.product');
         });

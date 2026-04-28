@@ -6,8 +6,8 @@
             'review' => 'warning',
             default => 'secondary',
         };
-        $linkedGroups = $selectedSupplier?->products
-            ?->pluck('category.name')
+        $linkedGroups = $selectedSupplier?->productCategories
+            ?->pluck('name')
             ->filter()
             ->unique()
             ->values() ?? collect();
@@ -42,7 +42,7 @@
             <div class="card card-xl-stretch">
                 <div class="card-body">
                     <div class="fs-2hx fw-bold text-primary">{{ $stats['linked_products'] }}</div>
-                    <div class="fs-6 fw-semibold text-gray-500">Product Links</div>
+                    <div class="fs-6 fw-semibold text-gray-500">Category Links</div>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
             <div class="card-title">
                 <div>
                     <h3 class="fw-bold mb-1">Suppliers</h3>
-                    <div class="text-muted fw-semibold fs-6">Review contact details, supplier-linked products, and current PO activity.</div>
+                    <div class="text-muted fw-semibold fs-6">Review contact details, supplier-linked categories, and current PO activity.</div>
                 </div>
             </div>
             <div class="card-toolbar">
@@ -95,7 +95,7 @@
                         <tr class="fw-bold text-muted">
                             <th>Supplier</th>
                             <th>Contact</th>
-                            <th>Products</th>
+                            <th>Categories</th>
                             <th>Open POs</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -141,7 +141,7 @@
                             <tr>
                                 <td colspan="6" class="text-center py-10">
                                     <div class="fw-bold mb-2">No suppliers found</div>
-                                    <div class="text-muted">Add supplier records to manage contacts, linked products, and open purchase orders here.</div>
+                                    <div class="text-muted">Add supplier records to manage contacts, linked categories, and open purchase orders here.</div>
                                 </td>
                             </tr>
                         @endforelse
@@ -200,7 +200,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="border rounded p-4 h-100">
-                                    <div class="text-muted fs-7">Linked Products</div>
+                                    <div class="text-muted fs-7">Linked Categories</div>
                                     <div class="fw-bold fs-5">{{ $selectedSupplier->products_count }}</div>
                                 </div>
                             </div>
@@ -213,9 +213,9 @@
                         </div>
 
                         <div class="mt-8">
-                            <div class="fw-bold mb-2">Linked Product Groups</div>
+                            <div class="fw-bold mb-2">Linked Product Categories</div>
                             <div class="text-muted">
-                                {{ $linkedGroups->isNotEmpty() ? $linkedGroups->join(', ') : 'No linked product groups yet.' }}
+                                {{ $linkedGroups->isNotEmpty() ? $linkedGroups->join(', ') : 'No linked product categories yet.' }}
                             </div>
                         </div>
                     @else
@@ -237,8 +237,8 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-8">
-                        <div class="fw-bold mb-1">Linked Products</div>
-                        <div class="text-muted">Track which products each supplier supports and keep sourcing relationships clear.</div>
+                        <div class="fw-bold mb-1">Linked Categories</div>
+                        <div class="text-muted">Track which product categories each supplier supports and keep sourcing relationships clear.</div>
                     </div>
                     <div class="mb-8">
                         <div class="fw-bold mb-1">Current Activity</div>

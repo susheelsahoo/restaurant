@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductCategory;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductCategoryController extends Controller
@@ -11,7 +13,8 @@ class ProductCategoryController extends Controller
     public function index(Request $request)
     {
         $categories = ProductCategory::query()
-            ->withCount('products')
+            ->with(['suppliers:id,name'])
+            ->withCount(['products', 'suppliers'])
             ->when($request->filled('q'), function ($query) use ($request) {
                 $search = trim((string) $request->q);
 
@@ -19,7 +22,8 @@ class ProductCategoryController extends Controller
                     $builder->where('name', 'like', '%' . $search . '%')
                         ->orWhere('slug', 'like', '%' . $search . '%')
                         ->orWhere('description', 'like', '%' . $search . '%')
-                        ->orWhere('monthly_budget', 'like', '%' . $search . '%');
+                        ->orWhere('monthly_budget', 'like', '%' . $search . '%')
+                        ->orWhereHas('suppliers', fn ($supplierQuery) => $supplierQuery->where('name', 'like', '%' . $search . '%'));
                 });
             })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
@@ -32,12 +36,17 @@ class ProductCategoryController extends Controller
 
     public function create()
     {
-        return view('admin.product_categories.form');
+        return view('admin.product_categories.form', $this->formData());
     }
 
     public function store(Request $request)
     {
-        ProductCategory::create($this->validatedData($request));
+        $data = $this->validatedData($request);
+
+        DB::transaction(function () use ($data) {
+            $productCategory = ProductCategory::create($data['category']);
+            $productCategory->suppliers()->sync($data['supplier_ids']);
+        });
 
         return redirect()->route('admin.purchase-orders.product-categories.index')
             ->with('success', 'Product category created successfully.');
@@ -45,12 +54,22 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        return view('admin.product_categories.form', compact('productCategory'));
+        $productCategory->load('suppliers:id,name');
+
+        return view('admin.product_categories.form', array_merge(
+            $this->formData(),
+            compact('productCategory')
+        ));
     }
 
     public function update(Request $request, ProductCategory $productCategory)
     {
-        $productCategory->update($this->validatedData($request, $productCategory->id));
+        $data = $this->validatedData($request, $productCategory->id);
+
+        DB::transaction(function () use ($data, $productCategory) {
+            $productCategory->update($data['category']);
+            $productCategory->suppliers()->sync($data['supplier_ids']);
+        });
 
         return redirect()->route('admin.purchase-orders.product-categories.index')
             ->with('success', 'Product category updated successfully.');
@@ -63,10 +82,20 @@ class ProductCategoryController extends Controller
                 ->with('error', 'This category is linked to one or more products and cannot be deleted.');
         }
 
-        $productCategory->delete();
+        DB::transaction(function () use ($productCategory) {
+            $productCategory->suppliers()->detach();
+            $productCategory->delete();
+        });
 
         return redirect()->route('admin.purchase-orders.product-categories.index')
             ->with('success', 'Product category deleted successfully.');
+    }
+
+    protected function formData(): array
+    {
+        return [
+            'suppliers' => Supplier::orderBy('name')->get(['id', 'name']),
+        ];
     }
 
     protected function validatedData(Request $request, ?int $productCategoryId = null): array
@@ -77,10 +106,21 @@ class ProductCategoryController extends Controller
             'description' => 'nullable|string',
             'monthly_budget' => 'required|integer|min:0',
             'status' => 'required|in:active,inactive',
+            'supplier_ids' => 'nullable|array',
+            'supplier_ids.*' => 'exists:suppliers,id',
         ]);
 
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
 
-        return $data;
+        return [
+            'category' => [
+                'name' => $data['name'],
+                'slug' => $data['slug'],
+                'description' => $data['description'] ?? null,
+                'monthly_budget' => $data['monthly_budget'],
+                'status' => $data['status'],
+            ],
+            'supplier_ids' => $data['supplier_ids'] ?? [],
+        ];
     }
 }

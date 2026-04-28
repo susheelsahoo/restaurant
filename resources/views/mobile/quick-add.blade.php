@@ -36,8 +36,8 @@
         </section>
         <section class="qa-card">
             <div class="qa-action-row">
-                <button id="scanBtn" class="qa-action-btn qa-action-primary" type="button">Scan Product</button>
-                <button id="templateBtn" class="qa-action-btn qa-action-secondary" type="button">Templates</button>
+                <button id="scanBtn" class="qa-action-btn qa-action-primary" type="button" aria-pressed="true">Scan Product</button>
+                <button id="templateBtn" class="qa-action-btn qa-action-secondary" type="button" aria-pressed="false">Templates</button>
             </div>
 
             <div id="scanInfo" class="qa-helper qa-helper-scan" hidden>
@@ -48,12 +48,17 @@
                 <div class="qa-helper-title">Quick templates</div>
                 <div class="qa-template-list">
                     @forelse ($quickAddTemplates as $template)
-                        <button class="qa-template-chip" type="button" data-template-id="{{ $template['id'] }}">
+                        <button class="qa-template-chip" type="button" data-template-id="{{ $template['id'] }}" aria-pressed="false">
                             {{ $template['name'] }}
                         </button>
                     @empty
                         <div class="qa-template-empty">No active templates available.</div>
                     @endforelse
+                </div>
+                <div id="selectedTemplateState" class="qa-selected-template" hidden>
+                    <span>Selected template</span>
+                    <strong id="selectedTemplateName"></strong>
+                    <small id="selectedTemplateMeta"></small>
                 </div>
             </div>
             <div class="qa-chip-row">
@@ -191,6 +196,10 @@ const scanBtn = document.getElementById('scanBtn');
 const templateBtn = document.getElementById('templateBtn');
 const scanInfo = document.getElementById('scanInfo');
 const templatePanel = document.getElementById('templatePanel');
+const templateButtons = Array.from(document.querySelectorAll('.qa-template-chip'));
+const selectedTemplateState = document.getElementById('selectedTemplateState');
+const selectedTemplateName = document.getElementById('selectedTemplateName');
+const selectedTemplateMeta = document.getElementById('selectedTemplateMeta');
 const chips = Array.from(document.querySelectorAll('.qa-chip'));
 const openOrderModalBtn = document.getElementById('openOrderModalBtn');
 const orderModal = document.getElementById('orderModal');
@@ -207,6 +216,22 @@ let productItems = [];
 let productSearchCache = initialProducts.slice();
 let activeCategory = 'all';
 let lookupTimer = null;
+let templateHighlightTimer = null;
+
+function setQuickAddMode(mode) {
+    const isScanMode = mode === 'scan';
+
+    scanBtn.classList.toggle('qa-action-primary', isScanMode);
+    scanBtn.classList.toggle('qa-action-secondary', !isScanMode);
+    scanBtn.setAttribute('aria-pressed', isScanMode ? 'true' : 'false');
+
+    templateBtn.classList.toggle('qa-action-primary', !isScanMode);
+    templateBtn.classList.toggle('qa-action-secondary', isScanMode);
+    templateBtn.setAttribute('aria-pressed', !isScanMode ? 'true' : 'false');
+
+    scanInfo.hidden = !isScanMode;
+    templatePanel.hidden = isScanMode;
+}
 
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -457,6 +482,7 @@ function applyTemplate(templateId) {
     }
 
     let matched = 0;
+    const matchedItems = [];
 
     template.items.forEach((templateItem) => {
         const matchedItem = productItems.find((item) => Number(item.dataset.id) === Number(templateItem.product_id));
@@ -466,6 +492,7 @@ function applyTemplate(templateId) {
         }
 
         matched += 1;
+        matchedItems.push(matchedItem);
         setItemSelected(matchedItem, true);
         setItemQuantity(matchedItem, templateItem.quantity);
 
@@ -488,6 +515,28 @@ function applyTemplate(templateId) {
         showMessage('Template products are not available in the current product list.');
         return;
     }
+
+    templateButtons.forEach((button) => {
+        const isSelected = Number(button.dataset.templateId) === Number(template.id);
+        button.classList.toggle('active', isSelected);
+        button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    });
+
+    selectedTemplateName.textContent = template.name;
+    selectedTemplateMeta.textContent = `${matched} ${matched === 1 ? 'product' : 'products'} selected from this template`;
+    selectedTemplateState.hidden = false;
+
+    if (templateHighlightTimer) {
+        window.clearTimeout(templateHighlightTimer);
+    }
+
+    productItems.forEach((item) => item.classList.remove('template-highlight'));
+    matchedItems.forEach((item) => item.classList.add('template-highlight'));
+    matchedItems[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    templateHighlightTimer = window.setTimeout(() => {
+        matchedItems.forEach((item) => item.classList.remove('template-highlight'));
+    }, 1600);
 
     clearMessage();
 }
@@ -582,6 +631,7 @@ async function submitRequest() {
 
     submitOrderBtn.disabled = true;
     submitOrderBtn.textContent = 'Submitting...';
+    let redirecting = false;
 
     const payload = {
         needed_by: neededByInput.value,
@@ -621,22 +671,20 @@ async function submitRequest() {
         submitState.textContent = `Created ${result.request.request_no} successfully.`;
         submitState.className = 'qa-submit-state';
         clearMessage();
+        redirecting = true;
 
-        productItems.forEach((item) => {
-            resetItemState(item);
-        });
-
-        updateSummary();
-        searchInput.value = '';
-        applyFilters();
-        setTimeout(closeOrderModal, 1000);
+        setTimeout(() => {
+            window.location.href = result.redirect_url || '{{ url('/mobile/request-detail') }}';
+        }, 700);
     } catch (error) {
         submitState.hidden = false;
         submitState.textContent = 'Request submit failed. Please try again.';
         submitState.className = 'qa-submit-state';
     } finally {
-        submitOrderBtn.disabled = false;
-        submitOrderBtn.textContent = 'Submit Request';
+        if (!redirecting) {
+            submitOrderBtn.disabled = false;
+            submitOrderBtn.textContent = 'Submit Request';
+        }
     }
 }
 
@@ -663,7 +711,7 @@ searchInput.addEventListener('keydown', (event) => {
 });
 
 scanBtn.addEventListener('click', () => {
-    scanInfo.hidden = !scanInfo.hidden;
+    setQuickAddMode('scan');
 
     if (searchInput.value.trim() !== '') {
         lookupProduct();
@@ -671,10 +719,10 @@ scanBtn.addEventListener('click', () => {
 });
 
 templateBtn.addEventListener('click', () => {
-    templatePanel.hidden = !templatePanel.hidden;
+    setQuickAddMode('template');
 });
 
-document.querySelectorAll('.qa-template-chip').forEach((button) => {
+templateButtons.forEach((button) => {
     button.addEventListener('click', () => applyTemplate(button.dataset.templateId));
 });
 

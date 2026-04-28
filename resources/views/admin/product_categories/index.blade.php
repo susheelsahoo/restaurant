@@ -33,6 +33,7 @@
                             <th>Slug</th>
                             <th>Description</th>
                             <th>Monthly Budget</th>
+                            <th>Suppliers</th>
                             <th>Products</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -45,6 +46,7 @@
                                 <td>{{ $category->slug }}</td>
                                 <td>{{ $category->description ?: '-' }}</td>
                                 <td>{{ number_format((int) $category->monthly_budget) }}</td>
+                                <td>{{ $category->suppliers->pluck('name')->filter()->join(', ') ?: '-' }}</td>
                                 <td>{{ $category->products_count }}</td>
                                 <td>
                                     <span class="badge badge-light-{{ $category->status === 'active' ? 'success' : 'secondary' }}">
@@ -64,7 +66,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-10">No product categories found</td>
+                                <td colspan="8" class="text-center py-10">No product categories found</td>
                             </tr>
                         @endforelse
                     </tbody>

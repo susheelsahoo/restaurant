@@ -296,7 +296,7 @@
                             <div class="col-6">
                                 <div class="border rounded p-4 h-100">
                                     <div class="fw-bold mb-1">Linked PO</div>
-                                    <div class="text-gray-600">{{ $selectedPurchaseRequest->purchaseOrders->count() }}</div>
+                                    <div class="text-gray-600">{{ $selectedPurchaseRequest->purchaseOrders->whereNull('parent_po_id')->count() }}</div>
                                 </div>
                             </div>
                             <div class="col-6">

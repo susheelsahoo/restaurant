@@ -34,6 +34,14 @@
     </header>
 
     <main class="content">
+        @if(session('success'))
+            <div class="or-result-message show success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="or-result-message show danger">{{ session('error') }}</div>
+        @endif
+
         <button class="primary-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
             + Add Request
         </button>

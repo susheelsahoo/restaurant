@@ -5,11 +5,9 @@
 @section('mobile-standalone', true)
 
 @php
-    $canSendOrder = $purchaseOrderReview['dispatch_status'] !== 'unassigned';
-    $supplierContactParts = collect([
-        $purchaseOrderReview['supplier_phone'],
-        $purchaseOrderReview['supplier_email'],
-    ])->filter(fn ($value) => $value !== '-')->values();
+    $supplierOrders = collect($purchaseOrderReview['supplier_orders']);
+    $supplierOptions = collect($purchaseOrderReview['supplier_options'] ?? []);
+    $canSendOrder = $supplierOrders->contains(fn ($supplierOrder) => $supplierOrder['dispatch_status'] === 'ready');
     $hasReceiveErrors = $errors->has('receipts')
         || collect($errors->getMessages())->keys()->contains(fn ($key) => str_starts_with($key, 'receipts.'));
 @endphp
@@ -38,7 +36,7 @@
         <section class="or-card or-hero">
             <h2>Approved Order Ready for Dispatch</h2>
             <p>
-                Review {{ $purchaseOrderReview['category_summary'] }} order {{ $purchaseOrderReview['po_number'] }} for {{ $purchaseOrderReview['supplier'] }} and send it by WhatsApp or email.
+                Review {{ $purchaseOrderReview['category_summary'] }} order {{ $purchaseOrderReview['po_number'] }} and send each supplier sub PO by WhatsApp or email.
             </p>
             <div class="or-hero-grid">
                 <div class="or-hero-box">
@@ -67,7 +65,7 @@
             </div>
             <div class="or-summary-grid">
                 <div class="or-summary-box">
-                    <strong id="supplierOrderCount">1</strong>
+                    <strong id="supplierOrderCount">{{ $supplierOrders->count() }}</strong>
                     <span>Supplier orders</span>
                 </div>
                 <div class="or-summary-box">
@@ -91,11 +89,26 @@
             </div>
         </section>
 
-        <article class="po-supplier-card" data-status="{{ $purchaseOrderReview['dispatch_status'] }}">
+        @foreach($supplierOrders as $supplierOrder)
+            @php
+                $supplierContactParts = collect([
+                    $supplierOrder['supplier_phone'],
+                    $supplierOrder['supplier_email'],
+                ])->filter(fn ($value) => $value !== '-')->values();
+            @endphp
+
+        <article
+            class="po-supplier-card"
+            data-status="{{ $supplierOrder['dispatch_status'] }}"
+            data-status-url="{{ $supplierOrder['status_url'] }}"
+            data-supplier-phone="{{ $supplierOrder['supplier_phone'] }}"
+            data-email-subject="{{ e($supplierOrder['email_preview_subject']) }}"
+            data-message-text="{{ e($supplierOrder['supplier_message_text']) }}"
+        >
             <div class="po-supplier-head">
                 <div>
                     <div class="po-supplier-name">
-                        {{ $purchaseOrderReview['dispatch_status'] === 'unassigned' ? 'Unassigned Order Group' : $purchaseOrderReview['supplier'] }}
+                        {{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Unassigned Order Group' : $supplierOrder['supplier'] }}
                     </div>
                     <div class="po-supplier-meta">
                         @if($supplierContactParts->isNotEmpty())
@@ -106,8 +119,8 @@
                     </div>
                 </div>
                 <div class="po-supplier-actions">
-                    <span class="or-pill {{ $purchaseOrderReview['dispatch_pill_tone'] }} po-status-pill">
-                        {{ $purchaseOrderReview['dispatch_label'] }}
+                    <span class="or-pill {{ $supplierOrder['dispatch_pill_tone'] }} po-status-pill">
+                        {{ $supplierOrder['dispatch_label'] }}
                     </span>
                 </div>
             </div>
@@ -115,19 +128,19 @@
             <div class="po-order-meta">
                 <div class="po-order-meta-box">
                     <small>Supplier PO</small>
-                    <strong>{{ $purchaseOrderReview['po_number'] }}</strong>
+                    <strong>{{ $supplierOrder['po_number'] }}</strong>
                 </div>
                 <div class="po-order-meta-box">
                     <small>Category Part</small>
-                    <strong>{{ $purchaseOrderReview['category_summary'] }}</strong>
+                    <strong>{{ $supplierOrder['category_summary'] }}</strong>
                 </div>
                 <div class="po-order-meta-box">
                     <small>Delivery Date</small>
-                    <strong>{{ $purchaseOrderReview['expected_delivery'] }}</strong>
+                    <strong>{{ $supplierOrder['expected_delivery'] }}</strong>
                 </div>
             </div>
 
-            @forelse($purchaseOrderReview['categories'] as $category)
+            @forelse($supplierOrder['categories'] as $category)
                 <div class="po-category-block">
                     <div class="po-category-title">{{ $category['name'] }}</div>
 
@@ -151,34 +164,51 @@
                 <p class="or-empty-state">No purchase order items added yet.</p>
             @endforelse
 
-            <div class="po-supplier-actions po-channel-actions">
-                <button class="po-send-btn whatsapp" data-channel="whatsapp" type="button">WhatsApp</button>
-                <button class="po-send-btn email" data-channel="email" type="button">Email</button>
-            </div>
+            @if($supplierOrder['dispatch_status'] === 'unassigned')
+                <form class="po-assignment-row" method="POST" action="{{ $supplierOrder['assign_supplier_url'] }}">
+                    @csrf
+                    @method('PATCH')
+                    <select class="po-assignment-select" name="supplier_id" required>
+                        <option value="">Assign supplier...</option>
+                        @foreach($supplierOptions as $supplierOption)
+                            <option value="{{ $supplierOption['id'] }}">{{ $supplierOption['name'] }}</option>
+                        @endforeach
+                    </select>
+                    <button class="po-assign-btn" type="submit" @disabled($supplierOptions->isEmpty())>Assign</button>
+                </form>
+            @else
+                <div class="po-supplier-actions po-channel-actions">
+                    <button class="po-send-btn whatsapp" data-channel="whatsapp" type="button">WhatsApp</button>
+                    <button class="po-send-btn email" data-channel="email" type="button">Email</button>
+                </div>
+            @endif
 
             <div
-                class="po-dispatch-log {{ $purchaseOrderReview['dispatch_status'] === 'sent' ? 'show success' : ($purchaseOrderReview['dispatch_status'] === 'unassigned' ? 'show warning' : '') }}"
+                class="po-dispatch-log {{ $supplierOrder['dispatch_status'] === 'sent' ? 'show success' : ($supplierOrder['dispatch_status'] === 'unassigned' ? 'show warning' : '') }}"
             >
-                @if($purchaseOrderReview['dispatch_status'] === 'sent')
+                @if($supplierOrder['dispatch_status'] === 'sent')
                     Order already sent or confirmed with supplier.
-                @elseif($purchaseOrderReview['dispatch_status'] === 'unassigned')
-                    Supplier not assigned yet.
+                @elseif($supplierOrder['dispatch_status'] === 'unassigned')
+                    {{ $supplierOptions->isEmpty() ? 'No active suppliers available.' : 'Supplier not assigned yet.' }}
                 @endif
             </div>
 
-            <div class="po-message-preview">
-                <div class="po-message-preview-header">
-                    <strong>Supplier Message Preview</strong>
-                    <span class="po-preview-channel-label">Channel</span>
+            @if($supplierOrder['dispatch_status'] !== 'unassigned')
+                <div class="po-message-preview">
+                    <div class="po-message-preview-header">
+                        <strong>Supplier Message Preview</strong>
+                        <span class="po-preview-channel-label">Channel</span>
+                    </div>
+                    <textarea class="po-message-text" aria-label="Supplier message preview"></textarea>
+                    <div class="po-preview-error or-inline-error"></div>
+                    <div class="po-message-preview-actions">
+                        <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
+                        <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
+                    </div>
                 </div>
-                <textarea class="po-message-text" aria-label="Supplier message preview"></textarea>
-                <div class="po-preview-error or-inline-error"></div>
-                <div class="po-message-preview-actions">
-                    <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
-                    <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
-                </div>
-            </div>
+            @endif
         </article>
+        @endforeach
 
         <section class="or-card">
             <div class="or-section-head">
@@ -241,6 +271,7 @@
             </div>
         </section>
 
+        @unless($purchaseOrderReview['has_sub_orders'])
         <section class="or-card">
             <div class="or-section-head">
                 <h3>Status Actions</h3>
@@ -287,12 +318,19 @@
                 @endforeach
             </div>
         </section>
+        @endunless
 
-        <form id="poSendStatusForm" method="POST" action="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/status') }}">
+        <form
+            id="poSendStatusForm"
+            method="POST"
+            action=""
+            data-all-ready-url="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/status') }}"
+        >
             @csrf
             @method('PATCH')
             <input type="hidden" name="status" value="sent">
             <input id="poSendChannel" type="hidden" name="channel" value="email">
+            <input id="poSendOnlyReady" type="hidden" name="only_ready" value="0">
         </form>
     </main>
 
@@ -307,6 +345,7 @@
         </div>
     </div>
 
+    @unless($purchaseOrderReview['has_sub_orders'])
     <div class="or-modal-backdrop" id="poReceiveModal" hidden>
         <div class="or-modal po-receive-mobile-modal" role="dialog" aria-modal="true" aria-labelledby="poReceiveTitle">
             <form method="POST" action="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/receiving') }}" id="poReceiveForm">
@@ -359,6 +398,7 @@
             </form>
         </div>
     </div>
+    @endunless
 </div>
 @endsection
 
@@ -373,19 +413,16 @@ const sendAllBtn = document.getElementById('sendAllBtn');
 const exportBtn = document.getElementById('exportBtn');
 const sendStatusForm = document.getElementById('poSendStatusForm');
 const sendChannelInput = document.getElementById('poSendChannel');
+const sendOnlyReadyInput = document.getElementById('poSendOnlyReady');
 const statusSendButtons = Array.from(document.querySelectorAll('.po-status-send-btn'));
 const receiveModal = document.getElementById('poReceiveModal');
 const receiveForm = document.getElementById('poReceiveForm');
 const receiveOpenButtons = Array.from(document.querySelectorAll('.po-receive-open-btn'));
-const receiveCloseBtn = receiveModal.querySelector('.po-receive-close-btn');
+const receiveCloseBtn = receiveModal ? receiveModal.querySelector('.po-receive-close-btn') : null;
 const receiveAllBtn = document.getElementById('poReceiveAllBtn');
 const receiveValidationError = document.getElementById('poReceiveValidationError');
 let activePreviewCard = null;
 let pendingChannel = 'email';
-const emailPreviewSubject = @json($purchaseOrderReview['email_preview_subject']);
-const emailPreviewHtml = @json($purchaseOrderReview['email_preview_html']);
-const supplierMessageText = @json($purchaseOrderReview['supplier_message_text']);
-const supplierPhone = @json($purchaseOrderReview['supplier_phone']);
 const shouldOpenReceiveModal = @json($hasReceiveErrors);
 
 function channelLabel(channel) {
@@ -434,13 +471,15 @@ function openPreview(card, channel) {
     const textarea = card.querySelector('.po-message-text');
     const label = card.querySelector('.po-preview-channel-label');
     const error = card.querySelector('.po-preview-error');
+    const subject = card.dataset.emailSubject || 'Purchase Order';
+    const messageText = card.dataset.messageText || '';
 
     if (label) {
         label.textContent = channelLabel(channel);
     }
 
     if (textarea) {
-        textarea.value = `${emailPreviewSubject}\n\n${supplierMessageText}`;
+        textarea.value = `${subject}\n\n${messageText}`;
     }
 
     if (error) {
@@ -487,7 +526,7 @@ supplierCards.forEach((card) => {
         }
 
         if (pendingChannel === 'whatsapp') {
-            const phone = normalizedWhatsAppPhone(supplierPhone);
+            const phone = normalizedWhatsAppPhone(activePreviewCard.dataset.supplierPhone);
 
             if (!phone) {
                 previewError.className = 'po-preview-error or-inline-error show';
@@ -495,10 +534,12 @@ supplierCards.forEach((card) => {
                 return;
             }
 
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(previewText?.value || supplierMessageText)}`, '_blank', 'noopener');
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(previewText?.value || activePreviewCard.dataset.messageText || '')}`, '_blank', 'noopener');
         }
 
+        sendStatusForm.action = activePreviewCard.dataset.statusUrl || '';
         sendChannelInput.value = pendingChannel;
+        sendOnlyReadyInput.value = '0';
         confirmSendBtn.disabled = true;
         confirmSendBtn.textContent = 'Sending...';
         sendStatusForm.submit();
@@ -507,6 +548,27 @@ supplierCards.forEach((card) => {
 
 function normalizedWhatsAppPhone(phone) {
     return String(phone || '').replace(/\D/g, '');
+}
+
+function sendAllReadyCardsByEmail(button) {
+    const readyCards = supplierCards.filter((card) => card.dataset.status === 'ready');
+
+    if (!readyCards.length) {
+        return false;
+    }
+
+    sendStatusForm.action = sendStatusForm.dataset.allReadyUrl || '';
+    sendChannelInput.value = 'email';
+    sendOnlyReadyInput.value = '1';
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = `Sending ${readyCards.length} PO${readyCards.length === 1 ? '' : 's'}...`;
+    }
+
+    sendStatusForm.submit();
+
+    return true;
 }
 
 statusSendButtons.forEach((button) => {
@@ -531,12 +593,20 @@ statusSendButtons.forEach((button) => {
 });
 
 function openReceiveModal() {
+    if (!receiveModal || !receiveValidationError) {
+        return;
+    }
+
     receiveValidationError.className = 'or-inline-error';
     receiveValidationError.textContent = '';
     receiveModal.hidden = false;
 }
 
 function closeReceiveModal() {
+    if (!receiveModal) {
+        return;
+    }
+
     receiveModal.hidden = true;
 }
 
@@ -544,9 +614,9 @@ receiveOpenButtons.forEach((button) => {
     button.addEventListener('click', openReceiveModal);
 });
 
-receiveCloseBtn.addEventListener('click', closeReceiveModal);
+receiveCloseBtn?.addEventListener('click', closeReceiveModal);
 
-receiveModal.addEventListener('click', (event) => {
+receiveModal?.addEventListener('click', (event) => {
     if (event.target === receiveModal) {
         closeReceiveModal();
     }
@@ -560,7 +630,7 @@ if (receiveAllBtn) {
     });
 }
 
-receiveForm.addEventListener('submit', (event) => {
+receiveForm?.addEventListener('submit', (event) => {
     const invalidInput = Array.from(receiveForm.querySelectorAll('[data-po-receive-input]')).find((input) => {
         const receivedQuantity = Number(input.value || 0);
         const orderedQuantity = Number(input.dataset.ordered || 0);
@@ -586,11 +656,9 @@ if (exportBtn) {
 
 if (sendAllBtn) {
     sendAllBtn.addEventListener('click', () => {
-        const readyCard = supplierCards.find((card) => card.dataset.status === 'ready');
-        const fallbackCard = supplierCards[0];
+        const fallbackCard = supplierCards.find((card) => card.dataset.status === 'unassigned') || supplierCards[0];
 
-        if (readyCard) {
-            openPreview(readyCard, 'email');
+        if (sendAllReadyCardsByEmail(sendAllBtn)) {
             return;
         }
 
@@ -607,7 +675,7 @@ if (sendAllBtn) {
 
 updateCounts();
 
-if (shouldOpenReceiveModal) {
+if (shouldOpenReceiveModal && receiveModal) {
     openReceiveModal();
 }
 </script>

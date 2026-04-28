@@ -31,7 +31,7 @@ class RequestController extends Controller
                     'department:id,name',
                     'items.product.category:id,name,monthly_budget',
                     'items.supplier:id,name',
-                    'purchaseOrders:id,request_id,po_number',
+                    'purchaseOrders:id,request_id,parent_po_id,po_number',
                 ])
                 ->where('request_no', $requestNo)
                 ->firstOrFail();
@@ -102,9 +102,13 @@ class RequestController extends Controller
             return $purchaseRequest;
         });
 
+        $message = 'Purchase request created successfully.';
+        $request->session()->flash('success', $message);
+
         return response()->json([
             'success' => true,
-            'message' => 'Purchase request created successfully.',
+            'message' => $message,
+            'redirect_url' => url('/mobile/request-detail'),
             'request' => [
                 'id' => $purchaseRequest->id,
                 'request_no' => $purchaseRequest->request_no,
@@ -157,12 +161,14 @@ class RequestController extends Controller
 
             $purchaseRequest->update($updateData);
 
-            if ($oldStatus !== 'approved' && $validated['status'] === 'approved') {
+            if ($validated['status'] === 'approved'
+                && ($oldStatus !== 'approved' || !$purchaseRequest->purchaseOrders()->whereNull('parent_po_id')->exists())
+            ) {
                 $this->createPurchaseOrdersFromRequest($purchaseRequest);
             }
         });
 
-        return redirect()->back()
+        return redirect('/mobile/request-detail')
             ->with('success', 'Request status updated successfully.');
     }
 
@@ -178,7 +184,7 @@ class RequestController extends Controller
             'needed_by' => Carbon::parse($validated['needed_by']),
         ]);
 
-        return redirect()->back()
+        return redirect('/mobile/request-detail')
             ->with('success', 'Delivery date updated successfully.');
     }
 
@@ -266,7 +272,8 @@ class RequestController extends Controller
             ->pluck('name')
             ->values();
         $statusMeta = $this->requestStatusMeta($purchaseRequest->status);
-        $purchaseOrder = $purchaseRequest->purchaseOrders->first();
+        $purchaseOrder = $purchaseRequest->purchaseOrders->firstWhere('parent_po_id', null)
+            ?? $purchaseRequest->purchaseOrders->first();
 
         return [
             'id' => $purchaseRequest->id,
@@ -346,12 +353,12 @@ class RequestController extends Controller
     private function quickAddCatalogData(): array
     {
         $products = Product::query()
-            ->with(['category:id,name', 'suppliers:id,name'])
+            ->with(['category:id,name', 'category.suppliers:id,name'])
             ->where('status', 'active')
             ->orderBy('name')
             ->get()
             ->map(function (Product $product) {
-                $supplier = $product->suppliers->first();
+                $supplier = $product->category?->suppliers->first();
 
                 return [
                     'id' => $product->id,

@@ -22,7 +22,17 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $query = PurchaseOrder::query()
-            ->with(['request', 'supplier', 'buyer', 'items.product.category', 'request.department']);
+            ->whereNull('parent_po_id')
+            ->with([
+                'request',
+                'supplier',
+                'buyer',
+                'items.product.category',
+                'request.department',
+                'subPurchaseOrders.supplier',
+                'subPurchaseOrders.buyer',
+                'subPurchaseOrders.items.product.category',
+            ]);
 
         if ($request->filled('q')) {
             $search = trim((string) $request->q);
@@ -30,8 +40,11 @@ class PurchaseOrderController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('po_number', 'like', '%' . $search . '%')
                     ->orWhereHas('supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', '%' . $search . '%'))
+                    ->orWhereHas('subPurchaseOrders', fn ($subQuery) => $subQuery->where('po_number', 'like', '%' . $search . '%'))
+                    ->orWhereHas('subPurchaseOrders.supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', '%' . $search . '%'))
                     ->orWhereHas('request', fn ($requestQuery) => $requestQuery->where('request_no', 'like', '%' . $search . '%'))
-                    ->orWhereHas('items.product.category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', '%' . $search . '%'));
+                    ->orWhereHas('items.product.category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', '%' . $search . '%'))
+                    ->orWhereHas('subPurchaseOrders.items.product.category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', '%' . $search . '%'));
             });
         }
 
@@ -40,7 +53,10 @@ class PurchaseOrderController extends Controller
         }
 
         if ($request->filled('supplier_id')) {
-            $query->where('supplier_id', $request->supplier_id);
+            $query->where(function ($builder) use ($request) {
+                $builder->where('supplier_id', $request->supplier_id)
+                    ->orWhereHas('subPurchaseOrders', fn ($subQuery) => $subQuery->where('supplier_id', $request->supplier_id));
+            });
         }
 
         if ($request->filled('department_id')) {
@@ -73,11 +89,11 @@ class PurchaseOrderController extends Controller
         }
 
         $stats = [
-            'total' => PurchaseOrder::count(),
-            'open' => PurchaseOrder::whereIn('status', ['draft', 'sent', 'confirmed', 'partial', 'delayed'])->count(),
-            'sent' => PurchaseOrder::where('status', 'sent')->count(),
-            'confirmed' => PurchaseOrder::where('status', 'confirmed')->count(),
-            'partial' => PurchaseOrder::where('status', 'partial')->count(),
+            'total' => PurchaseOrder::whereNull('parent_po_id')->count(),
+            'open' => PurchaseOrder::whereNull('parent_po_id')->whereIn('status', ['draft', 'sent', 'confirmed', 'partial', 'delayed'])->count(),
+            'sent' => PurchaseOrder::whereNull('parent_po_id')->where('status', 'sent')->count(),
+            'confirmed' => PurchaseOrder::whereNull('parent_po_id')->where('status', 'confirmed')->count(),
+            'partial' => PurchaseOrder::whereNull('parent_po_id')->where('status', 'partial')->count(),
         ];
 
         $suppliers = Supplier::orderBy('name')->get(['id', 'name']);
@@ -114,7 +130,16 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load(['request.requester', 'supplier', 'buyer', 'items.product.category']);
+        $purchaseOrder->load([
+            'parent',
+            'request.requester',
+            'supplier',
+            'buyer',
+            'items.product.category',
+            'subPurchaseOrders.supplier',
+            'subPurchaseOrders.buyer',
+            'subPurchaseOrders.items.product.category',
+        ]);
 
         return view('admin.purchase_orders.show', compact('purchaseOrder'));
     }
@@ -152,20 +177,22 @@ class PurchaseOrderController extends Controller
         $oldStatus = $purchaseOrder->status;
         $newStatus = $validated['status'];
 
-        $purchaseOrder->update([
-            'status' => $newStatus,
-        ]);
+        $purchaseOrder->loadMissing('subPurchaseOrders.supplier');
 
-        // Send email to supplier when status changes to "sent"
-        if ($oldStatus !== 'sent' && $newStatus === 'sent' && $purchaseOrder->supplier && $purchaseOrder->supplier->email) {
-            try {
-                Mail::to($purchaseOrder->supplier->email)
-                    ->queue(new \App\Mail\PurchaseOrderSupplierMail($purchaseOrder));
-            } catch (\Exception $e) {
-                // Log the error but don't fail the status update
-                Log::error('Failed to send PO email: ' . $e->getMessage());
+        if ($purchaseOrder->subPurchaseOrders->isNotEmpty()) {
+            foreach ($purchaseOrder->subPurchaseOrders as $subPurchaseOrder) {
+                $subOldStatus = $subPurchaseOrder->status;
+                $subPurchaseOrder->update(['status' => $newStatus]);
+                $this->sendSupplierEmailIfNeeded($subPurchaseOrder, $subOldStatus, $newStatus);
             }
+        } else {
+            $purchaseOrder->update([
+                'status' => $newStatus,
+            ]);
+            $this->sendSupplierEmailIfNeeded($purchaseOrder, $oldStatus, $newStatus);
         }
+
+        $purchaseOrder->refreshStatusFromSubOrders();
 
         return redirect()->back()
             ->with('success', 'Purchase order status updated successfully.');
@@ -193,6 +220,13 @@ class PurchaseOrderController extends Controller
     public function destroy(PurchaseOrder $purchaseOrder)
     {
         DB::transaction(function () use ($purchaseOrder) {
+            $purchaseOrder->load('subPurchaseOrders.items');
+
+            foreach ($purchaseOrder->subPurchaseOrders as $subPurchaseOrder) {
+                $subPurchaseOrder->items()->delete();
+                $subPurchaseOrder->delete();
+            }
+
             $purchaseOrder->items()->delete();
             $purchaseOrder->delete();
         });
@@ -206,7 +240,7 @@ class PurchaseOrderController extends Controller
         $validated = $request->validate([
             'po_number' => 'nullable|string|max:50|unique:purchase_orders,po_number,' . $purchaseOrderId,
             'request_id' => 'nullable|exists:requests,id',
-            'supplier_id' => 'required|exists:suppliers,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'buyer_id' => 'required|exists:users,id',
             'status' => 'required|in:' . implode(',', $this->statuses()),
             'order_date' => 'required|date',
@@ -244,7 +278,7 @@ class PurchaseOrderController extends Controller
             'purchase_order' => [
                 'po_number' => $validated['po_number'] ?: $this->generatePoNumber(),
                 'request_id' => $validated['request_id'] ?? null,
-                'supplier_id' => $validated['supplier_id'],
+                'supplier_id' => $validated['supplier_id'] ?? null,
                 'buyer_id' => $validated['buyer_id'],
                 'status' => $validated['status'],
                 'order_date' => $validated['order_date'],
@@ -283,23 +317,54 @@ class PurchaseOrderController extends Controller
         $year = Carbon::now()->format('Y');
         $prefix = 'PO-' . $year . '-';
 
-        $lastNumber = PurchaseOrder::query()
+        $maxNumber = PurchaseOrder::query()
             ->where('po_number', 'like', $prefix . '%')
-            ->orderByDesc('id')
-            ->value('po_number');
+            ->pluck('po_number')
+            ->reduce(function (int $max, string $poNumber) use ($prefix) {
+                $pattern = '/^' . preg_quote($prefix, '/') . '(\d+)(?:-[A-Z]+)?$/';
 
-        if (!$lastNumber || !preg_match('/(\d+)$/', $lastNumber, $matches)) {
+                if (!preg_match($pattern, $poNumber, $matches)) {
+                    return $max;
+                }
+
+                return max($max, (int) $matches[1]);
+            }, 0);
+
+        if ($maxNumber <= 0) {
             return $prefix . '0001';
         }
 
-        return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($maxNumber + 1, 4, '0', STR_PAD_LEFT);
     }
 
     protected function loadPurchaseOrderDetails(int $purchaseOrderId): ?PurchaseOrder
     {
         return PurchaseOrder::query()
-            ->with(['request.requester', 'supplier', 'buyer', 'items.product.category'])
+            ->with([
+                'parent',
+                'request.requester',
+                'supplier',
+                'buyer',
+                'items.product.category',
+                'subPurchaseOrders.supplier',
+                'subPurchaseOrders.buyer',
+                'subPurchaseOrders.items.product.category',
+            ])
             ->find($purchaseOrderId);
+    }
+
+    protected function sendSupplierEmailIfNeeded(PurchaseOrder $purchaseOrder, string $oldStatus, string $newStatus): void
+    {
+        if ($oldStatus === 'sent' || $newStatus !== 'sent' || !$purchaseOrder->supplier?->email) {
+            return;
+        }
+
+        try {
+            Mail::to($purchaseOrder->supplier->email)
+                ->queue(new \App\Mail\PurchaseOrderSupplierMail($purchaseOrder));
+        } catch (\Exception $e) {
+            Log::error('Failed to send PO email: ' . $e->getMessage());
+        }
     }
 
     protected function safeDepartments()
