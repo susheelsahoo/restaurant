@@ -162,6 +162,18 @@
                 @endif
             </div>
 
+            <div class="po-message-preview">
+                <div class="po-message-preview-header">
+                    <strong>Supplier Message Preview</strong>
+                    <span class="po-preview-channel-label">Channel</span>
+                </div>
+                <textarea class="po-message-text" aria-label="Supplier message preview"></textarea>
+                <div class="po-preview-error or-inline-error"></div>
+                <div class="po-message-preview-actions">
+                    <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
+                    <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
+                </div>
+            </div>
         </article>
 
         <section class="or-card">
@@ -291,25 +303,6 @@
         </div>
     </div>
 
-    <div class="or-modal-backdrop" id="supplierPreviewModal" hidden>
-        <div class="or-modal po-preview-modal" role="dialog" aria-modal="true" aria-labelledby="supplierPreviewTitle">
-            <div class="po-message-preview-header">
-                <strong id="supplierPreviewTitle">Supplier Message Preview</strong>
-                <span class="po-preview-channel-label">Email</span>
-            </div>
-            <div class="po-preview-subject">
-                <small>Subject</small>
-                <strong class="po-preview-subject-text"></strong>
-            </div>
-            <iframe class="po-message-frame" title="Supplier email template preview" sandbox></iframe>
-            <div id="poPreviewError" class="or-inline-error"></div>
-            <div class="po-message-preview-actions">
-                <button class="po-preview-btn secondary po-close-preview-btn" type="button">Close</button>
-                <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
-            </div>
-        </div>
-    </div>
-
     <div class="or-modal-backdrop" id="poReceiveModal" hidden>
         <div class="or-modal po-receive-mobile-modal" role="dialog" aria-modal="true" aria-labelledby="poReceiveTitle">
             <form method="POST" action="{{ url('/mobile/purchase-order/' . $purchaseOrderReview['id'] . '/receiving') }}" id="poReceiveForm">
@@ -377,13 +370,6 @@ const exportBtn = document.getElementById('exportBtn');
 const sendStatusForm = document.getElementById('poSendStatusForm');
 const sendChannelInput = document.getElementById('poSendChannel');
 const statusSendButtons = Array.from(document.querySelectorAll('.po-status-send-btn'));
-const supplierPreviewModal = document.getElementById('supplierPreviewModal');
-const previewFrame = supplierPreviewModal.querySelector('.po-message-frame');
-const previewChannelLabel = supplierPreviewModal.querySelector('.po-preview-channel-label');
-const previewSubjectText = supplierPreviewModal.querySelector('.po-preview-subject-text');
-const previewError = document.getElementById('poPreviewError');
-const closePreviewBtn = supplierPreviewModal.querySelector('.po-close-preview-btn');
-const confirmSendBtn = supplierPreviewModal.querySelector('.po-confirm-send-btn');
 const receiveModal = document.getElementById('poReceiveModal');
 const receiveForm = document.getElementById('poReceiveForm');
 const receiveOpenButtons = Array.from(document.querySelectorAll('.po-receive-open-btn'));
@@ -436,12 +422,29 @@ function openPreview(card, channel) {
     activePreviewCard = card;
     pendingChannel = channel;
 
-    previewError.className = 'or-inline-error';
-    previewError.textContent = '';
-    previewChannelLabel.textContent = channelLabel(channel);
-    previewSubjectText.textContent = emailPreviewSubject;
-    previewFrame.srcdoc = emailPreviewHtml;
-    supplierPreviewModal.hidden = false;
+    supplierCards.forEach((supplierCard) => {
+        supplierCard.querySelector('.po-message-preview')?.classList.remove('show');
+    });
+
+    const preview = card.querySelector('.po-message-preview');
+    const textarea = card.querySelector('.po-message-text');
+    const label = card.querySelector('.po-preview-channel-label');
+    const error = card.querySelector('.po-preview-error');
+
+    if (label) {
+        label.textContent = channelLabel(channel);
+    }
+
+    if (textarea) {
+        textarea.value = `${emailPreviewSubject}\n\n${supplierMessageText}`;
+    }
+
+    if (error) {
+        error.className = 'po-preview-error or-inline-error';
+        error.textContent = '';
+    }
+
+    preview?.classList.add('show');
 }
 
 filterChips.forEach((chip) => {
@@ -463,7 +466,44 @@ supplierCards.forEach((card) => {
             openPreview(card, button.dataset.channel || 'email');
         });
     });
+
+    const preview = card.querySelector('.po-message-preview');
+    const closePreviewBtn = card.querySelector('.po-close-preview-btn');
+    const confirmSendBtn = card.querySelector('.po-confirm-send-btn');
+    const previewError = card.querySelector('.po-preview-error');
+    const previewText = card.querySelector('.po-message-text');
+
+    closePreviewBtn?.addEventListener('click', () => {
+        preview?.classList.remove('show');
+    });
+
+    confirmSendBtn?.addEventListener('click', () => {
+        if (!activePreviewCard) {
+            return;
+        }
+
+        if (pendingChannel === 'whatsapp') {
+            const phone = normalizedWhatsAppPhone(supplierPhone);
+
+            if (!phone) {
+                previewError.className = 'po-preview-error or-inline-error show';
+                previewError.textContent = 'Supplier phone number is not available for WhatsApp.';
+                return;
+            }
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(previewText?.value || supplierMessageText)}`, '_blank', 'noopener');
+        }
+
+        sendChannelInput.value = pendingChannel;
+        confirmSendBtn.disabled = true;
+        confirmSendBtn.textContent = 'Sending...';
+        sendStatusForm.submit();
+    });
 });
+
+function normalizedWhatsAppPhone(phone) {
+    return String(phone || '').replace(/\D/g, '');
+}
 
 statusSendButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -484,22 +524,6 @@ statusSendButtons.forEach((button) => {
             openPreview(fallbackCard, 'email');
         }
     });
-});
-
-function closePreview() {
-    supplierPreviewModal.hidden = true;
-}
-
-function normalizedWhatsAppPhone(phone) {
-    return String(phone || '').replace(/\D/g, '');
-}
-
-closePreviewBtn.addEventListener('click', closePreview);
-
-supplierPreviewModal.addEventListener('click', (event) => {
-    if (event.target === supplierPreviewModal) {
-        closePreview();
-    }
 });
 
 function openReceiveModal() {
@@ -548,30 +572,6 @@ receiveForm.addEventListener('submit', (event) => {
     receiveValidationError.className = 'or-inline-error show';
     receiveValidationError.textContent = 'Received quantity cannot be negative or greater than requested quantity.';
     invalidInput.focus();
-});
-
-confirmSendBtn.addEventListener('click', () => {
-    if (!activePreviewCard) {
-        return;
-    }
-
-    if (pendingChannel === 'whatsapp') {
-        const phone = normalizedWhatsAppPhone(supplierPhone);
-
-        if (!phone) {
-            previewError.className = 'or-inline-error show';
-            previewError.textContent = 'Supplier phone number is not available for WhatsApp.';
-            return;
-        }
-
-        const message = `${emailPreviewSubject}\n\n${supplierMessageText}`;
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
-    }
-
-    sendChannelInput.value = pendingChannel;
-    confirmSendBtn.disabled = true;
-    confirmSendBtn.textContent = 'Sending...';
-    sendStatusForm.submit();
 });
 
 if (exportBtn) {

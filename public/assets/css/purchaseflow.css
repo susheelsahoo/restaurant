@@ -1448,6 +1448,7 @@ body {
     border-radius: 16px;
     padding: 12px 14px;
     margin-bottom: 12px;
+    margin-top: 12px;
 }
 
 .qa-search-box input {
@@ -2243,11 +2244,6 @@ body {
     padding: 16px;
 }
 
-.po-preview-modal {
-    max-height: 88vh;
-    overflow: hidden;
-}
-
 .or-modal h3 {
     margin: 0 0 6px;
     font-size: 17px;
@@ -2616,40 +2612,18 @@ body {
     color: var(--or-muted);
 }
 
-.po-preview-subject {
-    border: 1px solid var(--or-line);
-    border-radius: 12px;
-    background: #ffffff;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-}
-
-.po-preview-subject small {
-    display: block;
-    margin-bottom: 4px;
-    color: var(--or-muted);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-}
-
-.po-preview-subject strong {
-    display: block;
-    font-size: 12px;
-    line-height: 1.35;
-}
-
-.po-message-frame {
+.po-message-preview textarea {
     width: 100%;
-    height: 360px;
+    min-height: 150px;
     border: 1px solid var(--or-line);
     border-radius: 12px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.5;
     background: #ffffff;
-}
-
-.po-preview-modal .po-message-frame {
-    height: min(52vh, 460px);
+    resize: vertical;
+    font-family: inherit;
+    outline: none;
 }
 
 .po-message-preview-actions {

@@ -19,6 +19,22 @@
 
     <main class="qa-main">
         <section class="qa-card">
+            <div class="qa-section-head">
+                <h2>Selection Summary</h2>
+                <span>Live</span>
+            </div>
+            <div class="qa-summary-grid">
+                <div class="qa-summary-box">
+                    <strong id="selectedCount">0</strong>
+                    <span>Selected products</span>
+                </div>
+                <div class="qa-summary-box">
+                    <strong id="totalQuantity">0</strong>
+                    <span>Total quantity</span>
+                </div>
+            </div>
+        </section>
+        <section class="qa-card">
             <div class="qa-action-row">
                 <button id="scanBtn" class="qa-action-btn qa-action-primary" type="button">Scan Product</button>
                 <button id="templateBtn" class="qa-action-btn qa-action-secondary" type="button">Templates</button>
@@ -40,36 +56,19 @@
                     @endforelse
                 </div>
             </div>
-
-            <div class="qa-search-box">
-                <span class="qa-search-icon" aria-hidden="true">⌕</span>
-                <input id="searchInput" type="text" placeholder="Search product name, SKU, barcode, category...">
-            </div>
-
             <div class="qa-chip-row">
                 <button class="qa-chip active" type="button" data-category="all">All</button>
                 @foreach ($quickAddCategories as $category)
                     <button class="qa-chip" type="button" data-category="{{ \Illuminate\Support\Str::slug($category) }}">{{ $category }}</button>
                 @endforeach
             </div>
+            <div class="qa-search-box">
+                <span class="qa-search-icon" aria-hidden="true">⌕</span>
+                <input id="searchInput" type="text" placeholder="Search product name, SKU, barcode, category...">
+            </div>
         </section>
 
-        <section class="qa-card">
-            <div class="qa-section-head">
-                <h2>Selection Summary</h2>
-                <span>Live</span>
-            </div>
-            <div class="qa-summary-grid">
-                <div class="qa-summary-box">
-                    <strong id="selectedCount">0</strong>
-                    <span>Selected products</span>
-                </div>
-                <div class="qa-summary-box">
-                    <strong id="totalQuantity">0</strong>
-                    <span>Total quantity</span>
-                </div>
-            </div>
-        </section>
+        
 
         <div class="qa-section-head qa-list-head">
             <h2>Product List</h2>

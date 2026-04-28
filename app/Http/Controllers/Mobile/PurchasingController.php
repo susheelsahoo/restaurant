@@ -64,8 +64,15 @@ class PurchasingController extends Controller
             }
         }
 
-        return redirect('/mobile/purchase-order/' . $purchaseOrder->id)
-            ->with('success', 'Purchase order status updated successfully.');
+        $redirectUrl = $newStatus === 'sent'
+            ? '/mobile/orders'
+            : '/mobile/purchase-order/' . $purchaseOrder->id;
+        $message = $newStatus === 'sent'
+            ? 'Purchase order sent successfully.'
+            : 'Purchase order status updated successfully.';
+
+        return redirect($redirectUrl)
+            ->with('success', $message);
     }
 
     public function receive(
@@ -222,7 +229,7 @@ class PurchasingController extends Controller
             'sent_count' => $dispatchStatus === 'sent' ? 1 : 0,
             'supplier_needed_count' => $dispatchStatus === 'unassigned' ? 1 : 0,
             'statuses' => $this->purchaseOrderStatuses(),
-            'status_actions' => ['sent', 'confirmed', 'partial', 'completed', 'delayed'],
+            'status_actions' => ['confirmed', 'partial', 'completed', 'delayed'],
             'email_preview_subject' => $emailPreview['subject'],
             'email_preview_html' => $emailPreview['html'],
             'supplier_message_text' => $emailPreview['text'],
