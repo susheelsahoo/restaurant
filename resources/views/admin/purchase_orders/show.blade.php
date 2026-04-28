@@ -36,6 +36,12 @@
                         </div>
                         <div class="col-md-3">
                             <div class="border rounded p-4 h-100">
+                                <div class="text-muted fs-7">Category Part</div>
+                                <div class="fw-bold fs-5">{{ $purchaseOrder->category_summary }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-4 h-100">
                                 <div class="text-muted fs-7">Buyer</div>
                                 <div class="fw-bold fs-5">{{ $purchaseOrder->buyer->name ?? '-' }}</div>
                             </div>
@@ -59,6 +65,7 @@
                             <thead>
                                 <tr class="fw-bold text-muted">
                                     <th>Item</th>
+                                    <th>Category</th>
                                     <th>Ordered</th>
                                     <th>Received</th>
                                     <th>Outstanding</th>
@@ -74,6 +81,7 @@
                                     @endphp
                                     <tr>
                                         <td>{{ $item->product->name ?? '-' }}</td>
+                                        <td>{{ $item->product->category->name ?? 'Uncategorized' }}</td>
                                         <td>{{ number_format($ordered, 2) }}</td>
                                         <td>{{ number_format($received, 2) }}</td>
                                         <td>{{ number_format(max($ordered - $received, 0), 2) }}</td>
@@ -82,13 +90,13 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-8">No PO items added yet.</td>
+                                        <td colspan="7" class="text-center py-8">No PO items added yet.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="5" class="text-end">Total</th>
+                                    <th colspan="6" class="text-end">Total</th>
                                     <th>{{ config('app.price_sign') }} {{ number_format($purchaseOrder->total_amount, 2) }}</th>
                                 </tr>
                             </tfoot>

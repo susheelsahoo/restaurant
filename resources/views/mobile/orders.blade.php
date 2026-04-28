@@ -8,6 +8,12 @@
 <link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
 @endpush
 
+@php
+    $purchaseOrdersByCategory = collect($purchaseOrders)->groupBy(
+        fn (array $purchaseOrder) => $purchaseOrder['category_summary'] ?: 'Uncategorized'
+    );
+@endphp
+
 @section('mobile-content')
 <div class="app-container">
     <header class="header">
@@ -24,37 +30,46 @@
                 <h3>All Purchase Orders</h3>
             </div>
 
-            @forelse($purchaseOrders as $purchaseOrder)
-                <a href="{{ $purchaseOrder['detail_url'] }}" class="template-item recent-request-item request-list-link">
-                    <div class="template-info">
-                        <div class="recent-request-title">
-                            <h4>{{ $purchaseOrder['po_number'] }}</h4>
-                            <div class="badge {{ $purchaseOrder['summary_badge'] }}">
-                                {{ $purchaseOrder['order_date'] }}
-                            </div>
-                        </div>
-                        <p>
-                            {{ $purchaseOrder['supplier'] }}
-                            &middot;
-                            {{ $purchaseOrder['request_no'] }}
-                            &middot;
-                            {{ $purchaseOrder['department'] }}
-                            &middot;
-                            Expected {{ $purchaseOrder['expected_delivery'] }}
-                        </p>
+            @forelse($purchaseOrdersByCategory as $categoryName => $categoryPurchaseOrders)
+                <div class="po-mobile-part">
+                    <div class="po-mobile-part-head">
+                        <h4>{{ $categoryName }}</h4>
+                        <span>{{ $categoryPurchaseOrders->count() }} supplier {{ $categoryPurchaseOrders->count() === 1 ? 'order' : 'orders' }}</span>
                     </div>
-                    <div class="recent-request-meta">
-                        <span class="badge badge-light-{{ $purchaseOrder['status_tone'] }}">
-                            {{ $purchaseOrder['status_label'] }}
-                        </span>
-                        <span>{{ $purchaseOrder['items_count'] }} items</span>
-                        <span>{{ $purchaseOrder['total_label'] }}</span>
-                    </div>
-                </a>
 
-                @if (!$loop->last)
-                    <hr class="divider">
-                @endif
+                    @foreach($categoryPurchaseOrders as $purchaseOrder)
+                        <a href="{{ $purchaseOrder['detail_url'] }}" class="template-item recent-request-item request-list-link">
+                            <div class="template-info">
+                                <div class="recent-request-title">
+                                    <h4>{{ $purchaseOrder['po_number'] }}</h4>
+                                    <div class="badge {{ $purchaseOrder['summary_badge'] }}">
+                                        {{ $purchaseOrder['order_date'] }}
+                                    </div>
+                                </div>
+                                <p>
+                                    {{ $purchaseOrder['supplier'] }}
+                                    &middot;
+                                    {{ $purchaseOrder['request_no'] }}
+                                    &middot;
+                                    {{ $purchaseOrder['department'] }}
+                                    &middot;
+                                    Expected {{ $purchaseOrder['expected_delivery'] }}
+                                </p>
+                            </div>
+                            <div class="recent-request-meta">
+                                <span class="badge badge-light-{{ $purchaseOrder['status_tone'] }}">
+                                    {{ $purchaseOrder['status_label'] }}
+                                </span>
+                                <span>{{ $purchaseOrder['items_count'] }} items</span>
+                                <span>{{ $purchaseOrder['total_label'] }}</span>
+                            </div>
+                        </a>
+
+                        @if (!$loop->last)
+                            <hr class="divider">
+                        @endif
+                    @endforeach
+                </div>
             @empty
                 <p class="empty-state">No purchase orders found.</p>
             @endforelse

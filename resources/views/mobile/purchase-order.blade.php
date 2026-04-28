@@ -38,7 +38,7 @@
         <section class="or-card or-hero">
             <h2>Approved Order Ready for Dispatch</h2>
             <p>
-                Review {{ $purchaseOrderReview['po_number'] }} for {{ $purchaseOrderReview['supplier'] }} and send it by WhatsApp or email.
+                Review {{ $purchaseOrderReview['category_summary'] }} order {{ $purchaseOrderReview['po_number'] }} for {{ $purchaseOrderReview['supplier'] }} and send it by WhatsApp or email.
             </p>
             <div class="or-hero-grid">
                 <div class="or-hero-box">
@@ -50,8 +50,8 @@
                     <span>Total dispatch value</span>
                 </div>
                 <div class="or-hero-box">
-                    <strong>{{ $purchaseOrderReview['po_number'] }}</strong>
-                    <span>Main order number</span>
+                    <strong>{{ $purchaseOrderReview['category_summary'] }}</strong>
+                    <span>Order part</span>
                 </div>
                 <div class="or-hero-box">
                     <strong>{{ $purchaseOrderReview['expected_delivery_short'] }}</strong>
@@ -116,6 +116,10 @@
                 <div class="po-order-meta-box">
                     <small>Supplier PO</small>
                     <strong>{{ $purchaseOrderReview['po_number'] }}</strong>
+                </div>
+                <div class="po-order-meta-box">
+                    <small>Category Part</small>
+                    <strong>{{ $purchaseOrderReview['category_summary'] }}</strong>
                 </div>
                 <div class="po-order-meta-box">
                     <small>Delivery Date</small>

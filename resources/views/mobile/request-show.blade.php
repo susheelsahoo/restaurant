@@ -194,32 +194,32 @@
                 <h3>Manager Comment</h3>
                 <span>Required for send back</span>
             </div>
-            <div class="or-field">
-                <label for="managerComment">Comment for purchasing or requester</label>
-                <textarea
-                    id="managerComment"
-                    name="manager_comment"
-                    form="sendbackStatusForm"
-                    placeholder="Write comment, change request, or approval note..."
-                >{{ $managerComment }}</textarea>
-            </div>
 
-            <div id="sendbackPanel" class="or-sendback-panel {{ $showSendbackPanel ? 'show' : '' }}">
-                <div class="or-sendback-title">Send back with comment</div>
-                <p>Add a comment explaining what should be changed, then send this request back to the requester.</p>
-                <form
-                    id="sendbackStatusForm"
-                    class="or-sendback-actions"
-                    method="POST"
-                    action="{{ $requestReview['status_action_url'] }}"
-                >
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="status" value="returned">
-                    <button class="or-mini-btn secondary" id="cancelSendbackBtn" type="button">Cancel</button>
-                    <button class="or-mini-btn primary" id="confirmSendbackBtn" type="submit">Send Back</button>
-                </form>
-            </div>
+            <form id="sendbackStatusForm" method="POST" action="{{ $requestReview['status_action_url'] }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" value="returned">
+
+                <div class="or-field">
+                    <label for="managerComment">Comment for purchasing or requester</label>
+                    <textarea
+                        id="managerComment"
+                        name="manager_comment"
+                        maxlength="2000"
+                        placeholder="Write comment, change request, or approval note..."
+                        required
+                    >{{ $managerComment }}</textarea>
+                </div>
+
+                <div id="sendbackPanel" class="or-sendback-panel {{ $showSendbackPanel ? 'show' : '' }}">
+                    <div class="or-sendback-title">Send back with comment</div>
+                    <p>Add a comment explaining what should be changed, then send this request back to the requester.</p>
+                    <div class="or-sendback-actions">
+                        <button class="or-mini-btn secondary" id="cancelSendbackBtn" type="button">Cancel</button>
+                        <button class="or-mini-btn primary" id="confirmSendbackBtn" type="submit">Send Back</button>
+                    </div>
+                </div>
+            </form>
 
             <div id="resultMessage" class="or-result-message"></div>
         </section>
@@ -293,9 +293,9 @@ const confirmBtn = document.getElementById('confirmBtn');
 const confirmStatusForm = confirmBtn.closest('form');
 const confirmNeededByInput = document.getElementById('confirmNeededByInput');
 const declineBtn = document.getElementById('declineBtn');
+const sendbackStatusForm = document.getElementById('sendbackStatusForm');
 const sendbackPanel = document.getElementById('sendbackPanel');
 const cancelSendbackBtn = document.getElementById('cancelSendbackBtn');
-const confirmSendbackBtn = document.getElementById('confirmSendbackBtn');
 const resultMessage = document.getElementById('resultMessage');
 const expiredDeliveryModal = document.getElementById('expiredDeliveryModal');
 const expiredDeliveryForm = document.getElementById('expiredDeliveryForm');
@@ -320,6 +320,28 @@ function setResult(type, text) {
 function clearResult() {
     resultMessage.className = 'or-result-message';
     resultMessage.textContent = '';
+}
+
+function showSendbackPanel(message = '') {
+    sendbackPanel.classList.add('show');
+    setStatus('Modification Requested', 'orange');
+
+    if (message) {
+        setResult('warning', message);
+    } else {
+        clearResult();
+    }
+
+    managerComment.focus();
+}
+
+function submitSendbackForm() {
+    if (sendbackStatusForm.requestSubmit) {
+        sendbackStatusForm.requestSubmit();
+        return;
+    }
+
+    sendbackStatusForm.submit();
 }
 
 function setStatus(text, variant) {
@@ -416,10 +438,12 @@ function updateBudgetWarnings() {
 }
 
 modifyBtn.addEventListener('click', () => {
-    clearResult();
-    sendbackPanel.classList.add('show');
-    managerComment.focus();
-    setStatus('Modification Requested', 'orange');
+    if (managerComment.value.trim()) {
+        submitSendbackForm();
+        return;
+    }
+
+    showSendbackPanel('Please add a manager comment before sending the request back.');
 });
 
 cancelSendbackBtn.addEventListener('click', () => {
@@ -428,12 +452,12 @@ cancelSendbackBtn.addEventListener('click', () => {
     setStatus(@json($requestReview['status_label']), @json($requestReview['status_tone']));
 });
 
-confirmSendbackBtn.addEventListener('click', (event) => {
+sendbackStatusForm.addEventListener('submit', (event) => {
     const comment = managerComment.value.trim();
 
     if (!comment) {
         event.preventDefault();
-        setResult('warning', 'Please add a manager comment before sending the request back.');
+        showSendbackPanel('Please add a manager comment before sending the request back.');
         return;
     }
 });

@@ -97,7 +97,14 @@ class PurchasingController extends Controller
     private function purchaseOrderListData(?int $limit = null)
     {
         $query = PurchaseOrder::query()
-            ->with(['request:id,request_no,department_id', 'request.department:id,name', 'supplier:id,name', 'buyer:id,name', 'items.product:id,estimated_price'])
+            ->with([
+                'request:id,request_no,department_id',
+                'request.department:id,name',
+                'supplier:id,name',
+                'buyer:id,name',
+                'items.product:id,name,category_id,estimated_price',
+                'items.product.category:id,name',
+            ])
             ->withCount('items')
             ->latest('order_date')
             ->latest('id');
@@ -116,6 +123,7 @@ class PurchasingController extends Controller
                 'supplier' => $purchaseOrder->supplier?->name ?: '-',
                 'buyer' => $purchaseOrder->buyer?->name ?: '-',
                 'request_no' => $purchaseOrder->request?->request_no ?: '-',
+                'category_summary' => $purchaseOrder->category_summary,
                 'department' => $purchaseOrder->request?->department?->name ?: '-',
                 'status_label' => $statusMeta['label'],
                 'status_tone' => $statusMeta['badge_tone'],
@@ -209,6 +217,7 @@ class PurchasingController extends Controller
             'supplier_phone' => $purchaseOrder->supplier?->phone ?: '-',
             'buyer' => $purchaseOrder->buyer?->name ?: '-',
             'request_no' => $purchaseOrder->request?->request_no ?: '-',
+            'category_summary' => $purchaseOrder->category_summary,
             'requester' => $purchaseOrder->request?->requester?->name ?: '-',
             'department' => $purchaseOrder->request?->department?->name ?: '-',
             'order_date' => $purchaseOrder->order_date?->format('M d, Y') ?: '-',

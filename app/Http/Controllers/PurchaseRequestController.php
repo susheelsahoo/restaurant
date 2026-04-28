@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Product;
-use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Services\PurchaseOrderGenerationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -155,6 +155,12 @@ class PurchaseRequestController extends Controller
         if ($hasAdminComment) {
             $adminComment = trim((string) ($validated['admin_comment'] ?? ''));
             $validated['admin_comment'] = $adminComment !== '' ? $adminComment : null;
+        }
+
+        if ($validated['status'] === 'returned' && blank($validated['admin_comment'] ?? null)) {
+            throw ValidationException::withMessages([
+                'admin_comment' => 'Please add an admin comment before sending the request back.',
+            ]);
         }
 
         // Prevent approving requests with past needed_by dates
@@ -326,52 +332,6 @@ class PurchaseRequestController extends Controller
 
     protected function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
     {
-        // Load items with relationships
-        $purchaseRequest->load(['items.supplier', 'items.product:id,estimated_price']);
-
-        // Group items by supplier
-        $itemsBySupplier = $purchaseRequest->items
-            ->filter(fn ($item) => $item->supplier_id !== null)
-            ->groupBy('supplier_id');
-
-        // Create a PO for each supplier
-        foreach ($itemsBySupplier as $supplierId => $items) {
-            $purchaseOrder = PurchaseOrder::create([
-                'po_number' => $this->generatePoNumber(),
-                'request_id' => $purchaseRequest->id,
-                'supplier_id' => $supplierId,
-                'buyer_id' => auth()->id(),
-                'status' => 'draft',
-                'order_date' => Carbon::now()->toDateString(),
-                'expected_delivery' => $purchaseRequest->needed_by->toDateString(),
-            ]);
-
-            // Create PO items from request items
-            foreach ($items as $requestItem) {
-                $purchaseOrder->items()->create([
-                    'product_id' => $requestItem->product_id,
-                    'quantity' => $requestItem->quantity,
-                    'received_qty' => 0,
-                    'unit_price' => (float) ($requestItem->product?->estimated_price ?? 0),
-                ]);
-            }
-        }
-    }
-
-    protected function generatePoNumber(): string
-    {
-        $year = Carbon::now()->format('Y');
-        $prefix = 'PO-' . $year . '-';
-
-        $lastNumber = PurchaseOrder::query()
-            ->where('po_number', 'like', $prefix . '%')
-            ->orderByDesc('id')
-            ->value('po_number');
-
-        if (!$lastNumber || !preg_match('/(\d+)$/', $lastNumber, $matches)) {
-            return $prefix . '0001';
-        }
-
-        return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
+        app(PurchaseOrderGenerationService::class)->createFromRequest($purchaseRequest, auth()->id());
     }
 }

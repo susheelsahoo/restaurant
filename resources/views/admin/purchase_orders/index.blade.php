@@ -126,6 +126,7 @@
                         <tr class="fw-bold text-muted">
                             <th>PO Number</th>
                             <th>Supplier</th>
+                            <th>Category Part</th>
                             <th>Linked Request</th>
                             <th>Order Date</th>
                             <th>Expected Delivery</th>
@@ -144,6 +145,9 @@
                                     <div class="text-muted fs-7">{{ $purchaseOrder->buyer->name ?? 'No buyer' }}</div>
                                 </td>
                                 <td>{{ $purchaseOrder->supplier->name ?? '-' }}</td>
+                                <td>
+                                    <span class="badge badge-light-info">{{ $purchaseOrder->category_summary }}</span>
+                                </td>
                                 <td>{{ $purchaseOrder->request->request_no ?? '-' }}</td>
                                 <td>{{ optional($purchaseOrder->order_date)->format('d M Y') ?: '-' }}</td>
                                 <td>{{ optional($purchaseOrder->expected_delivery)->format('d M Y') ?: '-' }}</td>
@@ -167,7 +171,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-10">No purchase orders found.</td>
+                                <td colspan="9" class="text-center py-10">No purchase orders found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -209,6 +213,12 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="border rounded p-4 h-100">
+                                    <div class="text-muted fs-7">Category Part</div>
+                                    <div class="fw-bold fs-5">{{ $selectedPurchaseOrder->category_summary }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border rounded p-4 h-100">
                                     <div class="text-muted fs-7">Buyer</div>
                                     <div class="fw-bold fs-5">{{ $selectedPurchaseOrder->buyer->name ?? '-' }}</div>
                                 </div>
@@ -232,6 +242,7 @@
                                 <thead>
                                     <tr class="fw-bold text-muted">
                                         <th>Item</th>
+                                        <th>Category</th>
                                         <th>Ordered</th>
                                         <th>Received</th>
                                         <th>Unit Price</th>
@@ -242,6 +253,7 @@
                                     @forelse($selectedPurchaseOrder->items as $item)
                                         <tr>
                                             <td>{{ $item->product->name ?? '-' }}</td>
+                                            <td>{{ $item->product->category->name ?? 'Uncategorized' }}</td>
                                             <td>{{ number_format((float) $item->quantity, 2) }} {{ $item->product->unit ?? '' }}</td>
                                             <td>{{ number_format((float) $item->received_qty, 2) }} {{ $item->product->unit ?? '' }}</td>
                                             <td>{{ config('app.price_sign') }} {{ number_format((float) $item->unit_price, 2) }}</td>
@@ -249,7 +261,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-8">No PO items added yet.</td>
+                                            <td colspan="6" class="text-center py-8">No PO items added yet.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

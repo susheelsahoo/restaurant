@@ -22,7 +22,7 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $query = PurchaseOrder::query()
-            ->with(['request', 'supplier', 'buyer', 'items.product', 'request.department']);
+            ->with(['request', 'supplier', 'buyer', 'items.product.category', 'request.department']);
 
         if ($request->filled('q')) {
             $search = trim((string) $request->q);
@@ -30,7 +30,8 @@ class PurchaseOrderController extends Controller
             $query->where(function ($builder) use ($search) {
                 $builder->where('po_number', 'like', '%' . $search . '%')
                     ->orWhereHas('supplier', fn ($supplierQuery) => $supplierQuery->where('name', 'like', '%' . $search . '%'))
-                    ->orWhereHas('request', fn ($requestQuery) => $requestQuery->where('request_no', 'like', '%' . $search . '%'));
+                    ->orWhereHas('request', fn ($requestQuery) => $requestQuery->where('request_no', 'like', '%' . $search . '%'))
+                    ->orWhereHas('items.product.category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', '%' . $search . '%'));
             });
         }
 
@@ -113,7 +114,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load(['request.requester', 'supplier', 'buyer', 'items.product']);
+        $purchaseOrder->load(['request.requester', 'supplier', 'buyer', 'items.product.category']);
 
         return view('admin.purchase_orders.show', compact('purchaseOrder'));
     }
@@ -297,7 +298,7 @@ class PurchaseOrderController extends Controller
     protected function loadPurchaseOrderDetails(int $purchaseOrderId): ?PurchaseOrder
     {
         return PurchaseOrder::query()
-            ->with(['request.requester', 'supplier', 'buyer', 'items.product'])
+            ->with(['request.requester', 'supplier', 'buyer', 'items.product.category'])
             ->find($purchaseOrderId);
     }
 

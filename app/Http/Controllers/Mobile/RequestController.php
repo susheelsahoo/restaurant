@@ -8,10 +8,10 @@ use App\Http\Controllers\Mobile\Concerns\FormatsMobileValues;
 use App\Models\Department;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderTemplate;
 use App\Models\PurchaseRequest;
 use App\Models\RequestItem;
+use App\Services\PurchaseOrderGenerationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -436,52 +436,6 @@ class RequestController extends Controller
 
     private function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
     {
-        if ($purchaseRequest->purchaseOrders()->exists()) {
-            return;
-        }
-
-        $purchaseRequest->load(['items.supplier', 'items.product:id,estimated_price']);
-
-        $itemsBySupplier = $purchaseRequest->items
-            ->filter(fn ($item) => $item->supplier_id !== null)
-            ->groupBy('supplier_id');
-
-        foreach ($itemsBySupplier as $supplierId => $items) {
-            $purchaseOrder = PurchaseOrder::create([
-                'po_number' => $this->generatePoNumber(),
-                'request_id' => $purchaseRequest->id,
-                'supplier_id' => $supplierId,
-                'buyer_id' => auth()->id(),
-                'status' => 'draft',
-                'order_date' => Carbon::now()->toDateString(),
-                'expected_delivery' => $purchaseRequest->needed_by->toDateString(),
-            ]);
-
-            foreach ($items as $requestItem) {
-                $purchaseOrder->items()->create([
-                    'product_id' => $requestItem->product_id,
-                    'quantity' => $requestItem->quantity,
-                    'received_qty' => 0,
-                    'unit_price' => (float) ($requestItem->product?->estimated_price ?? 0),
-                ]);
-            }
-        }
-    }
-
-    private function generatePoNumber(): string
-    {
-        $year = Carbon::now()->format('Y');
-        $prefix = 'PO-' . $year . '-';
-
-        $lastNumber = PurchaseOrder::query()
-            ->where('po_number', 'like', $prefix . '%')
-            ->orderByDesc('id')
-            ->value('po_number');
-
-        if (!$lastNumber || !preg_match('/(\d+)$/', $lastNumber, $matches)) {
-            return $prefix . '0001';
-        }
-
-        return $prefix . str_pad(((int) $matches[1]) + 1, 4, '0', STR_PAD_LEFT);
+        app(PurchaseOrderGenerationService::class)->createFromRequest($purchaseRequest, auth()->id());
     }
 }

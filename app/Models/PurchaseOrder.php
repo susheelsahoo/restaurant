@@ -27,6 +27,7 @@ class PurchaseOrder extends Model
     ];
 
     protected $appends = [
+        'category_summary',
         'total_amount',
     ];
 
@@ -55,5 +56,22 @@ class PurchaseOrder extends Model
         return (float) $this->items->sum(function (PoItem $item) {
             return ((float) $item->quantity) * ((float) $item->unit_price);
         });
+    }
+
+    public function getCategorySummaryAttribute(): string
+    {
+        $items = $this->relationLoaded('items')
+            ? $this->items
+            : $this->items()->with('product.category:id,name')->get();
+
+        $categories = $items
+            ->map(fn (PoItem $item) => $item->product?->category?->name ?: 'Uncategorized')
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $categories->isNotEmpty()
+            ? $categories->implode(', ')
+            : 'Uncategorized';
     }
 }

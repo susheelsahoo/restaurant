@@ -64,7 +64,7 @@
             </div>
             <div class="qa-search-box">
                 <span class="qa-search-icon" aria-hidden="true">⌕</span>
-                <input id="searchInput" type="text" placeholder="Search product name, SKU, barcode, category...">
+                <input id="searchInput" type="text" placeholder="Search product name, SKU, barcode, category..." aria-label="Search product name, SKU, barcode, or category">
             </div>
         </section>
 
@@ -103,7 +103,7 @@
                     data-step-pcs="1"
                 >
                     <div class="qa-product-row">
-                        <div class="qa-product-left" role="button" tabindex="0">
+                        <div class="qa-product-left" role="button" tabindex="0" aria-pressed="false">
                             <div class="qa-mark"></div>
                             <div class="qa-product-info">
                                 <h3>{{ $product['name'] }}</h3>
@@ -112,13 +112,13 @@
                         </div>
                         <div class="qa-qty-control">
                             <button class="qa-qty-btn qa-minus-btn" type="button">-</button>
-                            <input class="qa-qty-value" value="{{ $defaultQty }}" inputmode="{{ $product['unit'] === 'kg' ? 'decimal' : 'numeric' }}">
+                            <input class="qa-qty-value" type="text" value="{{ $defaultQty }}" inputmode="{{ $product['unit'] === 'kg' ? 'decimal' : 'numeric' }}" aria-label="Quantity for {{ $product['name'] }}">
                             <div class="qa-unit-value">{{ $product['unit'] }}</div>
                             <button class="qa-qty-btn qa-plus-btn" type="button">+</button>
                         </div>
                     </div>
                     <div class="qa-note-row">
-                        <input class="qa-note-input" placeholder="Add note for this item">
+                        <input class="qa-note-input" placeholder="Add note for this item" aria-label="Note for {{ $product['name'] }}">
                     </div>
                 </article>
             @endforeach
@@ -130,17 +130,17 @@
             <span>Marked items: <strong id="bottomSelectedCount">0</strong></span>
             <span>Draft selection</span>
         </div>
-        <button class="qa-submit-btn" id="openOrderModalBtn" type="button">Add Selected Products</button>
+        <button class="qa-submit-btn" id="openOrderModalBtn" type="button" disabled>Add Selected Products</button>
     </div>
 
-    <div class="qa-modal-overlay" id="orderModal">
-        <div class="qa-modal">
+    <div class="qa-modal-overlay" id="orderModal" aria-hidden="true">
+        <div class="qa-modal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
             <div class="qa-modal-head">
                 <div>
-                    <h3>Submit Request</h3>
+                    <h3 id="orderModalTitle">Submit Request</h3>
                     <p>Review selected items and send the purchase request.</p>
                 </div>
-                <button class="qa-modal-close" id="closeOrderModalBtn" type="button">×</button>
+                <button class="qa-modal-close" id="closeOrderModalBtn" type="button" aria-label="Close submit request">×</button>
             </div>
 
             <div class="qa-form-grid">
@@ -269,6 +269,7 @@ function setItemQuantity(item, nextQuantity) {
 
 function setItemSelected(item, selected) {
     item.classList.toggle('selected', selected);
+    item.querySelector('.qa-product-left')?.setAttribute('aria-pressed', selected ? 'true' : 'false');
 }
 
 function resetItemState(item) {
@@ -440,10 +441,12 @@ function openOrderModal() {
     submitState.hidden = true;
     buildModalPreview();
     orderModal.classList.add('open');
+    orderModal.setAttribute('aria-hidden', 'false');
 }
 
 function closeOrderModal() {
     orderModal.classList.remove('open');
+    orderModal.setAttribute('aria-hidden', 'true');
 }
 
 function applyTemplate(templateId) {
