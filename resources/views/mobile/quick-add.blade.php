@@ -1,7 +1,7 @@
 @extends('layout.mobile')
 
 @section('title', 'Quick Add')
-@section('body-class', 'mobile-app-body')
+@section('body-class', 'mobile-app-body quick-add-app-body')
 @section('mobile-standalone', true)
 
 @section('mobile-content')
@@ -183,6 +183,15 @@
 
 @push('scripts')
 <script>
+function setQuickAddViewportHeight() {
+    document.documentElement.style.setProperty('--qa-app-height', `${window.innerHeight}px`);
+}
+
+setQuickAddViewportHeight();
+window.addEventListener('orientationchange', () => {
+    window.setTimeout(setQuickAddViewportHeight, 250);
+});
+
 const initialProducts = @json($quickAddProducts);
 const quickAddTemplates = @json($quickAddTemplates);
 

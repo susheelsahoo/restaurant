@@ -5,7 +5,7 @@
     <title>@yield('title', config('app.name', 'Restaurant'))</title>
     <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e40af">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -46,6 +46,27 @@
     @endif
 
     @stack('scripts')
+    <script>
+        document.addEventListener('gesturestart', function (event) {
+            event.preventDefault();
+        });
+
+        document.addEventListener('gesturechange', function (event) {
+            event.preventDefault();
+        });
+
+        let lastMobileTapTime = 0;
+
+        document.addEventListener('touchend', function (event) {
+            const currentTapTime = Date.now();
+
+            if (currentTapTime - lastMobileTapTime <= 300) {
+                event.preventDefault();
+            }
+
+            lastMobileTapTime = currentTapTime;
+        }, { passive: false });
+    </script>
     <script>
         function toggleMobileProfileMenu(event) {
             event.stopPropagation();
