@@ -183,15 +183,6 @@
 
 @push('scripts')
 <script>
-function setQuickAddViewportHeight() {
-    document.documentElement.style.setProperty('--qa-app-height', `${window.innerHeight}px`);
-}
-
-setQuickAddViewportHeight();
-window.addEventListener('orientationchange', () => {
-    window.setTimeout(setQuickAddViewportHeight, 250);
-});
-
 const initialProducts = @json($quickAddProducts);
 const quickAddTemplates = @json($quickAddTemplates);
 
