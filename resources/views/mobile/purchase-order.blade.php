@@ -19,7 +19,7 @@
             <span aria-hidden="true">&larr;</span>
         </a>
         <div class="or-title-block">
-            <h1>Supplier Order List</h1>
+            <h2>Supplier Order List</h2>
             <p>Assign suppliers and dispatch approved orders</p>
         </div>
         @include('mobile.partials.profile-menu')

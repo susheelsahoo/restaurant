@@ -27,7 +27,7 @@
 <div class="app-container">
     <header class="header">
         <div class="header-text">
-            <h1>Requests</h1>
+            <h2>Requests</h2>
             <p>View all recent purchase requests</p>
         </div>
         @include('mobile.partials.profile-menu')

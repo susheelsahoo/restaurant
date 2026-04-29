@@ -11,7 +11,7 @@
             <span aria-hidden="true">←</span>
         </button>
         <div class="qa-title-block">
-            <h1>Choose Products</h1>
+            <h2>Choose Products</h2>
             <p>Select items, adjust quantity, and submit one request.</p>
         </div>
         <div class="qa-avatar">{{ strtoupper(substr((string) auth()->user()?->name, 0, 1)) ?: 'U' }}</div>
@@ -98,7 +98,6 @@
                     data-sku="{{ $product['sku'] }}"
                     data-barcode="{{ $product['barcode'] }}"
                     data-supplier="{{ $product['preferred_supplier'] }}"
-                    data-supplier-id="{{ $product['supplier_id'] }}"
                     data-unit="{{ $product['unit'] }}"
                     data-default-unit="{{ $product['unit'] }}"
                     data-units="{{ $units }}"
@@ -639,7 +638,6 @@ async function submitRequest() {
         items: selectedItems.map((item) => ({
             product_id: Number(item.dataset.id),
             quantity: Number(item.dataset.qty),
-            supplier_id: item.dataset.supplierId ? Number(item.dataset.supplierId) : null,
             notes: item.querySelector('.qa-note-input').value.trim() || null,
         })),
     };

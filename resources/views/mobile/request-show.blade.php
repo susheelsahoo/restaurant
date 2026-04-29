@@ -17,7 +17,7 @@
             <span aria-hidden="true">&larr;</span>
         </a>
         <div class="or-title-block">
-            <h1>Order Review</h1>
+            <h2>Order Review</h2>
             <p>Manager approval and budget control</p>
         </div>
         <div class="or-avatar">{{ strtoupper(substr((string) auth()->user()?->name, 0, 1)) ?: 'M' }}</div>

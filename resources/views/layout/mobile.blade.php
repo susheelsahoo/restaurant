@@ -16,6 +16,21 @@
 
     {!! includeFavicon() !!}
 
+    <script>
+        (function () {
+            function setMobileViewportHeight() {
+                document.documentElement.style.setProperty('--mobile-viewport-height', window.innerHeight + 'px');
+            }
+
+            setMobileViewportHeight();
+            window.addEventListener('resize', setMobileViewportHeight);
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', setMobileViewportHeight);
+            }
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link

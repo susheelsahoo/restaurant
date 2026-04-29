@@ -18,7 +18,7 @@
 <div class="app-container">
     <header class="header">
         <div class="header-text">
-            <h1>Purchase Orders</h1>
+            <h2>Purchase Orders</h2>
             <p>Track supplier orders from the PO module</p>
         </div>
         @include('mobile.partials.profile-menu')

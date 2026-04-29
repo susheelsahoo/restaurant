@@ -62,7 +62,6 @@ class RequestController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:0.01',
-            'items.*.supplier_id' => 'nullable|exists:suppliers,id',
             'items.*.notes' => 'nullable|string',
         ]);
 
@@ -94,7 +93,7 @@ class RequestController extends Controller
                 $purchaseRequest->items()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'supplier_id' => $item['supplier_id'] ?? null,
+                    'supplier_id' => null,
                     'notes' => $item['notes'] ?? null,
                 ]);
             }

@@ -27,7 +27,7 @@
 <div class="app-container">
     <header class="header">
         <div class="header-text">
-            <h1>{{ $greeting }}, {{ auth()->user()->name }}</h1>
+            <h2>{{ $greeting }}, {{ auth()->user()->name }}</h2>
             <p>Kitchen team &middot; Tuesday overview</p>
         </div>
         @include('mobile.partials.profile-menu')

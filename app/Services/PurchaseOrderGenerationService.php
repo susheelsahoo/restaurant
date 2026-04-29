@@ -17,24 +17,19 @@ class PurchaseOrderGenerationService
         $purchaseRequest->load([
             'items.product:id,name,category_id,estimated_price',
             'items.product.category:id,name',
-            'items.supplier:id',
         ]);
 
         $itemsForPurchaseOrders = $purchaseRequest->items
             ->map(function ($item) {
                 return [
                     'request_item' => $item,
-                    'supplier_id' => $item->supplier_id ? (int) $item->supplier_id : null,
                     'category_id' => $item->product?->category_id ?: 'uncategorized',
                 ];
             });
 
-        $itemsBySupplierAndCategory = $itemsForPurchaseOrders
-            ->groupBy(function ($item) {
-                return ($item['supplier_id'] ?: 'no-supplier') . '|' . $item['category_id'];
-            });
+        $itemsByCategory = $itemsForPurchaseOrders->groupBy('category_id');
 
-        if ($itemsBySupplierAndCategory->isEmpty()) {
+        if ($itemsByCategory->isEmpty()) {
             return;
         }
 
@@ -52,7 +47,7 @@ class PurchaseOrderGenerationService
             'expected_delivery' => $expectedDelivery,
         ]);
 
-        foreach ($itemsBySupplierAndCategory->values() as $index => $items) {
+        foreach ($itemsByCategory->values() as $index => $items) {
             $firstItem = $items->first();
 
             if (!$firstItem) {
@@ -65,7 +60,7 @@ class PurchaseOrderGenerationService
                 'parent_po_id' => $mainPurchaseOrder->id,
                 'po_suffix' => $suffix,
                 'request_id' => $purchaseRequest->id,
-                'supplier_id' => $firstItem['supplier_id'],
+                'supplier_id' => null,
                 'buyer_id' => $buyerId,
                 'status' => 'draft',
                 'order_date' => $orderDate,
