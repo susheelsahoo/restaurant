@@ -2599,7 +2599,7 @@ body.quick-add-app-body {
 }
 
 .po-dispatch-page {
-    padding-bottom: 142px;
+    padding-bottom: 0;
 }
 
 .po-dispatch-page .or-progress {

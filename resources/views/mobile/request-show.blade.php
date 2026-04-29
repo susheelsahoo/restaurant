@@ -130,7 +130,7 @@
         </section>
 
         <div class="or-section-head or-list-head">
-            <h3>Category Pricing &amp; Budget</h3>
+            <h3>Category Pricing & Budget</h3>
             <span>Approved Month Expense</span>
         </div>
 
