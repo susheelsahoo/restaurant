@@ -1531,8 +1531,20 @@ body.mobile-app-body {
     border: none;
     padding: 0;
     background: transparent;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
 }
 
+@media screen and (max-width: 768px) {
+    .qa-search-box input,
+    .qa-field input,
+    .qa-field select,
+    .qa-qty-value,
+    .qa-note-input {
+        font-size: 16px !important;
+    }
+}
 .qa-search-icon {
     color: var(--qa-muted);
     font-size: 16px;
