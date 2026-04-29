@@ -133,9 +133,8 @@
     <div class="qa-sticky-bar">
         <div class="qa-sticky-meta">
             <span>Marked items: <strong id="bottomSelectedCount">0</strong></span>
-            <span>Draft selection</span>
         </div>
-        <button class="qa-submit-btn" id="openOrderModalBtn" type="button" disabled>Add Selected Products</button>
+        <button class="qa-submit-btn" id="openOrderModalBtn" type="button" disabled>Add Selected</button>
     </div>
 
     <div class="qa-modal-overlay" id="orderModal" aria-hidden="true">
