@@ -1809,6 +1809,16 @@ body.quick-add-app-body {
     border-top: 1px solid rgba(226, 232, 240, 0.9);
     box-shadow: 0 -18px 34px rgba(15, 23, 42, 0.10);
     z-index: 20;
+    transition: transform .22s ease, opacity .18s ease, padding .22s ease, min-height .22s ease;
+}
+
+.qa-sticky-bar.is-hidden {
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
 }
 
 .qa-sticky-meta {

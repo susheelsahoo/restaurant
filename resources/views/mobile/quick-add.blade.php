@@ -200,6 +200,7 @@ const selectedTemplateState = document.getElementById('selectedTemplateState');
 const selectedTemplateName = document.getElementById('selectedTemplateName');
 const selectedTemplateMeta = document.getElementById('selectedTemplateMeta');
 const chips = Array.from(document.querySelectorAll('.qa-chip'));
+const quickAddStickyBar = document.querySelector('.qa-sticky-bar');
 const openOrderModalBtn = document.getElementById('openOrderModalBtn');
 const orderModal = document.getElementById('orderModal');
 const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
@@ -700,6 +701,16 @@ searchInput.addEventListener('input', () => {
     clearTimeout(lookupTimer);
     lookupTimer = setTimeout(fetchSuggestions, 250);
     applyFilters();
+});
+
+searchInput.addEventListener('focus', () => {
+    quickAddStickyBar?.classList.add('is-hidden');
+});
+
+searchInput.addEventListener('blur', () => {
+    window.setTimeout(() => {
+        quickAddStickyBar?.classList.remove('is-hidden');
+    }, 120);
 });
 
 searchInput.addEventListener('keydown', (event) => {
