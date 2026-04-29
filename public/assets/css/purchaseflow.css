@@ -3080,7 +3080,7 @@ body.quick-add-app-body {
 
     .app-container .header {
         flex: 0 0 auto;
-        padding-top: 24px;
+        padding-top: 16px;
     }
 
     .app-container .content {
