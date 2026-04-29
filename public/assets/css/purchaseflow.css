@@ -1985,10 +1985,13 @@ body.quick-add-app-body {
         padding-right: 14px;
     }
 
-    .qa-action-row,
-    .qa-modal-actions,
-    .qa-summary-grid {
+    .qa-modal-actions {
         grid-template-columns: 1fr;
+    }
+
+    .qa-action-row,
+    .qa-summary-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
     .qa-product-row {
