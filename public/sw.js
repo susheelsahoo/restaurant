@@ -1,4 +1,4 @@
-const CACHE_VERSION = '2026-04-24-1';
+const CACHE_VERSION = '2026-04-29-1';
 const CACHE_NAME = `restaurant-mobile-v${CACHE_VERSION}`;
 
 // Only cache essential static files

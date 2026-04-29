@@ -231,6 +231,15 @@ body.mobile-app-body {
     text-size-adjust: 100%;
 }
 
+@media (max-width: 1023px) {
+    body.mobile-app-body {
+        height: 100vh;
+        height: 100dvh;
+        min-height: -webkit-fill-available;
+        overflow: hidden;
+    }
+}
+
 body.quick-add-app-body {
     height: 100vh;
     height: 100dvh;
@@ -245,10 +254,12 @@ body.quick-add-app-body {
     width: 100%;
     max-width: 400px; /* Same container width to emulate mobile */
     min-height: 100vh;
+    min-height: 100dvh;
     background-color: #f0f4f8;
     position: relative;
     display: flex;
     flex-direction: column;
+    padding-top: env(safe-area-inset-top);
     padding-bottom: 76px; /* Space for bottom nav */
     margin: 0 auto;
     box-shadow: 0 0 20px rgba(0,0,0,0.03); /* slight shadow for desktop view */
@@ -1309,7 +1320,7 @@ body.quick-add-app-body {
     margin: 0 auto;
     background: linear-gradient(180deg, #dfeafe 0%, var(--qa-bg) 24%, #f8fafc 100%);
     color: var(--qa-text);
-    padding: calc(18px + env(safe-area-inset-top)) 16px 0;
+    padding: calc(32px + env(safe-area-inset-top)) 16px 0;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
     overflow: hidden;
@@ -1343,6 +1354,7 @@ body.quick-add-app-body {
 .qa-main {
     min-height: 0;
     overflow-y: auto;
+    overflow-anchor: none;
     overscroll-behavior: contain;
     padding-bottom: 18px;
     -webkit-overflow-scrolling: touch;
@@ -1977,12 +1989,27 @@ body.quick-add-app-body {
     --or-radius: 22px;
     width: 100%;
     max-width: 400px;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
+    min-height: -webkit-fill-available;
     margin: 0 auto;
     position: relative;
     background: linear-gradient(180deg, #dfeafe 0%, var(--or-bg) 24%, #f8fafc 100%);
     color: var(--or-text);
-    padding: 18px 16px 142px;
+    padding: calc(32px + env(safe-area-inset-top)) 16px 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+}
+
+.order-review-page > main {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-anchor: none;
+    overscroll-behavior: contain;
+    padding-bottom: 18px;
+    -webkit-overflow-scrolling: touch;
 }
 
 .or-topbar,
@@ -2507,16 +2534,15 @@ body.quick-add-app-body {
 }
 
 .or-sticky-bar {
-    position: fixed;
-    left: 50%;
-    bottom: 0;
-    width: 100%;
-    max-width: 400px;
-    transform: translateX(-50%);
-    padding: 12px 16px 16px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--or-line);
+    position: relative;
+    width: calc(100% + 32px);
+    margin: 0 -16px;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 -18px 34px rgba(15, 23, 42, 0.10);
     z-index: 30;
 }
 
@@ -2960,6 +2986,14 @@ body.quick-add-app-body {
         padding-right: 12px;
     }
 
+    .or-sticky-bar {
+        width: calc(100% + 24px);
+        margin-left: -12px;
+        margin-right: -12px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
     .or-meta-row,
     .or-item-row {
         align-items: flex-start;
@@ -2991,5 +3025,45 @@ body.quick-add-app-body {
     .po-dispatch-log,
     .po-dispatch-page .or-card:last-of-type {
         display: none !important;
+    }
+}
+
+@media (max-width: 1023px) {
+    .app-container {
+        height: 100vh;
+        height: 100dvh;
+        min-height: -webkit-fill-available;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: 0;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    }
+
+    .app-container .header {
+        flex: 0 0 auto;
+        padding-top: 24px;
+    }
+
+    .app-container .content {
+        min-height: 0;
+        overflow-y: auto;
+        overflow-anchor: none;
+        overscroll-behavior: contain;
+        padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .app-container .bottom-nav {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        max-width: none;
+        flex: 0 0 auto;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom));
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -18px 34px rgba(15, 23, 42, 0.10);
     }
 }
