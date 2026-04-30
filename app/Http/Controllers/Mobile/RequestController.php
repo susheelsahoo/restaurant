@@ -190,7 +190,7 @@ class RequestController extends Controller
     private function requestReviewData(PurchaseRequest $purchaseRequest): array
     {
         $currency = env('PRICE_SIGN', '$');
-        $monthlyCategoryTotals = $this->monthlyCategoryTotals();
+        $monthlyCategoryTotals = $this->monthlyCategoryTotals($purchaseRequest->id);
 
         $items = $purchaseRequest->items
             ->map(function (RequestItem $item) {
@@ -223,7 +223,8 @@ class RequestController extends Controller
                 ]);
                 $budget = (float) $monthlyTotal['budget'];
                 $requestCost = (float) $categoryItems->sum('line_total');
-                $monthlyCost = (float) $monthlyTotal['cost'];
+                $approvedMonthlyCost = (float) $monthlyTotal['cost'];
+                $monthlyCost = $approvedMonthlyCost + $requestCost;
                 $usedPct = $budget > 0 ? ($monthlyCost / $budget) * 100 : 0;
 
                 if ($budget <= 0 && $monthlyCost > 0) {
@@ -232,15 +233,15 @@ class RequestController extends Controller
                     $progressPct = 100;
                 } elseif ($usedPct > 100) {
                     $tone = 'over';
-                    $statusText = number_format($usedPct, 0) . '% of approved current month spend - over budget';
+                    $statusText = number_format($usedPct, 0) . '% of approved + this request - over budget';
                     $progressPct = 100;
                 } elseif ($usedPct >= 75) {
                     $tone = 'warn';
-                    $statusText = number_format($usedPct, 1) . '% of approved current month spend - near limit';
+                    $statusText = number_format($usedPct, 1) . '% of approved + this request - near limit';
                     $progressPct = $usedPct;
                 } else {
                     $tone = 'safe';
-                    $statusText = number_format($usedPct, 0) . '% of approved current month spend';
+                    $statusText = number_format($usedPct, 0) . '% of approved + this request';
                     $progressPct = $usedPct;
                 }
 
@@ -249,6 +250,7 @@ class RequestController extends Controller
                     'items' => $categoryItems->values(),
                     'items_count' => $categoryItems->count(),
                     'request_cost' => $requestCost,
+                    'approved_monthly_cost' => $approvedMonthlyCost,
                     'monthly_cost' => $monthlyCost,
                     'budget' => $budget,
                     'used_pct' => $usedPct,
@@ -307,7 +309,7 @@ class RequestController extends Controller
         ];
     }
 
-    private function monthlyCategoryTotals()
+    private function monthlyCategoryTotals(?int $excludeRequestId = null)
     {
         $monthStart = now()->startOfMonth();
         $monthEnd = now()->endOfMonth();
@@ -315,9 +317,13 @@ class RequestController extends Controller
 
         return RequestItem::query()
             ->with(['product.category:id,name,monthly_budget'])
-            ->whereHas('purchaseRequest', function ($query) use ($approvedStatuses, $monthStart, $monthEnd) {
+            ->whereHas('purchaseRequest', function ($query) use ($approvedStatuses, $monthStart, $monthEnd, $excludeRequestId) {
                 $query->whereIn('status', $approvedStatuses)
                     ->whereBetween('created_at', [$monthStart, $monthEnd]);
+
+                if ($excludeRequestId !== null) {
+                    $query->whereKeyNot($excludeRequestId);
+                }
             })
             ->get()
             ->map(function (RequestItem $item) {

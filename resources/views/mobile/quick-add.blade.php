@@ -214,6 +214,7 @@ const priorityInput = document.getElementById('priority');
 let productItems = [];
 let productSearchCache = initialProducts.slice();
 let activeCategory = 'all';
+let activeTemplateId = null;
 let lookupTimer = null;
 let templateHighlightTimer = null;
 
@@ -473,6 +474,26 @@ function closeOrderModal() {
     orderModal.setAttribute('aria-hidden', 'true');
 }
 
+function clearSelectedProducts() {
+    productItems.forEach(resetItemState);
+    updateSummary();
+}
+
+function clearTemplateSelection() {
+    activeTemplateId = null;
+
+    templateButtons.forEach((button) => {
+        button.classList.remove('active');
+        button.setAttribute('aria-pressed', 'false');
+    });
+
+    selectedTemplateName.textContent = '';
+    selectedTemplateMeta.textContent = '';
+    selectedTemplateState.hidden = true;
+
+    productItems.forEach((item) => item.classList.remove('template-highlight'));
+}
+
 function applyTemplate(templateId) {
     const template = quickAddTemplates.find((item) => Number(item.id) === Number(templateId));
 
@@ -480,8 +501,18 @@ function applyTemplate(templateId) {
         return;
     }
 
+    if (Number(activeTemplateId) === Number(template.id)) {
+        clearSelectedProducts();
+        clearTemplateSelection();
+        clearMessage();
+        return;
+    }
+
     let matched = 0;
     const matchedItems = [];
+
+    clearTemplateSelection();
+    clearSelectedProducts();
 
     template.items.forEach((templateItem) => {
         const matchedItem = productItems.find((item) => Number(item.dataset.id) === Number(templateItem.product_id));
@@ -493,7 +524,6 @@ function applyTemplate(templateId) {
         matched += 1;
         matchedItems.push(matchedItem);
         setItemSelected(matchedItem, true);
-        setItemQuantity(matchedItem, templateItem.quantity);
 
         if (templateItem.unit) {
             matchedItem.dataset.unit = templateItem.unit;
@@ -502,6 +532,8 @@ function applyTemplate(templateId) {
                 unitValue.textContent = templateItem.unit;
             }
         }
+
+        setItemQuantity(matchedItem, templateItem.quantity);
 
         if (templateItem.note) {
             matchedItem.querySelector('.qa-note-input').value = templateItem.note;
@@ -514,6 +546,8 @@ function applyTemplate(templateId) {
         showMessage('Template products are not available in the current product list.');
         return;
     }
+
+    activeTemplateId = template.id;
 
     templateButtons.forEach((button) => {
         const isSelected = Number(button.dataset.templateId) === Number(template.id);

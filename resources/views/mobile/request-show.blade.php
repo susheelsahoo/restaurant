@@ -67,9 +67,9 @@
             class="or-warning-banner {{ $requestReview['alert_count'] > 0 ? 'show ' . ($requestReview['over_budget_categories']->isNotEmpty() ? 'danger' : 'warning') : '' }}"
         >
             @if($requestReview['over_budget_categories']->isNotEmpty())
-                Over-budget warning: approved current month spend for {{ $requestReview['over_budget_categories']->implode(', ') }} exceeded the category budget.
+                Over-budget warning: approved current month spend plus this request for {{ $requestReview['over_budget_categories']->implode(', ') }} exceeded the category budget.
             @elseif($requestReview['warning_categories']->isNotEmpty())
-                Budget caution: approved current month spend for {{ $requestReview['warning_categories']->implode(', ') }} is close to the category limit.
+                Budget caution: approved current month spend plus this request for {{ $requestReview['warning_categories']->implode(', ') }} is close to the category limit.
             @endif
         </div>
 
@@ -85,7 +85,7 @@
                 </div>
                 <div class="or-summary-box">
                     <strong id="budgetRemaining">{{ $money($requestReview['budget_remaining']) }}</strong>
-                    <span>Approved month budget left</span>
+                    <span>Budget left after request</span>
                 </div>
             </div>
         </section>
@@ -130,8 +130,8 @@
         </section>
 
         <div class="or-section-head or-list-head">
-            <h3>Category Pricing & Budget</h3>
-            <span>Approved Month Expense</span>
+            <h3>Monthly Budget</h3>
+            <span>Approved + Current Request</span>
         </div>
 
         @forelse($requestReview['categories'] as $category)
@@ -401,17 +401,17 @@ function updateBudgetWarnings() {
             overBudgetCategories.push(card.dataset.category);
             progress.classList.add('over');
             progressBar.style.width = '100%';
-            statusEl.textContent = `${usedPct.toFixed(0)}% of approved current month spend - over budget`;
+            statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request - over budget`;
         } else if (usedPct >= 75) {
             alerts += 1;
             warningCategories.push(card.dataset.category);
             progress.classList.add('warn');
             progressBar.style.width = `${usedPct}%`;
-            statusEl.textContent = `${usedPct.toFixed(1)}% of approved current month spend - near limit`;
+            statusEl.textContent = `${usedPct.toFixed(1)}% of approved + this request - near limit`;
         } else {
             progress.classList.add('safe');
             progressBar.style.width = `${usedPct}%`;
-            statusEl.textContent = `${usedPct.toFixed(0)}% of approved current month spend`;
+            statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request`;
         }
     });
 
@@ -425,10 +425,10 @@ function updateBudgetWarnings() {
 
     if (overBudgetCategories.length) {
         warningBanner.className = 'or-warning-banner show danger';
-        warningBanner.textContent = `Over-budget warning: approved current month spend for ${overBudgetCategories.join(', ')} exceeded the category budget.`;
+        warningBanner.textContent = `Over-budget warning: approved current month spend plus this request for ${overBudgetCategories.join(', ')} exceeded the category budget.`;
     } else if (warningCategories.length) {
         warningBanner.className = 'or-warning-banner show warning';
-        warningBanner.textContent = `Budget caution: approved current month spend for ${warningCategories.join(', ')} is close to the category limit or has no budget set.`;
+        warningBanner.textContent = `Budget caution: approved current month spend plus this request for ${warningCategories.join(', ')} is close to the category limit or has no budget set.`;
     } else {
         warningBanner.className = 'or-warning-banner';
         warningBanner.textContent = '';

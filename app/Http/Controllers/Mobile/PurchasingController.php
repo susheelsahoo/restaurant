@@ -331,6 +331,7 @@ class PurchasingController extends Controller
             'dispatch_status' => $dispatchStatus,
             'dispatch_label' => $dispatchMeta['label'],
             'dispatch_pill_tone' => $dispatchMeta['tone'],
+            'supplier_id' => $purchaseOrder->supplier_id,
             'status_url' => url('/mobile/purchase-order/' . $purchaseOrder->id . '/status'),
             'assign_supplier_url' => url('/mobile/purchase-order/' . $purchaseOrder->id . '/supplier'),
             'receiving_url' => url('/mobile/purchase-order/' . $purchaseOrder->id . '/receiving'),
