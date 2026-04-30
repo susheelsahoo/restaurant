@@ -363,14 +363,6 @@
         </div>
         <div class="or-action-grid po-dispatch-footer-actions">
             <button class="or-btn modify" id="exportBtn" type="button">Export PO</button>
-            <button
-                class="or-btn confirm po-receive-open-btn"
-                type="button"
-                data-receive-modal-id="poReceiveModal-{{ $firstSupplierOrderId }}"
-                @disabled($supplierOrders->sum('items_count') === 0)
-            >
-                Receive Items
-            </button>
         </div>
     </div>
 
@@ -445,7 +437,6 @@ const sendOnlyReadyInput = document.getElementById('poSendOnlyReady');
 const statusSendButtons = Array.from(document.querySelectorAll('.po-status-send-btn'));
 const receiveModals = Array.from(document.querySelectorAll('.po-receive-modal'));
 const receiveForms = Array.from(document.querySelectorAll('.po-receive-form'));
-const receiveOpenButtons = Array.from(document.querySelectorAll('.po-receive-open-btn'));
 let activePreviewCard = null;
 let pendingChannel = 'email';
 const shouldOpenReceiveModal = @json($hasReceiveErrors);
@@ -603,11 +594,20 @@ function openReceiveModal(modalId = '') {
         return;
     }
 
+    receiveModals.forEach((modal) => {
+        modal.hidden = true;
+        modal.setAttribute('hidden', 'hidden');
+    });
+
     const receiveValidationError = receiveModal.querySelector('.po-receive-validation-error');
 
-    receiveValidationError.className = 'or-inline-error';
-    receiveValidationError.textContent = '';
+    if (receiveValidationError) {
+        receiveValidationError.className = 'or-inline-error';
+        receiveValidationError.textContent = '';
+    }
+
     receiveModal.hidden = false;
+    receiveModal.removeAttribute('hidden');
 }
 
 function closeReceiveModal(receiveModal) {
@@ -616,10 +616,19 @@ function closeReceiveModal(receiveModal) {
     }
 
     receiveModal.hidden = true;
+    receiveModal.setAttribute('hidden', 'hidden');
 }
 
-receiveOpenButtons.forEach((button) => {
-    button.addEventListener('click', () => openReceiveModal(button.dataset.receiveModalId || ''));
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('.po-receive-open-btn');
+
+    if (!button || button.disabled) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    openReceiveModal(button.dataset.receiveModalId || '');
 });
 
 receiveModals.forEach((receiveModal) => {
