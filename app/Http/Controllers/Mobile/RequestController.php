@@ -54,6 +54,22 @@ class RequestController extends Controller
         ));
     }
 
+    public function edit(string $requestNo)
+    {
+        $purchaseRequest = PurchaseRequest::query()
+            ->with(['items.product.category:id,name', 'items.supplier:id,name'])
+            ->where('request_no', $requestNo)
+            ->firstOrFail();
+
+        if ($purchaseRequest->status !== 'returned') {
+            return redirect('/mobile/request-detail/' . $purchaseRequest->request_no);
+        }
+
+        return view('mobile.request-edit', [
+            'requestEdit' => $this->requestEditData($purchaseRequest),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -113,6 +129,50 @@ class RequestController extends Controller
                 'request_no' => $purchaseRequest->request_no,
             ],
         ]);
+    }
+
+    public function updateItems(Request $request, PurchaseRequest $purchaseRequest)
+    {
+        if ($purchaseRequest->status !== 'returned') {
+            return redirect('/mobile/request-detail/' . $purchaseRequest->request_no)
+                ->with('error', 'Only requests marked Needs Edit can be changed.');
+        }
+
+        $validated = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required|exists:request_items,id',
+            'items.*.quantity' => 'required|numeric|min:0.01',
+            'items.*.notes' => 'nullable|string|max:2000',
+        ]);
+
+        $requestItemIds = $purchaseRequest->items()->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        DB::transaction(function () use ($purchaseRequest, $validated, $requestItemIds) {
+            foreach ($validated['items'] as $itemData) {
+                $itemId = (int) $itemData['id'];
+
+                if (!in_array($itemId, $requestItemIds, true)) {
+                    throw ValidationException::withMessages([
+                        'items' => 'One or more products do not belong to this request.',
+                    ]);
+                }
+
+                RequestItem::query()
+                    ->whereKey($itemId)
+                    ->where('request_id', $purchaseRequest->id)
+                    ->update([
+                        'quantity' => $itemData['quantity'],
+                        'notes' => $itemData['notes'] ?? null,
+                    ]);
+            }
+
+            $purchaseRequest->update([
+                'status' => 'submitted',
+            ]);
+        });
+
+        return redirect('/mobile/request-detail')
+            ->with('success', 'Request updated and sent back for review.');
     }
 
     public function updateStatus(Request $request, PurchaseRequest $purchaseRequest)
@@ -306,6 +366,35 @@ class RequestController extends Controller
             'warning_categories' => $warningCategories,
             'over_budget_categories' => $overBudgetCategories,
             'currency' => $currency,
+        ];
+    }
+
+    private function requestEditData(PurchaseRequest $purchaseRequest): array
+    {
+        $items = $purchaseRequest->items
+            ->map(function (RequestItem $item) {
+                $product = $item->product;
+
+                return [
+                    'id' => $item->id,
+                    'name' => $product?->name ?: 'Unknown product',
+                    'category' => $product?->category?->name ?: 'Uncategorized',
+                    'unit' => $product?->unit ?: 'unit',
+                    'quantity' => (float) $item->quantity,
+                    'supplier' => $item->supplier?->name ?: '-',
+                    'notes' => $item->notes,
+                ];
+            })
+            ->values();
+
+        return [
+            'id' => $purchaseRequest->id,
+            'request_no' => $purchaseRequest->request_no,
+            'status' => $purchaseRequest->status,
+            'manager_comment' => $purchaseRequest->manager_comment,
+            'update_url' => url('/mobile/request-detail/' . $purchaseRequest->id . '/items'),
+            'detail_url' => url('/mobile/request-detail/' . $purchaseRequest->request_no),
+            'items' => $items,
         ];
     }
 

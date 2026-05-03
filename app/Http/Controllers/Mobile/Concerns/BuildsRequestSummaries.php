@@ -32,7 +32,9 @@ trait BuildsRequestSummaries
                     ->take(3)
                     ->implode(', ') ?: 'No products',
                 'is_urgent' => $purchaseRequest->priority === 'urgent',
-                'detail_url' => url('/mobile/request-detail/' . $purchaseRequest->request_no),
+                'detail_url' => $purchaseRequest->status === 'returned'
+                    ? url('/mobile/request-detail/' . $purchaseRequest->request_no . '/edit')
+                    : url('/mobile/request-detail/' . $purchaseRequest->request_no),
             ];
         });
     }

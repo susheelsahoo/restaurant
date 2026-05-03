@@ -108,6 +108,24 @@ class PurchasingController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
+        $categoryIds = $this->purchaseOrderCategoryIds($purchaseOrder);
+
+        if ($categoryIds->isNotEmpty()) {
+            $isCategorySupplier = Supplier::query()
+                ->whereKey($validated['supplier_id'])
+                ->where('status', 'active')
+                ->whereHas('productCategories', function ($query) use ($categoryIds) {
+                    $query->whereIn('product_categories.id', $categoryIds);
+                })
+                ->exists();
+
+            if (!$isCategorySupplier) {
+                throw ValidationException::withMessages([
+                    'supplier_id' => 'Please select a supplier linked to this order category.',
+                ]);
+            }
+        }
+
         $purchaseOrder->update([
             'supplier_id' => $validated['supplier_id'],
         ]);
@@ -246,7 +264,6 @@ class PurchasingController extends Controller
             'ready_count' => $supplierOrderData->where('dispatch_status', 'ready')->count(),
             'sent_count' => $supplierOrderData->where('dispatch_status', 'sent')->count(),
             'supplier_needed_count' => $supplierOrderData->where('dispatch_status', 'unassigned')->count(),
-            'supplier_options' => $this->supplierOptions(),
             'statuses' => $this->purchaseOrderStatuses(),
             'status_actions' => ['confirmed', 'partial', 'completed', 'delayed'],
         ];
@@ -265,6 +282,7 @@ class PurchasingController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->product?->name ?: 'Unknown product',
+                    'category_id' => $item->product?->category_id,
                     'category' => $item->product?->category?->name ?: 'Uncategorized',
                     'ordered_quantity' => $quantity,
                     'received_quantity' => $receivedQuantity,
@@ -284,6 +302,7 @@ class PurchasingController extends Controller
             ->map(function ($categoryItems, string $categoryName) {
                 return [
                     'name' => $categoryName,
+                    'category_ids' => $categoryItems->pluck('category_id')->filter()->unique()->values(),
                     'items' => $categoryItems->values(),
                     'items_count' => $categoryItems->count(),
                     'total_label' => $this->formatMoney((float) $categoryItems->sum('line_total')),
@@ -319,6 +338,7 @@ class PurchasingController extends Controller
             'supplier_email' => $purchaseOrder->supplier?->email ?: '-',
             'supplier_phone' => $purchaseOrder->supplier?->phone ?: '-',
             'category_summary' => $purchaseOrder->category_summary,
+            'supplier_options' => $this->supplierOptions($items->pluck('category_id')->filter()->unique()->values()->all()),
             'expected_delivery' => $purchaseOrder->expected_delivery?->format('M d, Y') ?: '-',
             'expected_delivery_short' => $purchaseOrder->expected_delivery?->format('M d') ?: '-',
             'items_count' => $items->count(),
@@ -341,17 +361,34 @@ class PurchasingController extends Controller
         ];
     }
 
-    private function supplierOptions()
+    private function supplierOptions(array $categoryIds = [])
     {
-        return Supplier::query()
+        $query = Supplier::query()
             ->where('status', 'active')
-            ->orderBy('name')
+            ->orderBy('name');
+
+        if ($categoryIds !== []) {
+            $query->whereHas('productCategories', function ($builder) use ($categoryIds) {
+                $builder->whereIn('product_categories.id', $categoryIds);
+            });
+        }
+
+        return $query
             ->get(['id', 'name'])
             ->map(fn (Supplier $supplier) => [
                 'id' => $supplier->id,
                 'name' => $supplier->name,
             ])
             ->values();
+    }
+
+    private function purchaseOrderCategoryIds(PurchaseOrder $purchaseOrder)
+    {
+        return $purchaseOrder->items()
+            ->join('products', 'products.id', '=', 'po_items.product_id')
+            ->whereNotNull('products.category_id')
+            ->distinct()
+            ->pluck('products.category_id');
     }
 
     private function purchaseOrderStatusMeta(string $status): array

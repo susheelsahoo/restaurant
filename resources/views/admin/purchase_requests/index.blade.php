@@ -160,7 +160,12 @@
                                 </td>
                                 <td>{{ optional($purchaseRequest->needed_by)->format('d M Y H:i') ?: '-' }}</td>
                                 <td class="text-nowrap">
-                                    <a href="{{ route('admin.purchase-orders.requests.show', $purchaseRequest->id) }}" class="btn btn-sm btn-light-info">View</a>
+                                    <a
+                                        href="{{ $purchaseRequest->status === 'returned' ? route('admin.purchase-orders.requests.edit', ['purchaseRequest' => $purchaseRequest->id, 'mode' => 'quantity']) : route('admin.purchase-orders.requests.show', $purchaseRequest->id) }}"
+                                        class="btn btn-sm btn-light-info"
+                                    >
+                                        View
+                                    </a>
                                     <a href="{{ route('admin.purchase-orders.requests.edit', $purchaseRequest->id) }}" class="btn btn-sm btn-warning">
                                         {!! getIcon('pencil', 'fs-3', '', 'i') !!}
                                     </a>

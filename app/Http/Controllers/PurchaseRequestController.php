@@ -114,6 +114,13 @@ class PurchaseRequestController extends Controller
 
     public function show(PurchaseRequest $purchaseRequest)
     {
+        if ($purchaseRequest->status === 'returned') {
+            return redirect()->route('admin.purchase-orders.requests.edit', [
+                'purchaseRequest' => $purchaseRequest->id,
+                'mode' => 'quantity',
+            ]);
+        }
+
         $purchaseRequest->load(['requester', 'department', 'items.product', 'items.supplier', 'purchaseOrders']);
 
         return view('admin.purchase_requests.show', compact('purchaseRequest'));

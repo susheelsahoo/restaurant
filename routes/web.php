@@ -239,6 +239,10 @@ Route::middleware([])->group(function () {
         Route::get('/mobile/quick-add', [MobileRequestController::class, 'create']);
         Route::post('/mobile/quick-add', [MobileRequestController::class, 'store']);
         Route::get('/mobile/request-detail', [MobileRequestController::class, 'index']);
+        Route::get('/mobile/request-detail/{requestNo}/edit', [MobileRequestController::class, 'edit'])
+            ->where('requestNo', '[A-Za-z0-9\-]+');
+        Route::patch('/mobile/request-detail/{purchaseRequest}/items', [MobileRequestController::class, 'updateItems'])
+            ->whereNumber('purchaseRequest');
         Route::get('/mobile/request-detail/{requestNo}', [MobileRequestController::class, 'index'])
             ->where('requestNo', '[A-Za-z0-9\-]+');
         Route::patch('/mobile/request-detail/{purchaseRequest}/status', [MobileRequestController::class, 'updateStatus'])

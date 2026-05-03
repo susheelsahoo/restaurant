@@ -55,11 +55,6 @@
                         <div class="qa-template-empty">No active templates available.</div>
                     @endforelse
                 </div>
-                <div id="selectedTemplateState" class="qa-selected-template" hidden>
-                    <span>Selected template</span>
-                    <strong id="selectedTemplateName"></strong>
-                    <small id="selectedTemplateMeta"></small>
-                </div>
             </div>
             <div class="qa-chip-row">
                 <button class="qa-chip active" type="button" data-category="all">All</button>
@@ -77,7 +72,7 @@
 
         <div class="qa-section-head qa-list-head">
             <h2>Product List</h2>
-            <span id="visibleCount">0 products</span>
+            <button id="toggleProductListBtn" class="qa-list-toggle" type="button" aria-pressed="false">Hide product list</button>
         </div>
 
         <div id="lookupMessage"></div>
@@ -188,16 +183,13 @@ const searchInput = document.getElementById('searchInput');
 const selectedCountEl = document.getElementById('selectedCount');
 const totalQuantityEl = document.getElementById('totalQuantity');
 const bottomSelectedCountEl = document.getElementById('bottomSelectedCount');
-const visibleCountEl = document.getElementById('visibleCount');
+const toggleProductListBtn = document.getElementById('toggleProductListBtn');
 const lookupMessage = document.getElementById('lookupMessage');
 const scanBtn = document.getElementById('scanBtn');
 const templateBtn = document.getElementById('templateBtn');
 const scanInfo = document.getElementById('scanInfo');
 const templatePanel = document.getElementById('templatePanel');
 const templateButtons = Array.from(document.querySelectorAll('.qa-template-chip'));
-const selectedTemplateState = document.getElementById('selectedTemplateState');
-const selectedTemplateName = document.getElementById('selectedTemplateName');
-const selectedTemplateMeta = document.getElementById('selectedTemplateMeta');
 const chips = Array.from(document.querySelectorAll('.qa-chip'));
 const quickAddStickyBar = document.querySelector('.qa-sticky-bar');
 const openOrderModalBtn = document.getElementById('openOrderModalBtn');
@@ -215,6 +207,8 @@ let productItems = [];
 let productSearchCache = initialProducts.slice();
 let activeCategory = 'all';
 let activeTemplateId = null;
+let showAllProducts = false;
+let isProductListHidden = false;
 let lookupTimer = null;
 let templateHighlightTimer = null;
 
@@ -231,6 +225,15 @@ function setQuickAddMode(mode) {
 
     scanInfo.hidden = !isScanMode;
     templatePanel.hidden = isScanMode;
+
+    if (isScanMode) {
+        showAllProducts = true;
+        isProductListHidden = false;
+    } else {
+        showAllProducts = activeTemplateId === null;
+    }
+
+    applyFilters();
 }
 
 function escapeHtml(value) {
@@ -323,13 +326,41 @@ function updateSummary() {
     openOrderModalBtn.disabled = selectedItems.length === 0;
 }
 
-function updateVisibleCount() {
-    const visibleItems = productItems.filter((item) => !item.classList.contains('hidden'));
-    visibleCountEl.textContent = `${visibleItems.length} products`;
+function getActiveTemplateProductIds() {
+    const template = quickAddTemplates.find((item) => Number(item.id) === Number(activeTemplateId));
+
+    if (!template || !Array.isArray(template.items)) {
+        return [];
+    }
+
+    return template.items.map((item) => Number(item.product_id));
+}
+
+function updateProductListToggle() {
+    if (!toggleProductListBtn) {
+        return;
+    }
+
+    if (activeTemplateId && !showAllProducts) {
+        toggleProductListBtn.textContent = 'Show all products';
+        toggleProductListBtn.setAttribute('aria-pressed', 'false');
+        return;
+    }
+
+    if (activeTemplateId && showAllProducts) {
+        toggleProductListBtn.textContent = 'Show template products';
+        toggleProductListBtn.setAttribute('aria-pressed', 'true');
+        return;
+    }
+
+    toggleProductListBtn.textContent = isProductListHidden ? 'Show product list' : 'Hide product list';
+    toggleProductListBtn.setAttribute('aria-pressed', isProductListHidden ? 'true' : 'false');
 }
 
 function applyFilters() {
     const query = searchInput.value.trim().toLowerCase();
+    const hasSearchQuery = query !== '';
+    const activeTemplateProductIds = getActiveTemplateProductIds();
 
     productItems.forEach((item) => {
         const haystack = [
@@ -340,13 +371,18 @@ function applyFilters() {
             item.dataset.supplier,
         ].join(' ').toLowerCase();
 
-        const matchesSearch = query === '' || haystack.includes(query);
-        const matchesCategory = activeCategory === 'all' || item.dataset.categorySlug === activeCategory;
+        const matchesSearch = !hasSearchQuery || haystack.includes(query);
+        const matchesCategory = hasSearchQuery || activeCategory === 'all' || item.dataset.categorySlug === activeCategory;
+        const matchesTemplate = !activeTemplateId
+            || showAllProducts
+            || hasSearchQuery
+            || activeTemplateProductIds.includes(Number(item.dataset.id));
+        const shouldHide = isProductListHidden || !(matchesSearch && matchesCategory && matchesTemplate);
 
-        item.classList.toggle('hidden', !(matchesSearch && matchesCategory));
+        item.classList.toggle('hidden', shouldHide);
     });
 
-    updateVisibleCount();
+    updateProductListToggle();
 }
 
 function attachProductItemEvents(item) {
@@ -481,17 +517,15 @@ function clearSelectedProducts() {
 
 function clearTemplateSelection() {
     activeTemplateId = null;
+    showAllProducts = true;
 
     templateButtons.forEach((button) => {
         button.classList.remove('active');
         button.setAttribute('aria-pressed', 'false');
     });
 
-    selectedTemplateName.textContent = '';
-    selectedTemplateMeta.textContent = '';
-    selectedTemplateState.hidden = true;
-
     productItems.forEach((item) => item.classList.remove('template-highlight'));
+    applyFilters();
 }
 
 function applyTemplate(templateId) {
@@ -548,6 +582,8 @@ function applyTemplate(templateId) {
     }
 
     activeTemplateId = template.id;
+    showAllProducts = false;
+    isProductListHidden = false;
 
     templateButtons.forEach((button) => {
         const isSelected = Number(button.dataset.templateId) === Number(template.id);
@@ -555,15 +591,12 @@ function applyTemplate(templateId) {
         button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
 
-    selectedTemplateName.textContent = template.name;
-    selectedTemplateMeta.textContent = `${matched} ${matched === 1 ? 'product' : 'products'} selected from this template`;
-    selectedTemplateState.hidden = false;
-
     if (templateHighlightTimer) {
         window.clearTimeout(templateHighlightTimer);
     }
 
     productItems.forEach((item) => item.classList.remove('template-highlight'));
+    applyFilters();
     matchedItems.forEach((item) => item.classList.add('template-highlight'));
     matchedItems[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -618,6 +651,8 @@ async function lookupProduct() {
         const matchedItem = productItems.find((item) => Number(item.dataset.id) === Number(product.id));
 
         if (matchedItem) {
+            isProductListHidden = false;
+            applyFilters();
             setItemSelected(matchedItem, true);
             matchedItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             clearMessage();
@@ -730,6 +765,10 @@ chips.forEach((chip) => {
 });
 
 searchInput.addEventListener('input', () => {
+    if (searchInput.value.trim() !== '') {
+        isProductListHidden = false;
+    }
+
     clearTimeout(lookupTimer);
     lookupTimer = setTimeout(fetchSuggestions, 250);
     applyFilters();
@@ -766,6 +805,17 @@ templateBtn.addEventListener('click', () => {
 
 templateButtons.forEach((button) => {
     button.addEventListener('click', () => applyTemplate(button.dataset.templateId));
+});
+
+toggleProductListBtn?.addEventListener('click', () => {
+    if (activeTemplateId) {
+        showAllProducts = !showAllProducts;
+        isProductListHidden = false;
+    } else {
+        isProductListHidden = !isProductListHidden;
+    }
+
+    applyFilters();
 });
 
 openOrderModalBtn.addEventListener('click', openOrderModal);

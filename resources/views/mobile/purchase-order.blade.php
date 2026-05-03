@@ -6,7 +6,6 @@
 
 @php
     $supplierOrders = collect($purchaseOrderReview['supplier_orders']);
-    $supplierOptions = collect($purchaseOrderReview['supplier_options'] ?? []);
     $firstSupplierOrderId = $supplierOrders->first()['id'] ?? $purchaseOrderReview['id'];
     $canSendOrder = $supplierOrders->contains(fn ($supplierOrder) => $supplierOrder['dispatch_status'] === 'ready');
     $hasReceiveErrors = $errors->has('receipts')
@@ -37,7 +36,7 @@
         <section class="or-card or-hero">
             <h2>Approved Order Ready for Dispatch</h2>
             <p>
-                Review {{ $purchaseOrderReview['category_summary'] }} order {{ $purchaseOrderReview['po_number'] }} and send each supplier sub PO by WhatsApp or email.
+                Review {{ $purchaseOrderReview['category_summary'] }} order and send each supplier sub order by WhatsApp or email.
             </p>
             <div class="or-hero-grid">
                 <div class="or-hero-box">
@@ -49,8 +48,8 @@
                     <span>Total dispatch value</span>
                 </div>
                 <div class="or-hero-box">
-                    <strong>{{ $purchaseOrderReview['category_summary'] }}</strong>
-                    <span>Order part</span>
+                    <strong>{{ $purchaseOrderReview['po_number'] }}</strong>
+                    <span>PO Number</span>
                 </div>
                 <div class="or-hero-box">
                     <strong>{{ $purchaseOrderReview['expected_delivery_short'] }}</strong>
@@ -92,6 +91,7 @@
 
         @foreach($supplierOrders as $supplierOrder)
             @php
+                $categorySupplierOptions = collect($supplierOrder['supplier_options'] ?? []);
                 $supplierContactParts = collect([
                     $supplierOrder['supplier_phone'],
                     $supplierOrder['supplier_email'],
@@ -130,24 +130,6 @@
                         </div>
                     </div>
 
-                    <form class="po-assignment-row po-assignment-row-head" method="POST" action="{{ $supplierOrder['assign_supplier_url'] }}">
-                        @csrf
-                        @method('PATCH')
-                        <select class="po-assignment-select" name="supplier_id" required>
-                            <option value="">{{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Assign supplier...' : 'Reassign supplier...' }}</option>
-                            @foreach($supplierOptions as $supplierOption)
-                                <option
-                                    value="{{ $supplierOption['id'] }}"
-                                    @selected((int) ($supplierOrder['supplier_id'] ?? 0) === (int) $supplierOption['id'])
-                                >
-                                    {{ $supplierOption['name'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button class="po-assign-btn" type="submit" @disabled($supplierOptions->isEmpty())>
-                            {{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Assign' : 'Reassign' }}
-                        </button>
-                    </form>
                 </div>
             </div>
 
@@ -157,14 +139,29 @@
                     <strong>{{ $supplierOrder['po_number'] }}</strong>
                 </div>
                 <div class="po-order-meta-box">
-                    <small>Category Part</small>
-                    <strong>{{ $supplierOrder['category_summary'] }}</strong>
-                </div>
-                <div class="po-order-meta-box">
                     <small>Delivery Date</small>
                     <strong>{{ $supplierOrder['expected_delivery'] }}</strong>
                 </div>
             </div>
+
+            <form class="po-assignment-row" method="POST" action="{{ $supplierOrder['assign_supplier_url'] }}">
+                @csrf
+                @method('PATCH')
+                <select class="po-assignment-select" name="supplier_id" required>
+                    <option value="">{{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Assign supplier...' : 'Reassign supplier...' }}</option>
+                    @foreach($categorySupplierOptions as $supplierOption)
+                        <option
+                            value="{{ $supplierOption['id'] }}"
+                            @selected((int) ($supplierOrder['supplier_id'] ?? 0) === (int) $supplierOption['id'])
+                        >
+                            {{ $supplierOption['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+                <button class="po-assign-btn" type="submit" @disabled($categorySupplierOptions->isEmpty())>
+                    {{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Assign' : 'Reassign' }}
+                </button>
+            </form>
 
             @forelse($supplierOrder['categories'] as $category)
                 <div class="po-category-block">
@@ -211,7 +208,7 @@
                 @if($supplierOrder['dispatch_status'] === 'sent')
                     Order already sent or confirmed with supplier.
                 @elseif($supplierOrder['dispatch_status'] === 'unassigned')
-                    {{ $supplierOptions->isEmpty() ? 'No active suppliers available.' : 'Supplier not assigned yet.' }}
+                    {{ $categorySupplierOptions->isEmpty() ? 'No active suppliers available for this category.' : 'Supplier not assigned yet.' }}
                 @endif
             </div>
 

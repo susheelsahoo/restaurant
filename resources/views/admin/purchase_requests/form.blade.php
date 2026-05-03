@@ -54,6 +54,13 @@
                             </div>
                         @endif
 
+                        @if(isset($purchaseRequest) && $purchaseRequest->status === 'returned')
+                            <div class="alert alert-warning">
+                                <div class="fw-bold mb-1">Sent back for changes</div>
+                                <div>Review the manager comment and update the product quantities before saving.</div>
+                            </div>
+                        @endif
+
                         <div class="row mb-6">
                             <label class="col-lg-4 col-form-label required fw-semibold fs-6">Request Number</label>
                             <div class="col-lg-8">
