@@ -245,6 +245,14 @@ ADD COLUMN manager_comment TEXT NULL AFTER status,
 ADD COLUMN admin_comment TEXT NULL AFTER manager_comment;
 
 
+ALTER TABLE products
+CONVERT TO CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+
+ALTER DATABASE tifliszo
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 
 
 
