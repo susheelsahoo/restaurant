@@ -9,6 +9,7 @@ use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\PurchaseOrderReceivingService;
+use App\Services\PurchaseRoleService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +20,14 @@ use Illuminate\Validation\ValidationException;
 
 class PurchaseOrderController extends Controller
 {
+    public function __construct(private readonly PurchaseRoleService $purchaseRoles)
+    {
+    }
+
     public function index(Request $request)
     {
+        $this->authorizePurchasing();
+
         $query = PurchaseOrder::query()
             ->whereNull('parent_po_id')
             ->with([
@@ -112,11 +119,15 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
+        $this->authorizePurchasing();
+
         return view('admin.purchase_orders.form', $this->formData());
     }
 
     public function store(Request $request)
     {
+        $this->authorizePurchasing();
+
         $data = $this->validateData($request);
 
         DB::transaction(function () use ($data) {
@@ -130,6 +141,8 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
+        $this->authorizePurchasing();
+
         $purchaseOrder->load([
             'parent',
             'request.requester',
@@ -146,6 +159,8 @@ class PurchaseOrderController extends Controller
 
     public function edit(PurchaseOrder $purchaseOrder)
     {
+        $this->authorizePurchasing();
+
         $purchaseOrder->load(['items.product']);
 
         return view('admin.purchase_orders.form', array_merge(
@@ -156,6 +171,8 @@ class PurchaseOrderController extends Controller
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
+        $this->authorizePurchasing();
+
         $data = $this->validateData($request, $purchaseOrder->id);
 
         DB::transaction(function () use ($purchaseOrder, $data) {
@@ -170,6 +187,8 @@ class PurchaseOrderController extends Controller
 
     public function updateStatus(Request $request, PurchaseOrder $purchaseOrder)
     {
+        $this->authorizePurchasing();
+
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->statuses()),
         ]);
@@ -203,6 +222,8 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         PurchaseOrderReceivingService $receivingService
     ) {
+        $this->authorizePurchasing();
+
         $validated = $request->validate([
             'receipts' => 'required|array|min:1',
             'receipts.*' => 'required|numeric|min:0',
@@ -219,6 +240,8 @@ class PurchaseOrderController extends Controller
 
     public function destroy(PurchaseOrder $purchaseOrder)
     {
+        $this->authorizePurchasing();
+
         DB::transaction(function () use ($purchaseOrder) {
             $purchaseOrder->load('subPurchaseOrders.items');
 
@@ -297,8 +320,12 @@ class PurchaseOrderController extends Controller
 
     protected function formData(): array
     {
+        $requestQuery = PurchaseRequest::query()
+            ->whereIn('status', ['approved', 'ordered'])
+            ->orderByDesc('id');
+
         return [
-            'requests' => PurchaseRequest::orderByDesc('id')->get(['id', 'request_no']),
+            'requests' => $requestQuery->get(['id', 'request_no']),
             'suppliers' => Supplier::orderBy('name')->get(['id', 'name']),
             'buyers' => User::orderBy('name')->get(['id', 'name']),
             'products' => Product::orderBy('name')->get(['id', 'name', 'unit']),
@@ -372,5 +399,10 @@ class PurchaseOrderController extends Controller
         return Schema::hasTable('departments')
             ? Department::orderBy('name')->get(['id', 'name'])
             : collect();
+    }
+
+    private function authorizePurchasing(): void
+    {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
     }
 }

@@ -9,6 +9,7 @@
 @endpush
 
 @php
+    $purchaseRoles = app(\App\Services\PurchaseRoleService::class);
     $approvalLabel = static fn (string $status): string => match ($status) {
         'approved', 'ordered' => 'Approved',
         'rejected' => 'Rejected',
@@ -42,9 +43,11 @@
             <div class="or-result-message show danger">{{ session('error') }}</div>
         @endif
 
-        <button class="primary-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
-            + Add Request
-        </button>
+        @if($purchaseRoles->canCreateRequests(auth()->user()))
+            <button class="primary-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
+                + Add Request
+            </button>
+        @endif
 
         <section class="card templates-card">
             <div class="templates-header">

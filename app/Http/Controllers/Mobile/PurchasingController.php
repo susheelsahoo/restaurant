@@ -8,6 +8,7 @@ use App\Mail\PurchaseOrderSupplierMail;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Services\PurchaseOrderReceivingService;
+use App\Services\PurchaseRoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -17,8 +18,14 @@ class PurchasingController extends Controller
 {
     use FormatsMobileValues;
 
+    public function __construct(private readonly PurchaseRoleService $purchaseRoles)
+    {
+    }
+
     public function index()
     {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
+
         return view('mobile.orders', [
             'purchaseOrders' => $this->purchaseOrderListData(),
         ]);
@@ -26,6 +33,8 @@ class PurchasingController extends Controller
 
     public function show(?PurchaseOrder $purchaseOrder = null)
     {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
+
         if ($purchaseOrder === null) {
             $purchaseOrder = PurchaseOrder::query()
                 ->whereNull('parent_po_id')
@@ -49,6 +58,8 @@ class PurchasingController extends Controller
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
+
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->purchaseOrderStatuses()),
             'channel' => 'nullable|in:email,whatsapp',
@@ -104,6 +115,8 @@ class PurchasingController extends Controller
 
     public function assignSupplier(Request $request, PurchaseOrder $purchaseOrder)
     {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
+
         $validated = $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
         ]);
@@ -143,6 +156,8 @@ class PurchasingController extends Controller
         PurchaseOrder $purchaseOrder,
         PurchaseOrderReceivingService $receivingService
     ) {
+        abort_unless($this->purchaseRoles->canManagePurchaseOrders(auth()->user()), 403);
+
         $validated = $request->validate([
             'receipts' => 'required|array|min:1',
             'receipts.*' => 'required|numeric|min:0',

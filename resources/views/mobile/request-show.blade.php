@@ -5,6 +5,8 @@
 @section('mobile-standalone', true)
 
 @php
+    $purchaseRoles = app(\App\Services\PurchaseRoleService::class);
+    $canApproveRequest = $purchaseRoles->canApproveRequests(auth()->user());
     $money = static fn (float $amount): string => $requestReview['currency'] . ' ' . number_format($amount, 2);
     $managerComment = old('manager_comment', $requestReview['manager_comment'] ?? '');
     $showSendbackPanel = old('status') === 'returned' || $errors->has('manager_comment');
@@ -189,6 +191,7 @@
             </section>
         @endif
 
+        @if($canApproveRequest)
         <section class="or-card">
             <div class="or-section-head">
                 <h3>Manager Comment</h3>
@@ -223,8 +226,10 @@
 
             <div id="resultMessage" class="or-result-message"></div>
         </section>
+        @endif
     </main>
 
+    @if($canApproveRequest)
     <div class="or-sticky-bar">
         <div class="or-sticky-meta">
             <span>Budget alerts: <strong id="bottomAlerts">{{ $requestReview['alert_count'] }}</strong></span>
@@ -249,6 +254,7 @@
             </form>
         </div>
     </div>
+    @endif
 
     <div class="or-modal-backdrop" id="expiredDeliveryModal" hidden>
         <div class="or-modal" role="dialog" aria-modal="true" aria-labelledby="expiredDeliveryTitle">
@@ -290,7 +296,7 @@ const statusPill = document.getElementById('statusPill');
 const managerComment = document.getElementById('managerComment');
 const modifyBtn = document.getElementById('modifyBtn');
 const confirmBtn = document.getElementById('confirmBtn');
-const confirmStatusForm = confirmBtn.closest('form');
+const confirmStatusForm = confirmBtn ? confirmBtn.closest('form') : null;
 const confirmNeededByInput = document.getElementById('confirmNeededByInput');
 const declineBtn = document.getElementById('declineBtn');
 const sendbackStatusForm = document.getElementById('sendbackStatusForm');
@@ -313,16 +319,28 @@ function formatMoney(value) {
 }
 
 function setResult(type, text) {
+    if (!resultMessage) {
+        return;
+    }
+
     resultMessage.className = `or-result-message show ${type}`;
     resultMessage.textContent = text;
 }
 
 function clearResult() {
+    if (!resultMessage) {
+        return;
+    }
+
     resultMessage.className = 'or-result-message';
     resultMessage.textContent = '';
 }
 
 function showSendbackPanel(message = '') {
+    if (!sendbackPanel || !managerComment) {
+        return;
+    }
+
     sendbackPanel.classList.add('show');
     setStatus('Modification Requested', 'orange');
 
@@ -336,6 +354,10 @@ function showSendbackPanel(message = '') {
 }
 
 function submitSendbackForm() {
+    if (!sendbackStatusForm) {
+        return;
+    }
+
     if (sendbackStatusForm.requestSubmit) {
         sendbackStatusForm.requestSubmit();
         return;
@@ -417,11 +439,17 @@ function updateBudgetWarnings() {
 
     summaryTotal.textContent = formatMoney(requestTotal);
     heroTotal.textContent = formatMoney(requestTotal);
-    bottomTotal.textContent = formatMoney(requestTotal);
     budgetRemaining.textContent = formatMoney(Math.max(0, totalBudget - monthlyTotal));
     heroAlerts.textContent = `${alerts} alerts`;
-    bottomAlerts.textContent = String(alerts);
     heroItemCount.textContent = `${totalItems} items`;
+
+    if (bottomTotal) {
+        bottomTotal.textContent = formatMoney(requestTotal);
+    }
+
+    if (bottomAlerts) {
+        bottomAlerts.textContent = String(alerts);
+    }
 
     if (overBudgetCategories.length) {
         warningBanner.className = 'or-warning-banner show danger';
@@ -437,6 +465,7 @@ function updateBudgetWarnings() {
     return { overBudgetCategories, warningCategories };
 }
 
+if (modifyBtn) {
 modifyBtn.addEventListener('click', () => {
     if (managerComment.value.trim()) {
         submitSendbackForm();
@@ -445,13 +474,17 @@ modifyBtn.addEventListener('click', () => {
 
     showSendbackPanel('Please add a manager comment before sending the request back.');
 });
+}
 
+if (cancelSendbackBtn) {
 cancelSendbackBtn.addEventListener('click', () => {
     sendbackPanel.classList.remove('show');
     clearResult();
     setStatus(@json($requestReview['status_label']), @json($requestReview['status_tone']));
 });
+}
 
+if (sendbackStatusForm) {
 sendbackStatusForm.addEventListener('submit', (event) => {
     const comment = managerComment.value.trim();
 
@@ -461,12 +494,16 @@ sendbackStatusForm.addEventListener('submit', (event) => {
         return;
     }
 });
+}
 
+if (confirmBtn) {
 confirmBtn.addEventListener('click', () => {
     sendbackPanel.classList.remove('show');
     updateBudgetWarnings();
 });
+}
 
+if (confirmStatusForm) {
 confirmStatusForm.addEventListener('submit', (event) => {
     if (!deliveryDateExpired || confirmWithUpdatedDelivery) {
         return;
@@ -475,13 +512,19 @@ confirmStatusForm.addEventListener('submit', (event) => {
     event.preventDefault();
     showExpiredDeliveryModal();
 });
+}
 
+if (declineBtn) {
 declineBtn.addEventListener('click', () => {
     sendbackPanel.classList.remove('show');
 });
+}
 
-cancelExpiredDeliveryBtn.addEventListener('click', hideExpiredDeliveryModal);
+if (cancelExpiredDeliveryBtn) {
+    cancelExpiredDeliveryBtn.addEventListener('click', hideExpiredDeliveryModal);
+}
 
+if (expiredDeliveryForm) {
 expiredDeliveryForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -496,6 +539,7 @@ expiredDeliveryForm.addEventListener('submit', (event) => {
     hideExpiredDeliveryModal();
     confirmStatusForm.requestSubmit();
 });
+}
 
 document.querySelectorAll('.status-comment-input').forEach((input) => {
     input.form.addEventListener('submit', () => {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mobile\Concerns;
 
 use App\Models\PurchaseRequest;
+use App\Services\PurchaseRoleService;
 
 trait BuildsRequestSummaries
 {
@@ -13,6 +14,8 @@ trait BuildsRequestSummaries
             ->withCount('items')
             ->latest('created_at')
             ->latest('id');
+
+        app(PurchaseRoleService::class)->applyRequestVisibility($query, auth()->user());
 
         if ($limit !== null) {
             $query->limit($limit);

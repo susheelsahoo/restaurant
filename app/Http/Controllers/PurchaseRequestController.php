@@ -8,6 +8,7 @@ use App\Models\PurchaseRequest;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\PurchaseOrderGenerationService;
+use App\Services\PurchaseRoleService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,11 +17,17 @@ use Illuminate\Validation\ValidationException;
 
 class PurchaseRequestController extends Controller
 {
+    public function __construct(private readonly PurchaseRoleService $purchaseRoles)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = PurchaseRequest::query()
             ->with(['requester', 'department', 'items.product', 'items.supplier', 'purchaseOrders'])
             ->withCount('items');
+
+        $this->purchaseRoles->applyRequestVisibility($query, auth()->user());
 
         if ($request->filled('q')) {
             $search = trim((string) $request->q);
@@ -75,11 +82,11 @@ class PurchaseRequestController extends Controller
         }
 
         $stats = [
-            'total' => PurchaseRequest::count(),
-            'submitted' => PurchaseRequest::where('status', 'submitted')->count(),
-            'approved' => PurchaseRequest::where('status', 'approved')->count(),
-            'urgent' => PurchaseRequest::where('priority', 'urgent')->count(),
-            'ordered' => PurchaseRequest::where('status', 'ordered')->count(),
+            'total' => $this->visibleRequests()->count(),
+            'submitted' => $this->visibleRequests()->where('status', 'submitted')->count(),
+            'approved' => $this->visibleRequests()->where('status', 'approved')->count(),
+            'urgent' => $this->visibleRequests()->where('priority', 'urgent')->count(),
+            'ordered' => $this->visibleRequests()->where('status', 'ordered')->count(),
         ];
 
         $departments = $this->safeDepartments();
@@ -96,11 +103,15 @@ class PurchaseRequestController extends Controller
 
     public function create()
     {
+        abort_unless($this->purchaseRoles->canCreateRequests(auth()->user()), 403);
+
         return view('admin.purchase_requests.form', $this->formData());
     }
 
     public function store(Request $request)
     {
+        abort_unless($this->purchaseRoles->canCreateRequests(auth()->user()), 403);
+
         $data = $this->validateData($request);
 
         DB::transaction(function () use ($data) {
@@ -114,6 +125,8 @@ class PurchaseRequestController extends Controller
 
     public function show(PurchaseRequest $purchaseRequest)
     {
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         if ($purchaseRequest->status === 'returned') {
             return redirect()->route('admin.purchase-orders.requests.edit', [
                 'purchaseRequest' => $purchaseRequest->id,
@@ -128,6 +141,8 @@ class PurchaseRequestController extends Controller
 
     public function edit(PurchaseRequest $purchaseRequest)
     {
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         $purchaseRequest->load(['items.product', 'items.supplier']);
 
         return view('admin.purchase_requests.form', array_merge(
@@ -138,6 +153,8 @@ class PurchaseRequestController extends Controller
 
     public function update(Request $request, PurchaseRequest $purchaseRequest)
     {
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         $data = $this->validateData($request, $purchaseRequest->id);
 
         DB::transaction(function () use ($purchaseRequest, $data) {
@@ -152,6 +169,12 @@ class PurchaseRequestController extends Controller
 
     public function updateStatus(Request $request, PurchaseRequest $purchaseRequest)
     {
+        abort_unless(
+            $this->purchaseRoles->canApproveRequests(auth()->user())
+                && $this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest),
+            403
+        );
+
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->statuses()),
             'admin_comment' => 'nullable|string|max:2000',
@@ -199,6 +222,8 @@ class PurchaseRequestController extends Controller
 
     public function destroy(PurchaseRequest $purchaseRequest)
     {
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         if ($purchaseRequest->purchaseOrders()->exists()) {
             return redirect()->route('admin.purchase-orders.requests')
                 ->with('error', 'This request is already linked to one or more purchase orders and cannot be deleted.');
@@ -317,10 +342,13 @@ class PurchaseRequestController extends Controller
 
     protected function loadPurchaseRequestDetails(int $purchaseRequestId): ?PurchaseRequest
     {
-        return PurchaseRequest::query()
+        $query = PurchaseRequest::query()
             ->with(['requester', 'department', 'items.product', 'items.supplier', 'purchaseOrders'])
-            ->withCount('items')
-            ->find($purchaseRequestId);
+            ->withCount('items');
+
+        $this->purchaseRoles->applyRequestVisibility($query, auth()->user());
+
+        return $query->find($purchaseRequestId);
     }
 
     protected function safeUsers()
@@ -340,5 +368,13 @@ class PurchaseRequestController extends Controller
     protected function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
     {
         app(PurchaseOrderGenerationService::class)->createFromRequest($purchaseRequest, auth()->id());
+    }
+
+    private function visibleRequests()
+    {
+        $query = PurchaseRequest::query();
+        $this->purchaseRoles->applyRequestVisibility($query, auth()->user());
+
+        return $query;
     }
 }

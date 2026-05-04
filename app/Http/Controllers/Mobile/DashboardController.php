@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mobile;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Mobile\Concerns\BuildsRequestSummaries;
 use App\Models\PurchaseRequest;
+use App\Services\PurchaseRoleService;
 
 class DashboardController extends Controller
 {
@@ -24,14 +25,23 @@ class DashboardController extends Controller
         $openStatuses = ['submitted', 'approved'];
         $awaitingApprovalStatuses = ['submitted'];
 
+        $access = app(PurchaseRoleService::class);
+        $visibleRequests = PurchaseRequest::query();
+        $access->applyRequestVisibility($visibleRequests, auth()->user());
+
+        $approvedRequests = clone $visibleRequests;
+        $urgentRequests = clone $visibleRequests;
+        $openRequests = clone $visibleRequests;
+        $awaitingApprovalRequests = clone $visibleRequests;
+
         return view('mobile.dashboard', [
             'stats' => [
-                ['value' => PurchaseRequest::count(), 'label' => 'Total Requests'],
-                ['value' => PurchaseRequest::where('status', 'approved')->count(), 'label' => 'Approved'],
-                ['value' => PurchaseRequest::where('priority', 'urgent')->count(), 'label' => 'Urgent'],
+                ['value' => $visibleRequests->count(), 'label' => 'Total Requests'],
+                ['value' => $approvedRequests->where('status', 'approved')->count(), 'label' => 'Approved'],
+                ['value' => $urgentRequests->where('priority', 'urgent')->count(), 'label' => 'Urgent'],
             ],
-            'openRequestsCount' => PurchaseRequest::whereIn('status', $openStatuses)->count(),
-            'awaitingApprovalCount' => PurchaseRequest::whereIn('status', $awaitingApprovalStatuses)->count(),
+            'openRequestsCount' => $openRequests->whereIn('status', $openStatuses)->count(),
+            'awaitingApprovalCount' => $awaitingApprovalRequests->whereIn('status', $awaitingApprovalStatuses)->count(),
             'recentRequests' => $this->requestListData(5),
             'greeting' => $greeting,
         ]);

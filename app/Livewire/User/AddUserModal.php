@@ -19,27 +19,25 @@ class AddUserModal extends Component
     public $name;
     public $email;
     public $role;
+    public $password;
+    public $password_confirmation;
     public $avatar;
     public $saved_avatar;
 
     public $edit_mode = false;
 
-    protected $rules = [
-        'name' => 'required|string',
-        'email' => 'required|email',
-        'role' => 'required|string',
-        'avatar' => 'nullable|sometimes|image|max:1024',
-    ];
-
     protected $listeners = [
         'delete_user' => 'deleteUser',
         'update_user' => 'updateUser',
-        'new_user' => 'hydrate',
+        'new_user' => 'newUser',
     ];
 
     public function render()
     {
-        $roles = Role::all();
+        $roles = Role::query()
+            ->where('guard_name', 'web')
+            ->orderBy('name')
+            ->get();
 
         $roles_description = [
             'administrator' => 'Best for business owners and company administrators',
@@ -47,6 +45,9 @@ class AddUserModal extends Component
             'analyst' => 'Best for people who need full access to analytics data, but don\'t need to update business settings',
             'support' => 'Best for employees who regularly refund payments and respond to disputes',
             'trial' => 'Best for people who need to preview content data, but don\'t need to make any updates',
+            'requester' => 'Can create and view department purchase requests',
+            'manager' => 'Can review requester submissions and approve purchase requests',
+            'purchasing manager' => 'Can approve requests and manage purchase orders',
         ];
 
         foreach ($roles as $i => $role) {
@@ -59,7 +60,7 @@ class AddUserModal extends Component
     public function submit()
     {
         // Validate the form input data
-        $this->validate();
+        $this->validate($this->rules());
 
         DB::transaction(function () {
             // Prepare the data for creating a new user
@@ -73,8 +74,8 @@ class AddUserModal extends Component
                 $data['profile_photo_path'] = null;
             }
 
-            if (!$this->edit_mode) {
-                $data['password'] = Hash::make($this->email);
+            if (!$this->edit_mode || filled($this->password)) {
+                $data['password'] = Hash::make($this->password);
             }
 
             // Update or Create a new user record in the database
@@ -136,11 +137,31 @@ class AddUserModal extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->role = $user->roles?->first()->name ?? '';
+        $this->password = null;
+        $this->password_confirmation = null;
     }
 
     public function hydrate()
     {
         $this->resetErrorBag();
         $this->resetValidation();
+    }
+
+    public function newUser()
+    {
+        $this->reset();
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
+    protected function rules(): array
+    {
+        return [
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'role' => 'required|string',
+            'password' => [$this->edit_mode ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
+            'avatar' => 'nullable|sometimes|image|max:1024',
+        ];
     }
 }

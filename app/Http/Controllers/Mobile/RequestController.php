@@ -12,6 +12,7 @@ use App\Models\PurchaseOrderTemplate;
 use App\Models\PurchaseRequest;
 use App\Models\RequestItem;
 use App\Services\PurchaseOrderGenerationService;
+use App\Services\PurchaseRoleService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,10 @@ class RequestController extends Controller
 {
     use BuildsRequestSummaries;
     use FormatsMobileValues;
+
+    public function __construct(private readonly PurchaseRoleService $purchaseRoles)
+    {
+    }
 
     public function index(?string $requestNo = null)
     {
@@ -36,6 +41,8 @@ class RequestController extends Controller
                 ->where('request_no', $requestNo)
                 ->firstOrFail();
 
+            abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
             return view('mobile.request-show', [
                 'requestReview' => $this->requestReviewData($purchaseRequest),
             ]);
@@ -48,6 +55,8 @@ class RequestController extends Controller
 
     public function create()
     {
+        abort_unless($this->purchaseRoles->canCreateRequests(auth()->user()), 403);
+
         return view('mobile.quick-add', array_merge(
             $this->quickAddCatalogData(),
             $this->quickAddTemplateData()
@@ -61,6 +70,8 @@ class RequestController extends Controller
             ->where('request_no', $requestNo)
             ->firstOrFail();
 
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         if ($purchaseRequest->status !== 'returned') {
             return redirect('/mobile/request-detail/' . $purchaseRequest->request_no);
         }
@@ -72,6 +83,8 @@ class RequestController extends Controller
 
     public function store(Request $request)
     {
+        abort_unless($this->purchaseRoles->canCreateRequests(auth()->user()), 403);
+
         $validated = $request->validate([
             'needed_by' => 'required|date',
             'priority' => 'required|in:low,normal,urgent',
@@ -81,16 +94,11 @@ class RequestController extends Controller
             'items.*.notes' => 'nullable|string',
         ]);
 
-        $department = Department::query()
-            ->where('name', 'Kitchen')
-            ->orWhere('name', 'like', '%Kitchen%')
-            ->orderBy('name')
-            ->first()
-            ?? Department::query()->orderBy('name')->first();
+        $department = $this->departmentForRequester();
 
         if (!$department) {
             throw ValidationException::withMessages([
-                'department_id' => 'Create a department before submitting mobile requests.',
+                'department_id' => 'Assign this user to a department before submitting mobile requests.',
             ]);
         }
 
@@ -133,6 +141,8 @@ class RequestController extends Controller
 
     public function updateItems(Request $request, PurchaseRequest $purchaseRequest)
     {
+        abort_unless($this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest), 403);
+
         if ($purchaseRequest->status !== 'returned') {
             return redirect('/mobile/request-detail/' . $purchaseRequest->request_no)
                 ->with('error', 'Only requests marked Needs Edit can be changed.');
@@ -177,6 +187,12 @@ class RequestController extends Controller
 
     public function updateStatus(Request $request, PurchaseRequest $purchaseRequest)
     {
+        abort_unless(
+            $this->purchaseRoles->canApproveRequests(auth()->user())
+                && $this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest),
+            403
+        );
+
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->statuses()),
             'manager_comment' => 'nullable|string|max:2000',
@@ -233,6 +249,12 @@ class RequestController extends Controller
 
     public function updateDeliveryDate(Request $request, PurchaseRequest $purchaseRequest)
     {
+        abort_unless(
+            $this->purchaseRoles->canApproveRequests(auth()->user())
+                && $this->purchaseRoles->userCanViewRequest(auth()->user(), $purchaseRequest),
+            403
+        );
+
         $validated = $request->validate([
             'needed_by' => 'required|date|after:now',
         ], [
@@ -538,5 +560,21 @@ class RequestController extends Controller
     private function createPurchaseOrdersFromRequest(PurchaseRequest $purchaseRequest): void
     {
         app(PurchaseOrderGenerationService::class)->createFromRequest($purchaseRequest, auth()->id());
+    }
+
+    private function departmentForRequester(): ?Department
+    {
+        $departmentId = $this->purchaseRoles->departmentIdForNewRequest(auth()->user());
+
+        if ($departmentId) {
+            return Department::query()->find($departmentId);
+        }
+
+        return Department::query()
+            ->where('name', 'Kitchen')
+            ->orWhere('name', 'like', '%Kitchen%')
+            ->orderBy('name')
+            ->first()
+            ?? Department::query()->orderBy('name')->first();
     }
 }

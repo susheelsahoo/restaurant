@@ -100,6 +100,28 @@
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="{{ $edit_mode ? '' : 'required' }} fw-semibold fs-6 mb-2">Password</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="password" wire:model.live="password" name="password" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="{{ $edit_mode ? 'Leave blank to keep current password' : 'Password' }}" autocomplete="new-password"/>
+                            <!--end::Input-->
+                            @error('password')
+                            <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="{{ $edit_mode ? '' : 'required' }} fw-semibold fs-6 mb-2">Confirm Password</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="password" wire:model.live="password_confirmation" name="password_confirmation" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="{{ $edit_mode ? 'Confirm new password' : 'Confirm password' }}" autocomplete="new-password"/>
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
                         <div class="mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-5">Role</label>

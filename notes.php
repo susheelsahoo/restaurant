@@ -255,59 +255,8 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 
-
-
-
-Recommended order
-
-Products
-Because purchase requests and purchase orders both depend on a clean product catalog. You already have products, product_categories, suppliers, and product-supplier linking in your current data, so this is the foundation.
-
-Suppliers
-A PO is meaningless without suppliers. Supplier records also connect to products and later reporting, so this should be solid before you rely heavily on Purchase Orders.
-
-Purchase Requests
-Your requests and request_items tables define demand. In a normal flow, teams create requests first, then approved requests become POs. Without this module, Purchase Orders feel manual and disconnected.
-
-Approvals
-Once requests exist, approvals give control to the workflow. Your schema already includes approvals, so this should come before making the PO process “final”.
-
-Purchase Orders
-This is the execution layer. It works best after products, suppliers, requests, and approvals are usable. Otherwise users will keep entering disconnected PO data manually.
-
-Deliveries / Receiving
-Your deliveries table is for what happens after the PO is sent. This should come after POs, because it depends on them.
-
-Reports / Dashboard refinements
-Do this last, once real data is flowing through the full cycle.
-
-Why this order makes sense
-
-Your current notes.php describes this natural process:
-
-Products -> Suppliers -> Requests -> Approvals -> Purchase Orders -> Deliveries -> Reports
-
-That is the business workflow, so building in that order reduces rework.
-
-What you already have partly covered
-
-Products: mostly in progress
-Suppliers: mostly in progress
-Product Categories: in progress
-Purchase Orders: now reasonably advanced
-What is still most important to complete next
-Purchase Requests
-
-Because right now that is the missing bridge between product demand and PO creation. Once requests are complete, approvals and PO creation become much more natural and useful.
-
-Simple recommendation
-If you want the best next step:
-
-Finish Products
-Finish Suppliers
-Build Purchase Requests next
-Then do Approvals
-Then polish Purchase Orders
-If you want, I can review your prototype and current schema and give you a module-by-module checklist with Completed / Pending / Next status.
+php artisan migrate --path=database/migrations/2026_05_04_000002_add_department_id_to_users_table.php
+php artisan db:seed --class=RolesPermissionsSeeder
+php artisan optimize:clear
 
 
