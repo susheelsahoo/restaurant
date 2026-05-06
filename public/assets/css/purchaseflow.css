@@ -456,7 +456,7 @@ body.quick-add-app-body {
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 10px;
-    color: #081335; /* Dark text on blue as per image */
+    color: #f0f4f8; 
 }
 
 .banner-card > p {
@@ -496,7 +496,7 @@ body.quick-add-app-body {
 /* Primary Button */
 .primary-btn {
     width: 100%;
-    background-color: #214cd5; /* Similar blue as avatar */
+    background-color: #214cd5; 
     color: #ffffff;
     border: none;
     border-radius: 14px;
@@ -3170,3 +3170,148 @@ body.quick-add-app-body {
         box-shadow: 0 -18px 34px rgba(15, 23, 42, 0.10);
     }
 }
+
+@media screen and (min-width: 1024px) {
+    body.quick-add-app-body, body.mobile-app-body {
+        height: auto;
+        overflow: visible;
+        background: radial-gradient(circle at 100% 0%, #ffffff 0%, #e2e8f0 100%);
+    }
+
+    .quick-add-page, .order-review-page {
+        max-width: 1100px;
+        min-height: calc(100vh - 80px);
+        height: auto;
+        margin: 40px auto;
+        padding: 40px 50px;
+        border-radius: 30px;
+        box-shadow: 0 25px 50px rgba(11, 26, 67, 0.05), 0 10px 20px rgba(11, 26, 67, 0.03); 
+        background-color: #ffffff; 
+        background-image: none;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    /* Quick Add Specific */
+    .quick-add-page .qa-main {
+        overflow-y: visible;
+        padding-bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .quick-add-page .qa-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+    }
+
+    .quick-add-page .qa-product-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .quick-add-page .qa-topbar {
+        margin-bottom: 32px;
+    }
+    
+    .quick-add-page .qa-title-block h2 {
+        font-size: 32px;
+    }
+    
+    .quick-add-page .qa-title-block p {
+        font-size: 16px;
+    }
+
+    .quick-add-page .qa-sticky-bar {
+        position: static;
+        width: 100%;
+        margin: 32px 0 0 0;
+        padding: 24px 0 0 0;
+        border-top: 1px solid #e2e8f0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .quick-add-page .qa-sticky-bar .qa-submit-btn {
+        width: auto;
+        padding: 16px 40px;
+        font-size: 16px;
+        border-radius: 16px;
+    }
+
+    /* Order Review & Purchase Order Dispatch Specific */
+    .order-review-page main {
+        overflow-y: visible;
+        padding-bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .order-review-page .or-card:not(.or-hero), .order-review-page .po-supplier-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+    }
+
+    .order-review-page .or-hero {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        color: #ffffff;
+        border: none;
+    }
+
+    .order-review-page .or-topbar {
+        margin-bottom: 32px;
+    }
+
+    .order-review-page .or-title-block h2,
+    .order-review-page .or-title-block h3 {
+        font-size: 32px;
+    }
+
+    .order-review-page .or-title-block p {
+        font-size: 16px;
+    }
+
+    .order-review-page .or-sticky-bar {
+        position: static;
+        width: 100%;
+        margin: 32px 0 0 0;
+        padding: 24px 0 0 0;
+        border-top: 1px solid #e2e8f0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .order-review-page .or-sticky-bar .or-btn {
+        width: auto;
+        padding: 16px 40px;
+        font-size: 16px;
+        border-radius: 16px;
+    }
+
+    .order-review-page .or-sticky-bar .or-action-grid {
+        display: flex;
+        gap: 16px;
+        width: auto;
+    }
+}
+
