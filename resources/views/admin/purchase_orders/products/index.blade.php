@@ -50,7 +50,7 @@
             <div class="card-title">
                 <div>
                     <h3 class="fw-bold mb-1">Products</h3>
-                    <div class="text-muted fw-semibold fs-6">Manage requestable items, scan codes, and category-based suppliers.</div>
+                    <div class="text-muted fw-semibold fs-6">Manage products, scan codes, and category-based suppliers.</div>
                 </div>
             </div>
             <div class="card-toolbar">
@@ -72,40 +72,40 @@
         </div>
         <div class="card-body pt-0">
             
-            <form method="GET" class="d-flex flex-wrap gap-3 mb-8">
+            <form method="GET" class="d-flex flex-nowrap align-items-center gap-3 mb-8 overflow-auto">
                 <input
                     type="text"
                     name="q"
                     value="{{ request('q') }}"
-                    class="form-control form-control-solid w-250px"
+                    class="form-control form-control-solid w-200px flex-shrink-0"
                     placeholder="Search name, SKU, barcode..."
                 >
 
-                <select name="category" class="form-select form-select-solid w-200px">
+                <select name="category" class="form-select form-select-solid w-200px flex-shrink-0">
                     <option value="">Category: All</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" @selected((string) request('category') === (string) $category->id)>{{ $category->name }}</option>
                     @endforeach
                 </select>
 
-                <select name="supplier" class="form-select form-select-solid w-200px">
+                <select name="supplier" class="form-select form-select-solid w-200px flex-shrink-0">
                     <option value="">Supplier: All</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}" @selected((string) request('supplier') === (string) $supplier->id)>{{ $supplier->name }}</option>
                     @endforeach
                 </select>
 
-                <select name="status" class="form-select form-select-solid w-180px">
+                <select name="status" class="form-select form-select-solid w-200px flex-shrink-0">
                     <option value="">Status: All</option>
                     @foreach($statuses as $status)
                         <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                     @endforeach
                 </select>
 
-                <button class="btn btn-light-primary">Filter</button>
+                <button class="btn btn-light-primary w-200px flex-shrink-0">Filter</button>
 
                 @if(request()->hasAny(['q', 'category', 'supplier', 'status']))
-                    <a href="{{ route('admin.purchase-orders.products') }}" class="btn btn-light">Reset</a>
+                    <a href="{{ route('admin.purchase-orders.products') }}" class="btn btn-light w-200px flex-shrink-0">Reset</a>
                 @endif
             </form>
 
