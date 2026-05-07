@@ -58,7 +58,12 @@
                     <a href="{{ route('admin.purchase-orders.product-categories.index') }}" class="btn btn-light-primary">
                         Product Categories
                     </a>
-                    <button type="button" class="btn btn-light" disabled>Import</button>
+                    <a href="{{ route('admin.purchase-orders.products.export') }}" class="btn btn-light-success">
+                        Export CSV
+                    </a>
+                    <a href="{{ route('admin.purchase-orders.products.import.form') }}" class="btn btn-light-primary">
+                        Import CSV
+                    </a>
                     <a href="{{ route('admin.purchase-orders.products.create') }}" class="btn btn-primary">
                         {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Product
                     </a>
@@ -66,6 +71,24 @@
             </div>
         </div>
         <div class="card-body pt-0">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="GET" class="d-flex flex-wrap gap-3 mb-8">
                 <input
                     type="text"

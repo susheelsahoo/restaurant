@@ -169,6 +169,10 @@ Route::middleware(['auth:web', 'verified'])->prefix('admin')->name('admin.')->gr
             ]);
         })->name('approvals');
         Route::get('/products', [ProductManagementController::class, 'index'])->name('products');
+        Route::get('/products/export', [ProductManagementController::class, 'export'])->name('products.export');
+        Route::get('/products/import', [ProductManagementController::class, 'importForm'])->name('products.import.form');
+        Route::get('/products/import/sample', [ProductManagementController::class, 'sampleImport'])->name('products.import.sample');
+        Route::post('/products/import', [ProductManagementController::class, 'import'])->name('products.import');
         Route::get('/products/create', [ProductManagementController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductManagementController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductManagementController::class, 'edit'])->name('products.edit');

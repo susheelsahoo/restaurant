@@ -8,6 +8,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ProductManagementController extends Controller
@@ -176,6 +177,150 @@ class ProductManagementController extends Controller
             ->with('success', 'Product deleted successfully.');
     }
 
+    public function export()
+    {
+        $products = Product::query()
+            ->with('category:id,name')
+            ->orderBy('name')
+            ->get();
+
+        $rows = $products->map(fn (Product $product) => [
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category_id' => $product->category_id,
+            'category_name' => $product->category?->name,
+            'unit' => $product->unit,
+            'estimated_price' => $product->estimated_price,
+            'barcode' => $product->barcode,
+            'status' => $product->status,
+        ]);
+
+        return $this->downloadCsv('products-export-' . now()->format('Y-m-d-His') . '.csv', $rows->all());
+    }
+
+    public function importForm()
+    {
+        return view('admin.purchase_orders.products.import', [
+            'categoriesCount' => ProductCategory::count(),
+            'productsCount' => Product::count(),
+            'barcodeEnabledCount' => Product::whereNotNull('barcode')->where('barcode', '!=', '')->count(),
+        ]);
+    }
+
+    public function sampleImport()
+    {
+        return $this->downloadCsv('products-import-sample.csv', [
+            [
+                'name' => 'Tomato-პომიდორი',
+                'sku' => 'VEG-TOM-001',
+                'category_id' => '',
+                'category_name' => 'Vegetables',
+                'unit' => 'kg',
+                'estimated_price' => '3.50',
+                'barcode' => '100000000001',
+                'status' => 'active',
+            ],
+            [
+                'name' => 'Chicken Breast',
+                'sku' => 'MEAT-CHK-001',
+                'category_id' => '',
+                'category_name' => 'Meat',
+                'unit' => 'kg',
+                'estimated_price' => '18.00',
+                'barcode' => '100000000002',
+                'status' => 'active',
+            ],
+            [
+                'name' => 'Mineral Water',
+                'sku' => 'BEV-WAT-001',
+                'category_id' => '',
+                'category_name' => 'Beverages',
+                'unit' => 'pcs',
+                'estimated_price' => '1.20',
+                'barcode' => '100000000003',
+                'status' => 'active',
+            ],
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $validated = $request->validate([
+            'products_file' => 'required|file|mimes:csv,txt|max:5120',
+        ]);
+
+        $handle = fopen($validated['products_file']->getRealPath(), 'r');
+
+        if ($handle === false) {
+            return redirect()->route('admin.purchase-orders.products.import.form')
+                ->with('error', 'Unable to read the uploaded CSV file.');
+        }
+
+        $headers = fgetcsv($handle);
+
+        if (! is_array($headers)) {
+            fclose($handle);
+
+            return redirect()->route('admin.purchase-orders.products.import.form')
+                ->with('error', 'The CSV file is empty.');
+        }
+
+        $headers = array_map(fn ($header) => $this->normalizeCsvHeader((string) $header), $headers);
+        $requiredHeaders = ['name', 'sku'];
+        $missingHeaders = array_diff($requiredHeaders, $headers);
+
+        if (! empty($missingHeaders)) {
+            fclose($handle);
+
+            return redirect()->route('admin.purchase-orders.products.import.form')
+                ->with('error', 'Missing required CSV columns: ' . implode(', ', $missingHeaders));
+        }
+
+        $created = 0;
+        $updated = 0;
+        $rowNumber = 1;
+        $errors = [];
+
+        DB::transaction(function () use ($handle, $headers, &$created, &$updated, &$rowNumber, &$errors) {
+            while (($row = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+                $row = array_pad($row, count($headers), null);
+                $data = array_combine($headers, array_slice($row, 0, count($headers)));
+
+                if (! $data || collect($data)->filter(fn ($value) => trim((string) $value) !== '')->isEmpty()) {
+                    continue;
+                }
+
+                $productData = $this->productDataFromCsvRow($data, $rowNumber, $errors);
+
+                if ($productData === null) {
+                    continue;
+                }
+
+                $existingProduct = Product::query()->where('sku', $productData['sku'])->first();
+
+                Product::updateOrCreate(
+                    ['sku' => $productData['sku']],
+                    $productData
+                );
+
+                $existingProduct ? $updated++ : $created++;
+            }
+        });
+
+        fclose($handle);
+
+        $message = "Products import finished. Created: {$created}. Updated: {$updated}.";
+
+        if (! empty($errors)) {
+            return redirect()->route('admin.purchase-orders.products.import.form')
+                ->with('error', $message . ' Skipped rows: ' . implode(' | ', array_slice($errors, 0, 8)));
+        }
+
+        return redirect()->route('admin.purchase-orders.products')
+            ->with('success', $message);
+    }
+
     protected function formData(): array
     {
         return [
@@ -310,5 +455,117 @@ class ProductManagementController extends Controller
             ])
             ->whereKey($productId)
             ->first();
+    }
+
+    private function productDataFromCsvRow(array $row, int $rowNumber, array &$errors): ?array
+    {
+        $name = trim((string) ($row['name'] ?? ''));
+        $sku = trim((string) ($row['sku'] ?? ''));
+        $unit = trim((string) ($row['unit'] ?? ''));
+        $barcode = trim((string) ($row['barcode'] ?? ''));
+        $status = strtolower(trim((string) ($row['status'] ?? 'active')));
+        $estimatedPrice = trim((string) ($row['estimated_price'] ?? ''));
+
+        if ($name === '' || $sku === '') {
+            $errors[] = "Row {$rowNumber}: name and sku are required.";
+
+            return null;
+        }
+
+        if (mb_strlen($name) > 150 || mb_strlen($sku) > 50 || mb_strlen($unit) > 20 || mb_strlen($barcode) > 50) {
+            $errors[] = "Row {$rowNumber}: one or more fields exceed allowed length.";
+
+            return null;
+        }
+
+        if (! in_array($status, ['active', 'inactive'], true)) {
+            $errors[] = "Row {$rowNumber}: status must be active or inactive.";
+
+            return null;
+        }
+
+        if ($estimatedPrice !== '' && ! is_numeric($estimatedPrice)) {
+            $errors[] = "Row {$rowNumber}: estimated_price must be numeric.";
+
+            return null;
+        }
+
+        $categoryId = $this->categoryIdFromCsvRow($row);
+
+        if ($categoryId === false) {
+            $errors[] = "Row {$rowNumber}: category was not found.";
+
+            return null;
+        }
+
+        $productId = Product::query()->where('sku', $sku)->value('id');
+
+        if ($barcode !== '') {
+            $barcodeExists = Product::query()
+                ->where('barcode', $barcode)
+                ->when($productId, fn ($query) => $query->whereKeyNot($productId))
+                ->exists();
+
+            if ($barcodeExists) {
+                $errors[] = "Row {$rowNumber}: barcode {$barcode} is already used.";
+
+                return null;
+            }
+        }
+
+        return [
+            'name' => $name,
+            'sku' => $sku,
+            'category_id' => $categoryId ?: null,
+            'unit' => $unit !== '' ? $unit : null,
+            'barcode' => $barcode !== '' ? $barcode : null,
+            'status' => $status,
+            'estimated_price' => $estimatedPrice !== '' ? $estimatedPrice : null,
+        ];
+    }
+
+    private function categoryIdFromCsvRow(array $row): int|false|null
+    {
+        $categoryId = trim((string) ($row['category_id'] ?? ''));
+
+        if ($categoryId !== '') {
+            return ProductCategory::query()->whereKey($categoryId)->exists()
+                ? (int) $categoryId
+                : false;
+        }
+
+        $categoryName = trim((string) ($row['category_name'] ?? ''));
+
+        if ($categoryName === '') {
+            return null;
+        }
+
+        return ProductCategory::query()
+            ->where('name', $categoryName)
+            ->orWhere('slug', Str::slug($categoryName))
+            ->value('id') ?: false;
+    }
+
+    private function downloadCsv(string $fileName, array $rows)
+    {
+        $headers = ['name', 'sku', 'category_id', 'category_name', 'unit', 'estimated_price', 'barcode', 'status'];
+
+        return response()->streamDownload(function () use ($headers, $rows) {
+            $output = fopen('php://output', 'w');
+            fputcsv($output, $headers);
+
+            foreach ($rows as $row) {
+                fputcsv($output, array_map(fn ($header) => $row[$header] ?? '', $headers));
+            }
+
+            fclose($output);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function normalizeCsvHeader(string $header): string
+    {
+        return Str::snake(trim(strtolower($header)));
     }
 }
