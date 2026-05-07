@@ -285,7 +285,7 @@ body {
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 10px;
-    color: #081335; /* Dark text on blue as per image */
+    color: #ffffff; /* Changed to white as requested */
 }
 
 .banner-card > p {
@@ -343,6 +343,24 @@ body {
 
 .primary-btn:active {
     transform: translateY(1px);
+}
+
+/* Floating Action Button (FAB) Container */
+.fab-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.fab-add-btn {
+    pointer-events: auto;
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(33, 76, 213, 0.2);
+    margin: 0;
 }
 
 /* Specific Card Styling */
@@ -932,8 +950,22 @@ body {
         width: auto;
         padding: 18px 48px;
         font-size: 18px;
-        align-self: flex-start;
+        align-self: flex-end;
         border-radius: 16px;
+    }
+
+    .fab-container {
+        position: static;
+        pointer-events: auto;
+        margin-top: auto;
+        padding: 0;
+        max-width: none;
+    }
+
+    .fab-add-btn {
+        width: auto;
+        padding: 18px 36px;
+        border-radius: 30px;
     }
 
     .stats-grid {
