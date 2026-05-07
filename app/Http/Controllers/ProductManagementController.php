@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Throwable;
 
 class ProductManagementController extends Controller
 {
@@ -209,7 +214,7 @@ class ProductManagementController extends Controller
 
     public function sampleImport()
     {
-        return $this->downloadCsv('products-import-sample.csv', [
+        return $this->downloadExcel('products-import-sample.xlsx', [
             [
                 'name' => 'Tomato-პომიდორი',
                 'sku' => 'VEG-TOM-001',
@@ -246,34 +251,30 @@ class ProductManagementController extends Controller
     public function import(Request $request)
     {
         $validated = $request->validate([
-            'products_file' => 'required|file|mimes:csv,txt|max:5120',
+            'products_file' => 'required|file|mimes:xlsx,xls|max:5120',
         ]);
 
-        $handle = fopen($validated['products_file']->getRealPath(), 'r');
-
-        if ($handle === false) {
+        try {
+            $rows = $this->readExcelRows($validated['products_file']->getRealPath());
+        } catch (Throwable) {
             return redirect()->route('admin.purchase-orders.products.import.form')
-                ->with('error', 'Unable to read the uploaded CSV file.');
+                ->with('error', 'Unable to read the uploaded Excel file.');
         }
 
-        $headers = fgetcsv($handle);
+        $headerRow = array_shift($rows);
 
-        if (! is_array($headers)) {
-            fclose($handle);
-
+        if (! is_array($headerRow)) {
             return redirect()->route('admin.purchase-orders.products.import.form')
-                ->with('error', 'The CSV file is empty.');
+                ->with('error', 'The Excel file is empty.');
         }
 
-        $headers = array_map(fn ($header) => $this->normalizeCsvHeader((string) $header), $headers);
+        $headers = array_map(fn ($header) => $this->normalizeImportHeader((string) $header), $headerRow);
         $requiredHeaders = ['name', 'sku'];
         $missingHeaders = array_diff($requiredHeaders, $headers);
 
         if (! empty($missingHeaders)) {
-            fclose($handle);
-
             return redirect()->route('admin.purchase-orders.products.import.form')
-                ->with('error', 'Missing required CSV columns: ' . implode(', ', $missingHeaders));
+                ->with('error', 'Missing required Excel columns: ' . implode(', ', $missingHeaders));
         }
 
         $created = 0;
@@ -281,8 +282,8 @@ class ProductManagementController extends Controller
         $rowNumber = 1;
         $errors = [];
 
-        DB::transaction(function () use ($handle, $headers, &$created, &$updated, &$rowNumber, &$errors) {
-            while (($row = fgetcsv($handle)) !== false) {
+        DB::transaction(function () use ($rows, $headers, &$created, &$updated, &$rowNumber, &$errors) {
+            foreach ($rows as $row) {
                 $rowNumber++;
                 $row = array_pad($row, count($headers), null);
                 $data = array_combine($headers, array_slice($row, 0, count($headers)));
@@ -307,8 +308,6 @@ class ProductManagementController extends Controller
                 $existingProduct ? $updated++ : $created++;
             }
         });
-
-        fclose($handle);
 
         $message = "Products import finished. Created: {$created}. Updated: {$updated}.";
 
@@ -586,7 +585,59 @@ class ProductManagementController extends Controller
         ]);
     }
 
-    private function normalizeCsvHeader(string $header): string
+    private function downloadExcel(string $fileName, array $rows)
+    {
+        $headers = ['name', 'sku', 'category_id', 'category_name', 'unit', 'estimated_price', 'barcode', 'status'];
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Products');
+
+        foreach ($headers as $columnIndex => $header) {
+            $column = $columnIndex + 1;
+            $sheet->setCellValueExplicit([$column, 1], $header, DataType::TYPE_STRING);
+            $sheet->getColumnDimensionByColumn($column)->setAutoSize(true);
+        }
+
+        foreach ($rows as $rowIndex => $row) {
+            $excelRow = $rowIndex + 2;
+
+            foreach ($headers as $columnIndex => $header) {
+                $sheet->setCellValueExplicit(
+                    [$columnIndex + 1, $excelRow],
+                    (string) ($row[$header] ?? ''),
+                    DataType::TYPE_STRING
+                );
+            }
+        }
+
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            (new Xlsx($spreadsheet))->save('php://output');
+            $spreadsheet->disconnectWorksheets();
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    private function readExcelRows(string $path): array
+    {
+        $spreadsheet = IOFactory::load($path);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = [];
+        $highestRow = $sheet->getHighestDataRow();
+        $highestColumn = $sheet->getHighestDataColumn();
+
+        foreach ($sheet->rangeToArray("A1:{$highestColumn}{$highestRow}", '', false, false, false) as $row) {
+            $rows[] = array_map(fn ($value) => is_null($value) ? '' : trim((string) $value), $row);
+        }
+
+        $spreadsheet->disconnectWorksheets();
+
+        return $rows;
+    }
+
+    private function normalizeImportHeader(string $header): string
     {
         return Str::snake(trim(strtolower($header)));
     }

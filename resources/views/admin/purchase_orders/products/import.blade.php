@@ -31,7 +31,7 @@
             <div class="card-title">
                 <div>
                     <h3 class="fw-bold mb-1">Import Products</h3>
-                    <div class="text-muted fw-semibold fs-6">Upload a CSV to create or update catalog products by SKU.</div>
+                    <div class="text-muted fw-semibold fs-6">Upload an Excel file to create or update catalog products by SKU.</div>
                 </div>
             </div>
             <div class="card-toolbar">
@@ -40,7 +40,7 @@
                         Back to Products
                     </a>
                     <a href="{{ route('admin.purchase-orders.products.import.sample') }}" class="btn btn-light-success">
-                        Sample CSV
+                        Sample Excel
                     </a>
                 </div>
             </div>
@@ -73,13 +73,13 @@
                 @csrf
 
                 <div class="row mb-8">
-                    <label class="col-lg-3 col-form-label required fw-semibold fs-6">Products CSV</label>
+                    <label class="col-lg-3 col-form-label required fw-semibold fs-6">Products Excel</label>
                     <div class="col-lg-9">
                         <input
                             type="file"
                             name="products_file"
                             class="form-control form-control-lg form-control-solid"
-                            accept=".csv,text/csv"
+                            accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                             required
                         >
                         <div class="form-text">
@@ -99,7 +99,7 @@
 
                 <div class="d-flex justify-content-end gap-3">
                     <a href="{{ route('admin.purchase-orders.products') }}" class="btn btn-light">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Import CSV</button>
+                    <button type="submit" class="btn btn-primary">Import Excel</button>
                 </div>
             </form>
         </div>

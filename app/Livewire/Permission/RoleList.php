@@ -14,19 +14,29 @@ class RoleList extends Component
 
     public function render()
     {
-        $this->roles = Role::with('permissions')->get();
+        $this->roles = $this->queryRoles();
 
         return view('livewire.permission.role-list');
     }
 
     public function updateRoleList()
     {
-        $this->roles = Role::with('permissions')->get();
+        $this->roles = $this->queryRoles();
     }
 
     public function hydrate()
     {
         $this->resetErrorBag();
         $this->resetValidation();
+    }
+
+    private function queryRoles(): Collection
+    {
+        return Role::query()
+            ->where('guard_name', 'web')
+            ->with('permissions')
+            ->withCount('users')
+            ->orderBy('name')
+            ->get();
     }
 }

@@ -25,19 +25,23 @@ class RoleModal extends Component
     protected $listeners = ['modal.show.role_name' => 'mountRole'];
 
     // This function is called when the component receives the `modal.show.role_name` event.
-    public function mountRole($role_name = '')
+    public function mountRole($role_id = '')
     {
-        if (empty($role_name)) {
+        if (empty($role_id)) {
             // Create new
             $this->role = new Role;
+            $this->role->guard_name = 'web';
             $this->name = '';
             return;
         }
 
-        // Get the role by name.
-        $role = Role::where('name', $role_name)->first();
+        // Get the role by ID to avoid mixing roles with the same name across guards.
+        $role = Role::query()
+            ->where('guard_name', 'web')
+            ->find($role_id);
+
         if (is_null($role)) {
-            $this->dispatch('error', 'The selected role [' . $role_name . '] is not found');
+            $this->dispatch('error', 'The selected role is not found');
             return;
         }
 
@@ -52,7 +56,10 @@ class RoleModal extends Component
     public function mount()
     {
         // Get all permissions.
-        $this->permissions = Permission::all();
+        $this->permissions = Permission::query()
+            ->where('guard_name', 'web')
+            ->orderBy('name')
+            ->get();
 
         // Set the checked permissions property to an empty array.
         $this->checked_permissions = [];
