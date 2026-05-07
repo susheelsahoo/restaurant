@@ -44,6 +44,7 @@ class DashboardController extends Controller
             'awaitingApprovalCount' => $awaitingApprovalRequests->whereIn('status', $awaitingApprovalStatuses)->count(),
             'recentRequests' => $this->requestListData(5),
             'greeting' => $greeting,
+            'purchaseRoles' => $access,
         ]);
     }
 }
