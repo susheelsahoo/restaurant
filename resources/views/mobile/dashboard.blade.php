@@ -90,12 +90,11 @@ default => 'secondary',
             <p class="empty-state">No recent requests yet.</p>
             @endforelse
         </section>
-
-        <div class="fab-container">
-            <button class="primary-btn fab-add-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
-                + New Request
+        @if($purchaseRoles->canCreateRequests(auth()->user()))
+            <button class="primary-btn" type="button" onclick="window.location.href='{{ url('/mobile/quick-add') }}'">
+                + Add Request
             </button>
-        </div>
+        @endif
     </main>
 
     @include('mobile.partials.bottom-nav')
