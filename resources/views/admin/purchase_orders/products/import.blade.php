@@ -92,7 +92,7 @@
                     <div class="flex-grow-1">
                         <div class="fw-bold mb-2">Import rules</div>
                         <div class="text-gray-700">
-                            SKU is used to update existing products. Barcode is optional, but when provided it must be unique across all products.
+                            SKU is used to update existing products. Category names are created automatically when missing. Barcode is optional, but when provided it must be unique across all products.
                         </div>
                     </div>
                 </div>

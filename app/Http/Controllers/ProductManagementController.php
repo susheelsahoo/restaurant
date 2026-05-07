@@ -493,7 +493,7 @@ class ProductManagementController extends Controller
         $categoryId = $this->categoryIdFromCsvRow($row);
 
         if ($categoryId === false) {
-            $errors[] = "Row {$rowNumber}: category was not found.";
+            $errors[] = "Row {$rowNumber}: category_id was not found.";
 
             return null;
         }
@@ -540,10 +540,32 @@ class ProductManagementController extends Controller
             return null;
         }
 
-        return ProductCategory::query()
+        $existingCategoryId = ProductCategory::query()
             ->where('name', $categoryName)
             ->orWhere('slug', Str::slug($categoryName))
-            ->value('id') ?: false;
+            ->value('id');
+
+        if ($existingCategoryId) {
+            return (int) $existingCategoryId;
+        }
+
+        return ProductCategory::create([
+            'name' => $categoryName,
+            'slug' => $this->categorySlugFromName($categoryName),
+            'monthly_budget' => 0,
+            'status' => 'active',
+        ])->id;
+    }
+
+    private function categorySlugFromName(string $categoryName): string
+    {
+        $slug = Str::slug($categoryName);
+
+        if ($slug !== '') {
+            return $slug;
+        }
+
+        return 'category-' . substr(md5(Str::lower($categoryName)), 0, 10);
     }
 
     private function downloadCsv(string $fileName, array $rows)
