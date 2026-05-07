@@ -200,7 +200,7 @@ class ProductManagementController extends Controller
             'status' => $product->status,
         ]);
 
-        return $this->downloadCsv('products-export-' . now()->format('Y-m-d-His') . '.csv', $rows->all());
+        return $this->downloadExcel('products-export-' . now()->format('Y-m-d-His') . '.xlsx', $rows->all());
     }
 
     public function importForm()

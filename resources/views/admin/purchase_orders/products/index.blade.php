@@ -59,10 +59,10 @@
                         Product Categories
                     </a>
                     <a href="{{ route('admin.purchase-orders.products.export') }}" class="btn btn-light-success">
-                        Export CSV
+                        Export Products
                     </a>
                     <a href="{{ route('admin.purchase-orders.products.import.form') }}" class="btn btn-light-primary">
-                        Import CSV
+                        Import Products
                     </a>
                     <a href="{{ route('admin.purchase-orders.products.create') }}" class="btn btn-primary">
                         {!! getIcon('plus', 'fs-2', '', 'i') !!} Add Product
