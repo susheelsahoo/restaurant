@@ -5,11 +5,11 @@
 @section('mobile-standalone', true)
 
 @php
-    $purchaseRoles = app(\App\Services\PurchaseRoleService::class);
-    $canApproveRequest = $purchaseRoles->canApproveRequests(auth()->user());
-    $money = static fn (float $amount): string => $requestReview['currency'] . ' ' . number_format($amount, 2);
-    $managerComment = old('manager_comment', $requestReview['manager_comment'] ?? '');
-    $showSendbackPanel = old('status') === 'returned' || $errors->has('manager_comment');
+$purchaseRoles = app(\App\Services\PurchaseRoleService::class);
+$canApproveRequest = $purchaseRoles->canApproveRequests(auth()->user());
+$money = static fn (float $amount): string => $requestReview['currency'] . ' ' . number_format($amount, 2);
+$managerComment = old('manager_comment', $requestReview['manager_comment'] ?? '');
+$showSendbackPanel = old('status') === 'returned' || $errors->has('manager_comment');
 @endphp
 
 @section('mobile-content')
@@ -19,7 +19,7 @@
             <span aria-hidden="true">&larr;</span>
         </a>
         <div class="or-title-block">
-            <h2>Order Review</h2>
+            <h3>Order Review</h3>
             <p>Manager approval and budget control</p>
         </div>
         <div class="or-avatar">{{ strtoupper(substr((string) auth()->user()?->name, 0, 1)) ?: 'M' }}</div>
@@ -27,19 +27,19 @@
 
     <main>
         @if(session('success'))
-            <div class="or-result-message show success">{{ session('success') }}</div>
+        <div class="or-result-message show success">{{ session('success') }}</div>
         @endif
 
         @if(session('error'))
-            <div class="or-result-message show danger">{{ session('error') }}</div>
+        <div class="or-result-message show danger">{{ session('error') }}</div>
         @endif
 
         @if($errors->any())
-            <div class="or-result-message show danger">{{ $errors->first() }}</div>
+        <div class="or-result-message show danger">{{ $errors->first() }}</div>
         @endif
 
         <section class="or-card or-hero">
-            <h2>{{ $requestReview['request_no'] }}</h2>
+            <h3>{{ $requestReview['request_no'] }}</h3>
             <p>
                 Submitted by {{ $requestReview['requester'] }} for {{ $requestReview['department'] }}.
                 Review request value, category budgets, and purchasing readiness.
@@ -66,12 +66,11 @@
 
         <div
             id="warningBanner"
-            class="or-warning-banner {{ $requestReview['alert_count'] > 0 ? 'show ' . ($requestReview['over_budget_categories']->isNotEmpty() ? 'danger' : 'warning') : '' }}"
-        >
+            class="or-warning-banner {{ $requestReview['alert_count'] > 0 ? 'show ' . ($requestReview['over_budget_categories']->isNotEmpty() ? 'danger' : 'warning') : '' }}">
             @if($requestReview['over_budget_categories']->isNotEmpty())
-                Over-budget warning: approved current month spend plus this request for {{ $requestReview['over_budget_categories']->implode(', ') }} exceeded the category budget.
+            Over-budget warning: approved current month spend plus this request for {{ $requestReview['over_budget_categories']->implode(', ') }} exceeded the category budget.
             @elseif($requestReview['warning_categories']->isNotEmpty())
-                Budget caution: approved current month spend plus this request for {{ $requestReview['warning_categories']->implode(', ') }} is close to the category limit.
+            Budget caution: approved current month spend plus this request for {{ $requestReview['warning_categories']->implode(', ') }} is close to the category limit.
             @endif
         </div>
 
@@ -137,58 +136,57 @@
         </div>
 
         @forelse($requestReview['categories'] as $category)
-            <article
-                class="or-category-card"
-                data-category="{{ $category['name'] }}"
-                data-monthly-cost="{{ $category['monthly_cost'] }}"
-                data-budget="{{ $category['budget'] }}"
-            >
-                <div class="or-category-top">
-                    <div>
-                        <div class="or-category-title">{{ $category['name'] }}</div>
-                        <div class="or-category-sub">{{ $category['items_count'] }} items selected</div>
-                    </div>
-                    <div class="or-budget-box">
-                        <strong class="or-budget-amount">{{ $money($category['monthly_cost']) }} / {{ $money($category['budget']) }}</strong>
-                        <small class="or-budget-status">{{ $category['status_text'] }}</small>
-                    </div>
+        <article
+            class="or-category-card"
+            data-category="{{ $category['name'] }}"
+            data-monthly-cost="{{ $category['monthly_cost'] }}"
+            data-budget="{{ $category['budget'] }}">
+            <div class="or-category-top">
+                <div>
+                    <div class="or-category-title">{{ $category['name'] }}</div>
+                    <div class="or-category-sub">{{ $category['items_count'] }} items selected</div>
                 </div>
-                <div class="or-progress {{ $category['tone'] }}">
-                    <div style="width: {{ $category['progress_pct'] }}%"></div>
+                <div class="or-budget-box">
+                    <strong class="or-budget-amount">{{ $money($category['monthly_cost']) }} / {{ $money($category['budget']) }}</strong>
+                    <small class="or-budget-status">{{ $category['status_text'] }}</small>
                 </div>
+            </div>
+            <div class="or-progress {{ $category['tone'] }}">
+                <div style="width: {{ $category['progress_pct'] }}%"></div>
+            </div>
 
-                @foreach($category['items'] as $item)
-                    <div class="or-item-row">
-                        <div>
-                            <div class="or-item-name">{{ $item['name'] }}</div>
-                            <div class="or-item-meta">
-                                {{ $item['quantity_label'] }}
-                                &middot;
-                                {{ $item['notes'] ? 'Note: ' . $item['notes'] : 'No note' }}
-                                &middot;
-                                {{ $item['supplier'] !== '-' ? 'Supplier: ' . $item['supplier'] : 'No supplier selected' }}
-                            </div>
-                        </div>
-                        <div class="or-item-price">
-                            {{ $item['has_price'] ? $money($item['line_total']) : 'Price pending' }}
-                        </div>
+            @foreach($category['items'] as $item)
+            <div class="or-item-row">
+                <div>
+                    <div class="or-item-name">{{ $item['name'] }}</div>
+                    <div class="or-item-meta">
+                        {{ $item['quantity_label'] }}
+                        &middot;
+                        {{ $item['notes'] ? 'Note: ' . $item['notes'] : 'No note' }}
+                        &middot;
+                        {{ $item['supplier'] !== '-' ? 'Supplier: ' . $item['supplier'] : 'No supplier selected' }}
                     </div>
-                @endforeach
-            </article>
+                </div>
+                <div class="or-item-price">
+                    {{ $item['has_price'] ? $money($item['line_total']) : 'Price pending' }}
+                </div>
+            </div>
+            @endforeach
+        </article>
         @empty
-            <section class="or-card">
-                <p class="or-empty-state">No request items added yet.</p>
-            </section>
+        <section class="or-card">
+            <p class="or-empty-state">No request items added yet.</p>
+        </section>
         @endforelse
 
         @if(filled($requestReview['admin_comment'] ?? null))
-            <section class="or-card">
-                <div class="or-section-head">
-                    <h3>Admin Comment</h3>
-                    <span>Latest response</span>
-                </div>
-                <p class="or-empty-state">{!! nl2br(e($requestReview['admin_comment'])) !!}</p>
-            </section>
+        <section class="or-card">
+            <div class="or-section-head">
+                <h3>Admin Comment</h3>
+                <span>Latest response</span>
+            </div>
+            <p class="or-empty-state">{!! nl2br(e($requestReview['admin_comment'])) !!}</p>
+        </section>
         @endif
 
         @if($canApproveRequest)
@@ -210,8 +208,7 @@
                         name="manager_comment"
                         maxlength="2000"
                         placeholder="Write comment, change request, or approval note..."
-                        required
-                    >{{ $managerComment }}</textarea>
+                        required>{{ $managerComment }}</textarea>
                 </div>
 
                 <div id="sendbackPanel" class="or-sendback-panel {{ $showSendbackPanel ? 'show' : '' }}">
@@ -267,8 +264,7 @@
                         id="expiredDeliveryInput"
                         type="datetime-local"
                         min="{{ $requestReview['min_needed_by_input'] }}"
-                        required
-                    >
+                        required>
                 </div>
                 <div id="expiredDeliveryError" class="or-inline-error"></div>
                 <div class="or-modal-actions">
@@ -283,270 +279,273 @@
 
 @push('scripts')
 <script>
-const categoryCards = Array.from(document.querySelectorAll('.or-category-card'));
-const warningBanner = document.getElementById('warningBanner');
-const summaryTotal = document.getElementById('summaryTotal');
-const budgetRemaining = document.getElementById('budgetRemaining');
-const heroTotal = document.getElementById('heroTotal');
-const heroAlerts = document.getElementById('heroAlerts');
-const heroItemCount = document.getElementById('heroItemCount');
-const bottomAlerts = document.getElementById('bottomAlerts');
-const bottomTotal = document.getElementById('bottomTotal');
-const statusPill = document.getElementById('statusPill');
-const managerComment = document.getElementById('managerComment');
-const modifyBtn = document.getElementById('modifyBtn');
-const confirmBtn = document.getElementById('confirmBtn');
-const confirmStatusForm = confirmBtn ? confirmBtn.closest('form') : null;
-const confirmNeededByInput = document.getElementById('confirmNeededByInput');
-const declineBtn = document.getElementById('declineBtn');
-const sendbackStatusForm = document.getElementById('sendbackStatusForm');
-const sendbackPanel = document.getElementById('sendbackPanel');
-const cancelSendbackBtn = document.getElementById('cancelSendbackBtn');
-const resultMessage = document.getElementById('resultMessage');
-const expiredDeliveryModal = document.getElementById('expiredDeliveryModal');
-const expiredDeliveryForm = document.getElementById('expiredDeliveryForm');
-const expiredDeliveryInput = document.getElementById('expiredDeliveryInput');
-const expiredDeliveryError = document.getElementById('expiredDeliveryError');
-const cancelExpiredDeliveryBtn = document.getElementById('cancelExpiredDeliveryBtn');
-const currency = @json($requestReview['currency']);
-const requestTotal = @json($requestReview['total_cost']);
-const deliveryDateExpired = @json($requestReview['needed_by_is_past']);
-const minNeededByInput = @json($requestReview['min_needed_by_input']);
-let confirmWithUpdatedDelivery = false;
+    const categoryCards = Array.from(document.querySelectorAll('.or-category-card'));
+    const warningBanner = document.getElementById('warningBanner');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const budgetRemaining = document.getElementById('budgetRemaining');
+    const heroTotal = document.getElementById('heroTotal');
+    const heroAlerts = document.getElementById('heroAlerts');
+    const heroItemCount = document.getElementById('heroItemCount');
+    const bottomAlerts = document.getElementById('bottomAlerts');
+    const bottomTotal = document.getElementById('bottomTotal');
+    const statusPill = document.getElementById('statusPill');
+    const managerComment = document.getElementById('managerComment');
+    const modifyBtn = document.getElementById('modifyBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const confirmStatusForm = confirmBtn ? confirmBtn.closest('form') : null;
+    const confirmNeededByInput = document.getElementById('confirmNeededByInput');
+    const declineBtn = document.getElementById('declineBtn');
+    const sendbackStatusForm = document.getElementById('sendbackStatusForm');
+    const sendbackPanel = document.getElementById('sendbackPanel');
+    const cancelSendbackBtn = document.getElementById('cancelSendbackBtn');
+    const resultMessage = document.getElementById('resultMessage');
+    const expiredDeliveryModal = document.getElementById('expiredDeliveryModal');
+    const expiredDeliveryForm = document.getElementById('expiredDeliveryForm');
+    const expiredDeliveryInput = document.getElementById('expiredDeliveryInput');
+    const expiredDeliveryError = document.getElementById('expiredDeliveryError');
+    const cancelExpiredDeliveryBtn = document.getElementById('cancelExpiredDeliveryBtn');
+    const currency = @json($requestReview['currency']);
+    const requestTotal = @json($requestReview['total_cost']);
+    const deliveryDateExpired = @json($requestReview['needed_by_is_past']);
+    const minNeededByInput = @json($requestReview['min_needed_by_input']);
+    let confirmWithUpdatedDelivery = false;
 
-function formatMoney(value) {
-    return `${currency} ${Number(value || 0).toFixed(2)}`;
-}
-
-function setResult(type, text) {
-    if (!resultMessage) {
-        return;
+    function formatMoney(value) {
+        return `${currency} ${Number(value || 0).toFixed(2)}`;
     }
 
-    resultMessage.className = `or-result-message show ${type}`;
-    resultMessage.textContent = text;
-}
-
-function clearResult() {
-    if (!resultMessage) {
-        return;
-    }
-
-    resultMessage.className = 'or-result-message';
-    resultMessage.textContent = '';
-}
-
-function showSendbackPanel(message = '') {
-    if (!sendbackPanel || !managerComment) {
-        return;
-    }
-
-    sendbackPanel.classList.add('show');
-    setStatus('Modification Requested', 'orange');
-
-    if (message) {
-        setResult('warning', message);
-    } else {
-        clearResult();
-    }
-
-    managerComment.focus();
-}
-
-function submitSendbackForm() {
-    if (!sendbackStatusForm) {
-        return;
-    }
-
-    if (sendbackStatusForm.requestSubmit) {
-        sendbackStatusForm.requestSubmit();
-        return;
-    }
-
-    sendbackStatusForm.submit();
-}
-
-function setStatus(text, variant) {
-    statusPill.textContent = text;
-    statusPill.className = `or-pill ${variant}`;
-}
-
-function showExpiredDeliveryModal() {
-    expiredDeliveryError.className = 'or-inline-error';
-    expiredDeliveryError.textContent = '';
-    expiredDeliveryInput.value = minNeededByInput;
-    expiredDeliveryModal.hidden = false;
-    expiredDeliveryInput.focus();
-}
-
-function hideExpiredDeliveryModal() {
-    expiredDeliveryModal.hidden = true;
-}
-
-function isFutureDateTime(value) {
-    const selectedTime = new Date(value).getTime();
-
-    return Number.isFinite(selectedTime) && selectedTime > Date.now();
-}
-
-function updateBudgetWarnings() {
-    let monthlyTotal = 0;
-    let totalBudget = 0;
-    let alerts = 0;
-    let totalItems = 0;
-    const overBudgetCategories = [];
-    const warningCategories = [];
-
-    categoryCards.forEach((card) => {
-        const monthlyCost = Number(card.dataset.monthlyCost || 0);
-        const budget = Number(card.dataset.budget || 0);
-        const usedPct = budget > 0 ? (monthlyCost / budget) * 100 : 0;
-        const amountEl = card.querySelector('.or-budget-amount');
-        const statusEl = card.querySelector('.or-budget-status');
-        const progress = card.querySelector('.or-progress');
-        const progressBar = progress.querySelector('div');
-
-        monthlyTotal += monthlyCost;
-        totalBudget += budget;
-        totalItems += card.querySelectorAll('.or-item-row').length;
-        amountEl.textContent = `${formatMoney(monthlyCost)} / ${formatMoney(budget)}`;
-        progress.classList.remove('safe', 'warn', 'over');
-
-        if (budget <= 0 && monthlyCost > 0) {
-            alerts += 1;
-            warningCategories.push(card.dataset.category);
-            progress.classList.add('warn');
-            progressBar.style.width = '100%';
-            statusEl.textContent = 'Monthly budget not set';
-        } else if (usedPct > 100) {
-            alerts += 1;
-            overBudgetCategories.push(card.dataset.category);
-            progress.classList.add('over');
-            progressBar.style.width = '100%';
-            statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request - over budget`;
-        } else if (usedPct >= 75) {
-            alerts += 1;
-            warningCategories.push(card.dataset.category);
-            progress.classList.add('warn');
-            progressBar.style.width = `${usedPct}%`;
-            statusEl.textContent = `${usedPct.toFixed(1)}% of approved + this request - near limit`;
-        } else {
-            progress.classList.add('safe');
-            progressBar.style.width = `${usedPct}%`;
-            statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request`;
+    function setResult(type, text) {
+        if (!resultMessage) {
+            return;
         }
+
+        resultMessage.className = `or-result-message show ${type}`;
+        resultMessage.textContent = text;
+    }
+
+    function clearResult() {
+        if (!resultMessage) {
+            return;
+        }
+
+        resultMessage.className = 'or-result-message';
+        resultMessage.textContent = '';
+    }
+
+    function showSendbackPanel(message = '') {
+        if (!sendbackPanel || !managerComment) {
+            return;
+        }
+
+        sendbackPanel.classList.add('show');
+        setStatus('Modification Requested', 'orange');
+
+        if (message) {
+            setResult('warning', message);
+        } else {
+            clearResult();
+        }
+
+        managerComment.focus();
+    }
+
+    function submitSendbackForm() {
+        if (!sendbackStatusForm) {
+            return;
+        }
+
+        if (sendbackStatusForm.requestSubmit) {
+            sendbackStatusForm.requestSubmit();
+            return;
+        }
+
+        sendbackStatusForm.submit();
+    }
+
+    function setStatus(text, variant) {
+        statusPill.textContent = text;
+        statusPill.className = `or-pill ${variant}`;
+    }
+
+    function showExpiredDeliveryModal() {
+        expiredDeliveryError.className = 'or-inline-error';
+        expiredDeliveryError.textContent = '';
+        expiredDeliveryInput.value = minNeededByInput;
+        expiredDeliveryModal.hidden = false;
+        expiredDeliveryInput.focus();
+    }
+
+    function hideExpiredDeliveryModal() {
+        expiredDeliveryModal.hidden = true;
+    }
+
+    function isFutureDateTime(value) {
+        const selectedTime = new Date(value).getTime();
+
+        return Number.isFinite(selectedTime) && selectedTime > Date.now();
+    }
+
+    function updateBudgetWarnings() {
+        let monthlyTotal = 0;
+        let totalBudget = 0;
+        let alerts = 0;
+        let totalItems = 0;
+        const overBudgetCategories = [];
+        const warningCategories = [];
+
+        categoryCards.forEach((card) => {
+            const monthlyCost = Number(card.dataset.monthlyCost || 0);
+            const budget = Number(card.dataset.budget || 0);
+            const usedPct = budget > 0 ? (monthlyCost / budget) * 100 : 0;
+            const amountEl = card.querySelector('.or-budget-amount');
+            const statusEl = card.querySelector('.or-budget-status');
+            const progress = card.querySelector('.or-progress');
+            const progressBar = progress.querySelector('div');
+
+            monthlyTotal += monthlyCost;
+            totalBudget += budget;
+            totalItems += card.querySelectorAll('.or-item-row').length;
+            amountEl.textContent = `${formatMoney(monthlyCost)} / ${formatMoney(budget)}`;
+            progress.classList.remove('safe', 'warn', 'over');
+
+            if (budget <= 0 && monthlyCost > 0) {
+                alerts += 1;
+                warningCategories.push(card.dataset.category);
+                progress.classList.add('warn');
+                progressBar.style.width = '100%';
+                statusEl.textContent = 'Monthly budget not set';
+            } else if (usedPct > 100) {
+                alerts += 1;
+                overBudgetCategories.push(card.dataset.category);
+                progress.classList.add('over');
+                progressBar.style.width = '100%';
+                statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request - over budget`;
+            } else if (usedPct >= 75) {
+                alerts += 1;
+                warningCategories.push(card.dataset.category);
+                progress.classList.add('warn');
+                progressBar.style.width = `${usedPct}%`;
+                statusEl.textContent = `${usedPct.toFixed(1)}% of approved + this request - near limit`;
+            } else {
+                progress.classList.add('safe');
+                progressBar.style.width = `${usedPct}%`;
+                statusEl.textContent = `${usedPct.toFixed(0)}% of approved + this request`;
+            }
+        });
+
+        summaryTotal.textContent = formatMoney(requestTotal);
+        heroTotal.textContent = formatMoney(requestTotal);
+        budgetRemaining.textContent = formatMoney(Math.max(0, totalBudget - monthlyTotal));
+        heroAlerts.textContent = `${alerts} alerts`;
+        heroItemCount.textContent = `${totalItems} items`;
+
+        if (bottomTotal) {
+            bottomTotal.textContent = formatMoney(requestTotal);
+        }
+
+        if (bottomAlerts) {
+            bottomAlerts.textContent = String(alerts);
+        }
+
+        if (overBudgetCategories.length) {
+            warningBanner.className = 'or-warning-banner show danger';
+            warningBanner.textContent = `Over-budget warning: approved current month spend plus this request for ${overBudgetCategories.join(', ')} exceeded the category budget.`;
+        } else if (warningCategories.length) {
+            warningBanner.className = 'or-warning-banner show warning';
+            warningBanner.textContent = `Budget caution: approved current month spend plus this request for ${warningCategories.join(', ')} is close to the category limit or has no budget set.`;
+        } else {
+            warningBanner.className = 'or-warning-banner';
+            warningBanner.textContent = '';
+        }
+
+        return {
+            overBudgetCategories,
+            warningCategories
+        };
+    }
+
+    if (modifyBtn) {
+        modifyBtn.addEventListener('click', () => {
+            if (managerComment.value.trim()) {
+                submitSendbackForm();
+                return;
+            }
+
+            showSendbackPanel('Please add a manager comment before sending the request back.');
+        });
+    }
+
+    if (cancelSendbackBtn) {
+        cancelSendbackBtn.addEventListener('click', () => {
+            sendbackPanel.classList.remove('show');
+            clearResult();
+            setStatus(@json($requestReview['status_label']), @json($requestReview['status_tone']));
+        });
+    }
+
+    if (sendbackStatusForm) {
+        sendbackStatusForm.addEventListener('submit', (event) => {
+            const comment = managerComment.value.trim();
+
+            if (!comment) {
+                event.preventDefault();
+                showSendbackPanel('Please add a manager comment before sending the request back.');
+                return;
+            }
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            sendbackPanel.classList.remove('show');
+            updateBudgetWarnings();
+        });
+    }
+
+    if (confirmStatusForm) {
+        confirmStatusForm.addEventListener('submit', (event) => {
+            if (!deliveryDateExpired || confirmWithUpdatedDelivery) {
+                return;
+            }
+
+            event.preventDefault();
+            showExpiredDeliveryModal();
+        });
+    }
+
+    if (declineBtn) {
+        declineBtn.addEventListener('click', () => {
+            sendbackPanel.classList.remove('show');
+        });
+    }
+
+    if (cancelExpiredDeliveryBtn) {
+        cancelExpiredDeliveryBtn.addEventListener('click', hideExpiredDeliveryModal);
+    }
+
+    if (expiredDeliveryForm) {
+        expiredDeliveryForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!isFutureDateTime(expiredDeliveryInput.value)) {
+                expiredDeliveryError.className = 'or-inline-error show';
+                expiredDeliveryError.textContent = 'Please select a delivery date greater than today.';
+                return;
+            }
+
+            confirmNeededByInput.value = expiredDeliveryInput.value;
+            confirmWithUpdatedDelivery = true;
+            hideExpiredDeliveryModal();
+            confirmStatusForm.requestSubmit();
+        });
+    }
+
+    document.querySelectorAll('.status-comment-input').forEach((input) => {
+        input.form.addEventListener('submit', () => {
+            input.value = managerComment.value.trim();
+        });
     });
 
-    summaryTotal.textContent = formatMoney(requestTotal);
-    heroTotal.textContent = formatMoney(requestTotal);
-    budgetRemaining.textContent = formatMoney(Math.max(0, totalBudget - monthlyTotal));
-    heroAlerts.textContent = `${alerts} alerts`;
-    heroItemCount.textContent = `${totalItems} items`;
-
-    if (bottomTotal) {
-        bottomTotal.textContent = formatMoney(requestTotal);
-    }
-
-    if (bottomAlerts) {
-        bottomAlerts.textContent = String(alerts);
-    }
-
-    if (overBudgetCategories.length) {
-        warningBanner.className = 'or-warning-banner show danger';
-        warningBanner.textContent = `Over-budget warning: approved current month spend plus this request for ${overBudgetCategories.join(', ')} exceeded the category budget.`;
-    } else if (warningCategories.length) {
-        warningBanner.className = 'or-warning-banner show warning';
-        warningBanner.textContent = `Budget caution: approved current month spend plus this request for ${warningCategories.join(', ')} is close to the category limit or has no budget set.`;
-    } else {
-        warningBanner.className = 'or-warning-banner';
-        warningBanner.textContent = '';
-    }
-
-    return { overBudgetCategories, warningCategories };
-}
-
-if (modifyBtn) {
-modifyBtn.addEventListener('click', () => {
-    if (managerComment.value.trim()) {
-        submitSendbackForm();
-        return;
-    }
-
-    showSendbackPanel('Please add a manager comment before sending the request back.');
-});
-}
-
-if (cancelSendbackBtn) {
-cancelSendbackBtn.addEventListener('click', () => {
-    sendbackPanel.classList.remove('show');
-    clearResult();
-    setStatus(@json($requestReview['status_label']), @json($requestReview['status_tone']));
-});
-}
-
-if (sendbackStatusForm) {
-sendbackStatusForm.addEventListener('submit', (event) => {
-    const comment = managerComment.value.trim();
-
-    if (!comment) {
-        event.preventDefault();
-        showSendbackPanel('Please add a manager comment before sending the request back.');
-        return;
-    }
-});
-}
-
-if (confirmBtn) {
-confirmBtn.addEventListener('click', () => {
-    sendbackPanel.classList.remove('show');
     updateBudgetWarnings();
-});
-}
-
-if (confirmStatusForm) {
-confirmStatusForm.addEventListener('submit', (event) => {
-    if (!deliveryDateExpired || confirmWithUpdatedDelivery) {
-        return;
-    }
-
-    event.preventDefault();
-    showExpiredDeliveryModal();
-});
-}
-
-if (declineBtn) {
-declineBtn.addEventListener('click', () => {
-    sendbackPanel.classList.remove('show');
-});
-}
-
-if (cancelExpiredDeliveryBtn) {
-    cancelExpiredDeliveryBtn.addEventListener('click', hideExpiredDeliveryModal);
-}
-
-if (expiredDeliveryForm) {
-expiredDeliveryForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    if (!isFutureDateTime(expiredDeliveryInput.value)) {
-        expiredDeliveryError.className = 'or-inline-error show';
-        expiredDeliveryError.textContent = 'Please select a delivery date greater than today.';
-        return;
-    }
-
-    confirmNeededByInput.value = expiredDeliveryInput.value;
-    confirmWithUpdatedDelivery = true;
-    hideExpiredDeliveryModal();
-    confirmStatusForm.requestSubmit();
-});
-}
-
-document.querySelectorAll('.status-comment-input').forEach((input) => {
-    input.form.addEventListener('submit', () => {
-        input.value = managerComment.value.trim();
-    });
-});
-
-updateBudgetWarnings();
 </script>
 @endpush

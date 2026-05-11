@@ -8,7 +8,7 @@
 <div class="app-container">
     <header class="header">
         <div class="header-text">
-            <h2>Purchasing</h2>
+            <h3>Purchasing</h3>
             <p>Manage purchasing process</p>
         </div>
         @include('mobile.partials.profile-menu')

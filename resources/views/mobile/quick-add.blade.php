@@ -99,21 +99,23 @@
                         data-default-unit="{{ $product['unit'] }}" data-units="{{ $units }}" data-qty="{{ $defaultQty }}"
                         data-default-qty="{{ $defaultQty }}" data-step-kg="0.5" data-step-pcs="1">
                         <div class="qa-product-row">
-                            <div class="qa-product-left" role="button" tabindex="0" aria-pressed="false">
-                                <div class="qa-mark"></div>
-                                <div class="qa-product-info">
-                                    <h3>{{ $product['name'] }}</h3>
-                                    <p>{{ $product['category'] }} · {{ $product['preferred_supplier'] }} @if($product['sku']) ·
+                            <div class="qa-product-left" role="button" tabindex="0" aria-pressed="false" style="flex-direction: column; align-items: stretch; gap: 6px; width: 100%;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <h3 style="margin: 0; padding-right: 10px; font-size: 15px;">{{ $product['name'] }}</h3>
+                                    <div class="qa-mark" style="flex-shrink: 0;"></div>
+                                </div>
+                                <div class="qa-product-info" style="margin: 0;">
+                                    <p style="margin: 0;">{{ $product['category'] }} · {{ $product['preferred_supplier'] }} @if($product['sku']) ·
                                     SKU: {{ $product['sku'] }} @endif</p>
                                 </div>
-                            </div>
-                            <div class="qa-qty-control">
-                                <button class="qa-qty-btn qa-minus-btn" type="button">-</button>
-                                <input class="qa-qty-value" type="text" value="{{ $defaultQty }}"
-                                    inputmode="{{ $product['unit'] === 'kg' ? 'decimal' : 'numeric' }}"
-                                    aria-label="Quantity for {{ $product['name'] }}">
-                                <div class="qa-unit-value">{{ $product['unit'] }}</div>
-                                <button class="qa-qty-btn qa-plus-btn" type="button">+</button>
+                                <div class="qa-qty-control" style="margin-top: 4px;">
+                                    <button class="qa-qty-btn qa-minus-btn" type="button">-</button>
+                                    <input class="qa-qty-value" type="text" value="{{ $defaultQty }}"
+                                        inputmode="{{ $product['unit'] === 'kg' ? 'decimal' : 'numeric' }}"
+                                        aria-label="Quantity for {{ $product['name'] }}">
+                                    <div class="qa-unit-value">{{ $product['unit'] }}</div>
+                                    <button class="qa-qty-btn qa-plus-btn" type="button">+</button>
+                                </div>
                             </div>
                         </div>
                         <div class="qa-note-row">
@@ -408,13 +410,15 @@
                 }
             });
 
-            plusBtn.addEventListener('click', () => {
+            plusBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
                 setItemSelected(item, true);
                 setItemQuantity(item, Number(item.dataset.qty || 0) + getStep(item));
                 updateSummary();
             });
 
-            minusBtn.addEventListener('click', () => {
+            minusBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
                 setItemSelected(item, true);
                 setItemQuantity(item, Number(item.dataset.qty || 0) - getStep(item));
                 updateSummary();
