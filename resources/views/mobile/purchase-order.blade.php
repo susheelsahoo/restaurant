@@ -34,7 +34,7 @@ $hasReceiveErrors = $errors->has('receipts')
         @endif
 
         <section class="or-card or-hero">
-            <h2>Approved Order Ready for Dispatch</h2>
+            <h3>Approved Order Ready for Dispatch</h3>
             <p>
                 Review {{ $purchaseOrderReview['category_summary'] }} order and send each supplier sub order by WhatsApp or email.
             </p>

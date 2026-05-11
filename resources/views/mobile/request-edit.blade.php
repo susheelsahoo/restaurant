@@ -11,7 +11,7 @@
             <span aria-hidden="true">&larr;</span>
         </a>
         <div class="or-title-block">
-            <h2>Edit Request</h2>
+            <h3>Edit Request</h3>
             <p>Update product quantities and submit again</p>
         </div>
         <div class="or-avatar">{{ strtoupper(substr((string) auth()->user()?->name, 0, 1)) ?: 'U' }}</div>
@@ -23,7 +23,7 @@
         @endif
 
         <section class="or-card or-hero">
-            <h2>{{ $requestEdit['request_no'] }}</h2>
+            <h3>{{ $requestEdit['request_no'] }}</h3>
             <p>This request was sent back. Adjust the product quantities, review notes, and submit it for approval again.</p>
         </section>
 

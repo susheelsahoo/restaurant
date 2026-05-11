@@ -3277,7 +3277,7 @@ body.quick-add-app-body {
 
     .order-review-page .or-title-block h2,
     .order-review-page .or-title-block h3 {
-        font-size: 32px;
+        font-size: 22px;
     }
 
     .order-review-page .or-title-block p {
@@ -3302,8 +3302,8 @@ body.quick-add-app-body {
     }
 
     .order-review-page .or-sticky-bar .or-btn {
-        width: auto;
-        padding: 16px 40px;
+        width: 100%;
+        padding: 16px 20px;
         font-size: 16px;
         border-radius: 16px;
     }
@@ -3312,6 +3312,10 @@ body.quick-add-app-body {
         display: flex;
         gap: 16px;
         width: auto;
+    }
+
+    .order-review-page .or-sticky-bar .or-action-grid > * {
+        flex: 1;
     }
 }
 
