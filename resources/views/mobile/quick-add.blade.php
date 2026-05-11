@@ -44,8 +44,8 @@
                 </div>
 
                 <div id="scanInfo" class="qa-helper qa-helper-scan" hidden>
-                    Scan mode uses barcode lookup. Enter a barcode or product name, then we will auto-select the matched
-                    item.
+                    Scan mode uses your camera when available. You can also enter a barcode or product name, then we will
+                    auto-select the matched item.
                 </div>
 
                 <div id="templatePanel" class="qa-helper qa-helper-template" hidden>
@@ -84,6 +84,20 @@
             </div>
 
             <div id="lookupMessage"></div>
+
+            <div class="qa-scanner-panel" id="barcodeScannerPanel" hidden>
+                <div class="qa-scanner-head">
+                    <div>
+                        <strong>Scan barcode</strong>
+                        <span id="scannerStatus">Point the camera at the product barcode.</span>
+                    </div>
+                    <button class="qa-modal-close" id="closeScannerBtn" type="button" aria-label="Close scanner">×</button>
+                </div>
+                <div class="qa-scanner-frame">
+                    <video id="barcodeScannerVideo" playsinline muted></video>
+                    <div class="qa-scanner-line" aria-hidden="true"></div>
+                </div>
+            </div>
 
             <section class="qa-product-list" id="productList">
                 @foreach ($quickAddProducts as $product)
@@ -193,6 +207,10 @@
         const templateBtn = document.getElementById('templateBtn');
         const scanInfo = document.getElementById('scanInfo');
         const templatePanel = document.getElementById('templatePanel');
+        const barcodeScannerPanel = document.getElementById('barcodeScannerPanel');
+        const barcodeScannerVideo = document.getElementById('barcodeScannerVideo');
+        const closeScannerBtn = document.getElementById('closeScannerBtn');
+        const scannerStatus = document.getElementById('scannerStatus');
         const templateButtons = Array.from(document.querySelectorAll('.qa-template-chip'));
         const chips = Array.from(document.querySelectorAll('.qa-chip'));
         const quickAddStickyBar = document.querySelector('.qa-sticky-bar');
@@ -215,6 +233,10 @@
         let isProductListHidden = false;
         let lookupTimer = null;
         let templateHighlightTimer = null;
+        let scannerStream = null;
+        let scannerDetector = null;
+        let scannerFrameRequest = null;
+        let scannerIsRunning = false;
 
         function setQuickAddMode(mode) {
             const isScanMode = mode === 'scan';
@@ -256,6 +278,10 @@
 
         function clearMessage() {
             lookupMessage.innerHTML = '';
+        }
+
+        function setScannerStatus(message) {
+            scannerStatus.textContent = message;
         }
 
         function formatQty(value) {
@@ -672,6 +698,115 @@
             }
         }
 
+        function stopBarcodeScanner() {
+            scannerIsRunning = false;
+
+            if (scannerFrameRequest) {
+                window.cancelAnimationFrame(scannerFrameRequest);
+                scannerFrameRequest = null;
+            }
+
+            if (scannerStream) {
+                scannerStream.getTracks().forEach((track) => track.stop());
+                scannerStream = null;
+            }
+
+            barcodeScannerVideo.srcObject = null;
+            barcodeScannerPanel.hidden = true;
+        }
+
+        async function handleScannedBarcode(rawValue) {
+            const barcode = String(rawValue || '').trim();
+
+            if (!barcode) {
+                return;
+            }
+
+            stopBarcodeScanner();
+            searchInput.value = barcode;
+            isProductListHidden = false;
+            await lookupProduct();
+        }
+
+        async function scanVideoFrame() {
+            if (!scannerIsRunning || !scannerDetector) {
+                return;
+            }
+
+            try {
+                const barcodes = await scannerDetector.detect(barcodeScannerVideo);
+
+                if (barcodes.length > 0) {
+                    await handleScannedBarcode(barcodes[0].rawValue);
+                    return;
+                }
+            } catch (error) {
+                setScannerStatus('Scanning paused. Keep the barcode steady inside the frame.');
+            }
+
+            scannerFrameRequest = window.requestAnimationFrame(scanVideoFrame);
+        }
+
+        async function startBarcodeScanner() {
+            setQuickAddMode('scan');
+            clearMessage();
+
+            if (!('BarcodeDetector' in window)) {
+                showMessage('Camera barcode scanning is not supported in this browser. Enter the barcode in the search box and press Scan Product.');
+                searchInput.focus();
+                return;
+            }
+
+            if (!navigator.mediaDevices?.getUserMedia) {
+                showMessage('Camera access is not available. Enter the barcode in the search box and press Scan Product.');
+                searchInput.focus();
+                return;
+            }
+
+            stopBarcodeScanner();
+            barcodeScannerPanel.hidden = false;
+            setScannerStatus('Opening camera...');
+
+            try {
+                const preferredFormats = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf'];
+                const supportedFormats = typeof BarcodeDetector.getSupportedFormats === 'function'
+                    ? await BarcodeDetector.getSupportedFormats()
+                    : preferredFormats;
+                const formats = preferredFormats.filter((format) => supportedFormats.includes(format));
+
+                if (!formats.length) {
+                    stopBarcodeScanner();
+                    showMessage('This browser cannot scan product barcodes. Enter the barcode manually in the search box.');
+                    searchInput.focus();
+                    return;
+                }
+
+                scannerDetector = new BarcodeDetector({
+                    formats,
+                });
+
+                scannerStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                    },
+                    audio: false,
+                });
+
+                barcodeScannerVideo.srcObject = scannerStream;
+                await barcodeScannerVideo.play();
+
+                scannerIsRunning = true;
+                setScannerStatus('Point the camera at the product barcode.');
+                scanVideoFrame();
+            } catch (error) {
+                stopBarcodeScanner();
+                showMessage('Unable to open the camera. Allow camera permission, or enter the barcode manually.');
+                searchInput.focus();
+            }
+        }
+
         async function fetchSuggestions() {
             const query = searchInput.value.trim();
 
@@ -798,12 +933,15 @@
         });
 
         scanBtn.addEventListener('click', () => {
-            setQuickAddMode('scan');
-
             if (searchInput.value.trim() !== '') {
                 lookupProduct();
+                return;
             }
+
+            startBarcodeScanner();
         });
+
+        closeScannerBtn.addEventListener('click', stopBarcodeScanner);
 
         templateBtn.addEventListener('click', () => {
             setQuickAddMode('template');
