@@ -4,10 +4,6 @@
 @section('body-class', 'mobile-app-body')
 @section('mobile-standalone', true)
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}?v={{ time() }}">
-@endpush
-
 @php
 $approvalLabel = static fn (string $status): string => match ($status) {
 'approved', 'ordered' => 'Approved',

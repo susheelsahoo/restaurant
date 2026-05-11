@@ -240,6 +240,11 @@ Route::middleware([])->group(function () {
     Route::post('/mobile/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->middleware('guest:web,mobile');
     Route::middleware('mobile.auth')->group(function () {
         Route::get('/mobile/dashboard', [MobileDashboardController::class, 'index']);
+        Route::get('/mobile/profile', function () {
+            return view('mobile.profile', [
+                'user' => auth()->user()->loadMissing(['department', 'roles']),
+            ]);
+        })->name('mobile.profile');
         Route::get('/mobile/quick-add', [MobileRequestController::class, 'create']);
         Route::post('/mobile/quick-add', [MobileRequestController::class, 'store']);
         Route::get('/mobile/request-detail', [MobileRequestController::class, 'index']);

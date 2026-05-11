@@ -4,10 +4,6 @@
 @section('body-class', 'mobile-app-body')
 @section('mobile-standalone', true)
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
-@endpush
-
 @php
 $purchaseOrdersByCategory = collect($purchaseOrders)->groupBy(
 fn (array $purchaseOrder) => $purchaseOrder['category_summary'] ?: 'Uncategorized'

@@ -15,7 +15,7 @@
                 <h3>Choose Products</h3>
                 <p>Select items, adjust quantity, and submit one request.</p>
             </div>
-            <div class="qa-avatar">{{ strtoupper(substr((string) auth()->user()?->name, 0, 1)) ?: 'U' }}</div>
+            @include('mobile.partials.profile-menu')
         </header>
 
         <main class="qa-main">

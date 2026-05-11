@@ -10,7 +10,7 @@
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
-        <a href="{{ url('/user-management/users/' . auth()->id()) }}" class="mobile-profile-item">Profile</a>
+        <a href="{{ route('mobile.profile') }}" class="mobile-profile-item">Profile</a>
         <form method="POST" action="{{ url('/logout') }}">
             @csrf
             <button class="mobile-profile-item danger" type="submit">Logout</button>

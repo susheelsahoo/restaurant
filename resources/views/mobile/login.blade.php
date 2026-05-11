@@ -4,10 +4,6 @@
 @section('body-class', 'login-body')
 @section('mobile-standalone', true)
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}">
-@endpush
-
 @section('mobile-content')
 <div class="login-container">
     <header class="app-header">

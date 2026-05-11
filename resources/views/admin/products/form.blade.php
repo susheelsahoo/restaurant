@@ -56,6 +56,9 @@
                                 <option value="kg" @selected(old('unit', $product->unit ?? '') === 'kg')>kg</option>
                                 <option value="pcs" @selected(old('unit', $product->unit ?? '') === 'pcs')>pcs</option>
                                 <option value="pack" @selected(old('unit', $product->unit ?? '') === 'pack')>pack</option>
+                                <option value="bottle" @selected(old('unit', $product->unit ?? '') === 'bottle')>bottle</option>
+                                <option value="box" @selected(old('unit', $product->unit ?? '') === 'box')>box</option>
+                                
                             </select>
                         </div>
                     </div>

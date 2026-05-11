@@ -4,10 +4,6 @@
 @section('body-class', 'mobile-app-body')
 @section('mobile-standalone', true)
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('mobile-login/style.css') }}?v={{ time() }}">
-@endpush
-
 @php
     $purchaseRoles = app(\App\Services\PurchaseRoleService::class);
     $approvalLabel = static fn (string $status): string => match ($status) {
