@@ -37,9 +37,12 @@ $isHome = request()->is('/') || request()->is('home');
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('menu') ? 'active' : '' }}" href="{{ url('menu') }}">
+                    	<a class="nav-link {{ request()->is('menu') ? 'active' : '' }}" href="https://tifliszo.hu/Tifliso_best_menu.pdf" target="_blank" rel="noopener noreferrer" title="Open menu PDF in a new tab">
+							Menu
+						</a>
+                    <!--<a class="nav-link {{ request()->is('menu') ? 'active' : '' }}" href="{{ url('menu') }}">
                         Menu
-                    </a>
+                    </a>-->
                 </li>
 
                 <!--<li class="nav-item">
