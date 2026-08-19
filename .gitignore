@@ -110,4 +110,3 @@ error_log
 public/error_log
 public/sitemap.xml
 php8.3/*
-public/mobile/*
