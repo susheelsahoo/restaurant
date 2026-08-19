@@ -1,8 +1,14 @@
 
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{REQUEST_URI} !^/public/
-  RewriteRule ^(.*)$ /public/$1 [L]
+    RewriteEngine On
+
+    # Never expose application configuration or source files.
+    RewriteRule ^(?:\.env|composer\.(?:json|lock)|artisan|storage(?:/|$)|vendor(?:/|$)) - [F,L,NC]
+
+    # Laravel's web root is public/. Keep the repository root out of the
+    # document root when the hosting panel cannot be changed immediately.
+    RewriteCond %{REQUEST_URI} !^/public(?:/|$)
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
 # php -- BEGIN cPanel-generated handler, do not edit

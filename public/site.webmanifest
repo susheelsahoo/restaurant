@@ -2,7 +2,7 @@
   "name": "Restaurant Mobile App",
   "short_name": "Restaurant",
   "description": "Mobile app for restaurant management and ordering",
-  "start_url": "/mobile",
+  "start_url": "/mobile/login",
   "scope": "/mobile/",
   "display": "standalone",
   "orientation": "portrait",
@@ -59,14 +59,14 @@
       "short_name": "Dashboard",
       "description": "View your dashboard",
       "url": "/mobile/dashboard",
-      "icons": [{"src": "/purchase-orders-192.png", "sizes": "192x192"}]
+      "icons": [{ "src": "/purchase-orders-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Quick Add",
       "short_name": "Quick Add",
       "description": "Quick add request",
       "url": "/mobile/quick-add",
-      "icons": [{"src": "/purchase-orders-192.png", "sizes": "192x192"}]
+      "icons": [{ "src": "/purchase-orders-192.png", "sizes": "192x192" }]
     }
   ]
 }
