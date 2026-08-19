@@ -62,7 +62,7 @@ class PurchasingController extends Controller
 
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', $this->purchaseOrderStatuses()),
-            'channel' => 'nullable|in:email,whatsapp',
+            'channel' => 'nullable|in:email,whatsapp,viber',
             'only_ready' => 'nullable|boolean',
         ]);
 
@@ -142,6 +142,35 @@ class PurchasingController extends Controller
         $purchaseOrder->update([
             'supplier_id' => $validated['supplier_id'],
         ]);
+
+        $purchaseOrder->load('supplier');
+
+        if ($request->expectsJson()) {
+            $statusMeta = $this->purchaseOrderStatusMeta($purchaseOrder->status);
+            $sentStatuses = ['sent', 'confirmed', 'partial', 'completed'];
+            $dispatchStatus = match (true) {
+                $purchaseOrder->status === 'delayed' => 'delayed',
+                in_array($purchaseOrder->status, $sentStatuses, true) => 'sent',
+                default => 'ready',
+            };
+            $dispatchMeta = match ($dispatchStatus) {
+                'sent' => ['label' => $statusMeta['label'], 'tone' => 'blue'],
+                'delayed' => ['label' => 'Delayed', 'tone' => 'red'],
+                default => ['label' => 'Ready to Send', 'tone' => 'green'],
+            };
+
+            return response()->json([
+                'message' => 'Supplier assigned successfully.',
+                'supplier' => [
+                    'name' => $purchaseOrder->supplier->name,
+                    'phone' => $purchaseOrder->supplier->phone ?: '-',
+                    'email' => $purchaseOrder->supplier->email ?: '-',
+                ],
+                'dispatch_status' => $dispatchStatus,
+                'dispatch_label' => $dispatchMeta['label'],
+                'dispatch_pill_tone' => $dispatchMeta['tone'],
+            ]);
+        }
 
         $parentPurchaseOrder = $purchaseOrder->parent_po_id
             ? $purchaseOrder->parent()->first()
@@ -342,6 +371,10 @@ class PurchasingController extends Controller
             default => ['label' => 'Ready to Send', 'tone' => 'green'],
         };
         $emailPreview = (new PurchaseOrderSupplierMail($purchaseOrder))->renderedContent();
+        $whatsappPreview = (new PurchaseOrderSupplierMail(
+            $purchaseOrder,
+            'purchase-order-whatsapp'
+        ))->renderedContent();
 
         return [
             'id' => $purchaseOrder->id,
@@ -372,7 +405,9 @@ class PurchasingController extends Controller
             'receiving_url' => url('/mobile/purchase-order/' . $purchaseOrder->id . '/receiving'),
             'email_preview_subject' => $emailPreview['subject'],
             'email_preview_html' => $emailPreview['html'],
-            'supplier_message_text' => $emailPreview['text'],
+            'email_message_text' => $emailPreview['text'],
+            'whatsapp_preview_subject' => $whatsappPreview['subject'],
+            'whatsapp_message_text' => $whatsappPreview['text'],
         ];
     }
 

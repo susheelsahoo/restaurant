@@ -19,10 +19,13 @@ class PurchaseOrderSupplierMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(PurchaseOrder $purchaseOrder)
+    public function __construct(
+        PurchaseOrder $purchaseOrder,
+        string $templateSlug = 'purchase-order-supplier'
+    )
     {
         $this->purchaseOrder = $purchaseOrder;
-        $this->template = EmailTemplate::getBySlug('purchase-order-supplier');
+        $this->template = EmailTemplate::getBySlug($templateSlug);
     }
 
     /**

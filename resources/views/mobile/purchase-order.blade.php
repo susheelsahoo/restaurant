@@ -104,7 +104,9 @@ $hasReceiveErrors = $errors->has('receipts')
             data-status-url="{{ $supplierOrder['status_url'] }}"
             data-supplier-phone="{{ $supplierOrder['supplier_phone'] }}"
             data-email-subject="{{ e($supplierOrder['email_preview_subject']) }}"
-            data-message-text="{{ e($supplierOrder['supplier_message_text']) }}">
+            data-email-message="{{ e($supplierOrder['email_message_text']) }}"
+            data-whatsapp-subject="{{ e($supplierOrder['whatsapp_preview_subject']) }}"
+            data-whatsapp-message="{{ e($supplierOrder['whatsapp_message_text']) }}">
             <div class="po-supplier-head">
                 <div class="po-supplier-head-main">
                     <div class="po-supplier-head-row">
@@ -112,7 +114,6 @@ $hasReceiveErrors = $errors->has('receipts')
                             <div class="po-supplier-name">
                                 {{ $supplierOrder['dispatch_status'] === 'unassigned' ? 'Supplier not assigned yet.' : $supplierOrder['supplier'] }}
                             </div>
-                            @if($supplierOrder['dispatch_status'] !== 'unassigned')
                             <div class="po-supplier-meta">
                                 @if($supplierContactParts->isNotEmpty())
                                 Supplier contact: {{ $supplierContactParts->implode(' / ') }}
@@ -120,7 +121,6 @@ $hasReceiveErrors = $errors->has('receipts')
                                 Supplier contact not available
                                 @endif
                             </div>
-                            @endif
                         </div>
                         <div class="po-supplier-actions">
                             <span class="or-pill {{ $supplierOrder['dispatch_pill_tone'] }} po-status-pill">
@@ -185,8 +185,8 @@ $hasReceiveErrors = $errors->has('receipts')
             <p class="or-empty-state">No purchase order items added yet.</p>
             @endforelse
 
-            @if($supplierOrder['dispatch_status'] !== 'unassigned')
-            <div class="po-supplier-actions po-channel-actions">
+            <div class="po-supplier-actions po-channel-actions" @if($supplierOrder['dispatch_status'] === 'unassigned') hidden @endif>
+                <button class="po-send-btn viber" data-channel="viber" type="button">Viber</button>
                 <button class="po-send-btn whatsapp" data-channel="whatsapp" type="button">WhatsApp</button>
                 <button class="po-send-btn email" data-channel="email" type="button">Email</button>
                 <button
@@ -197,7 +197,6 @@ $hasReceiveErrors = $errors->has('receipts')
                     Receive Items
                 </button>
             </div>
-            @endif
 
             <div
                 class="po-dispatch-log {{ $supplierOrder['dispatch_status'] === 'sent' ? 'show success' : ($supplierOrder['dispatch_status'] === 'unassigned' ? 'show warning' : '') }}">
@@ -208,7 +207,6 @@ $hasReceiveErrors = $errors->has('receipts')
                 @endif
             </div>
 
-            @if($supplierOrder['dispatch_status'] !== 'unassigned')
             <div class="po-message-preview">
                 <div class="po-message-preview-header">
                     <strong>Supplier Message Preview</strong>
@@ -221,7 +219,6 @@ $hasReceiveErrors = $errors->has('receipts')
                     <button class="po-preview-btn primary po-confirm-send-btn" type="button">Send Now</button>
                 </div>
             </div>
-            @endif
         </article>
         @endforeach
 
@@ -434,6 +431,7 @@ $hasReceiveErrors = $errors->has('receipts')
     function channelLabel(channel) {
         const labels = {
             whatsapp: 'WhatsApp',
+            viber: 'Viber',
             email: 'Email',
         };
 
@@ -477,8 +475,12 @@ $hasReceiveErrors = $errors->has('receipts')
         const textarea = card.querySelector('.po-message-text');
         const label = card.querySelector('.po-preview-channel-label');
         const error = card.querySelector('.po-preview-error');
-        const subject = card.dataset.emailSubject || 'Purchase Order';
-        const messageText = card.dataset.messageText || '';
+        const subject = channel === 'email'
+            ? (card.dataset.emailSubject || 'Purchase Order')
+            : (card.dataset.whatsappSubject || 'Purchase Order');
+        const messageText = channel === 'email'
+            ? (card.dataset.emailMessage || '')
+            : (card.dataset.whatsappMessage || '');
 
         if (label) {
             label.textContent = channelLabel(channel);
@@ -510,6 +512,68 @@ $hasReceiveErrors = $errors->has('receipts')
     });
 
     supplierCards.forEach((card) => {
+        const assignmentForm = card.querySelector('.po-assignment-row');
+        const assignmentSelect = card.querySelector('.po-assignment-select');
+        const assignmentButton = card.querySelector('.po-assign-btn');
+
+        assignmentForm?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!assignmentSelect?.value || !assignmentButton) {
+                return;
+            }
+
+            const originalButtonText = assignmentButton.textContent;
+            assignmentButton.disabled = true;
+            assignmentButton.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(assignmentForm.action, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: new FormData(assignmentForm),
+                });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    const validationMessage = result.errors
+                        ? Object.values(result.errors).flat()[0]
+                        : result.message;
+                    throw new Error(validationMessage || 'Unable to assign supplier.');
+                }
+
+                const supplier = result.supplier;
+                const contactParts = [supplier.phone, supplier.email].filter((value) => value && value !== '-');
+                const supplierName = card.querySelector('.po-supplier-name');
+                const supplierMeta = card.querySelector('.po-supplier-meta');
+                const statusPill = card.querySelector('.po-status-pill');
+                const channelActions = card.querySelector('.po-channel-actions');
+                const dispatchLog = card.querySelector('.po-dispatch-log');
+
+                card.dataset.status = result.dispatch_status;
+                card.dataset.supplierPhone = supplier.phone;
+                supplierName.textContent = supplier.name;
+                supplierMeta.textContent = contactParts.length
+                    ? `Supplier contact: ${contactParts.join(' / ')}`
+                    : 'Supplier contact not available';
+                statusPill.className = `or-pill ${result.dispatch_pill_tone} po-status-pill`;
+                statusPill.textContent = result.dispatch_label;
+                channelActions.hidden = false;
+                assignmentButton.textContent = 'Reassign';
+                dispatchLog.className = 'po-dispatch-log';
+                dispatchLog.textContent = '';
+                updateCounts();
+            } catch (error) {
+                setLog(card, 'warning', error.message || 'Unable to assign supplier.');
+                assignmentButton.textContent = originalButtonText;
+            } finally {
+                assignmentButton.disabled = false;
+            }
+        });
+
         card.querySelectorAll('.po-send-btn[data-channel]').forEach((button) => {
             button.addEventListener('click', () => {
                 openPreview(card, button.dataset.channel || 'email');
@@ -540,7 +604,15 @@ $hasReceiveErrors = $errors->has('receipts')
                     return;
                 }
 
-                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(previewText?.value || activePreviewCard.dataset.messageText || '')}`, '_blank', 'noopener');
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(previewText?.value || activePreviewCard.dataset.whatsappMessage || '')}`, '_blank', 'noopener');
+            }
+
+            if (pendingChannel === 'viber') {
+                const message = previewText?.value || activePreviewCard.dataset.whatsappMessage || '';
+
+                // Viber's supported web share scheme opens the contact picker with
+                // the order message prefilled. The user selects the supplier chat.
+                window.open(`viber://forward?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
             }
 
             sendStatusForm.action = activePreviewCard.dataset.statusUrl || '';
