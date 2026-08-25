@@ -35,6 +35,7 @@ use App\Http\Controllers\WinesController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Mobile\DashboardController as MobileDashboardController;
+use App\Http\Controllers\ToDoTaskController;
 use App\Http\Controllers\Mobile\PurchasingController as MobilePurchasingController;
 use App\Http\Controllers\Mobile\RequestController as MobileRequestController;
 
@@ -118,6 +119,8 @@ Route::get('/email', function () {
 Route::middleware(['auth:web', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/tasks', [ToDoTaskController::class, 'store'])->name('tasks.store');
+    Route::patch('/tasks/{task}/status', [ToDoTaskController::class, 'updateStatus'])->name('tasks.status.update');
 
     Route::resource('/pages', PageController::class)->names('pages');
     Route::resource('/gallery', GalleryImageController::class)->names('gallery');

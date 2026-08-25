@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\ReservationStatus;
 use App\Models\ContactMessage;
+use App\Models\ToDoTask;
 
 class DashboardController extends Controller
 {
@@ -45,6 +46,9 @@ class DashboardController extends Controller
         $new_contact = ContactMessage::where('is_read', false)->count();
         $read_contact = ContactMessage::where('is_read', true)->count();
 
+        $pendingTasks = ToDoTask::where('status', 'pending')->orderBy('due_at')->get();
+        $completedTasks = ToDoTask::where('status', 'completed')->latest('completed_at')->get();
+
         return view(
             'pages.dashboards.index',
             compact(
@@ -65,7 +69,9 @@ class DashboardController extends Controller
                 'inHouseStatus',
                 'declinedStatus',
                 'completeStatus',
-                'colorMap'
+                'colorMap',
+                'pendingTasks',
+                'completedTasks'
             )
         );
     }
